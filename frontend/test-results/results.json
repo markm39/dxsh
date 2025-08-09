@@ -1,0 +1,339 @@
+{
+  "config": {
+    "configFile": "/Users/markmiller/workflow-engine/frontend/playwright.config.ts",
+    "rootDir": "/Users/markmiller/workflow-engine/frontend/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 3
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/markmiller/workflow-engine/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/markmiller/workflow-engine/frontend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/markmiller/workflow-engine/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/markmiller/workflow-engine/frontend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/markmiller/workflow-engine/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/markmiller/workflow-engine/frontend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.54.2",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "file-node.spec.ts",
+      "file": "file-node.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "FileNode Delete Functionality",
+          "file": "file-node.spec.ts",
+          "line": 252,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should have delete button on node and successfully delete node",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30293,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                            "column": 24,
+                            "line": 275
+                          },
+                          "message": "Error: locator.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first().locator('button[title*=\"Delete this node\"]').or(locator('[data-testid^=\"rf__node-fileNode_\"]').first().locator('button').filter({ hasText: 'delete' })).first()\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"Delete this node\" class=\"relative z-10 p-1.5 rounded-md transition-colors hover:bg-red-500/20 text-red-400 hover:text-red-300\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <h3 class=\"text-lg font-semibold text-text-primary\">File Selection</h3> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <h3 class=\"text-lg font-semibold text-text-primary\">File Selection</h3> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  2 × retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m      - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <div class=\"flex-1 overflow-y-auto p-6 space-y-6\">…</div> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  11 × retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <h3 class=\"text-lg font-semibold text-text-primary\">File Selection</h3> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <h3 class=\"text-lg font-semibold text-text-primary\">File Selection</h3> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex-1 overflow-y-auto p-6 space-y-6\">…</div> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <div class=\"flex-1 overflow-y-auto p-6 space-y-6\">…</div> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\u001b[2m    - done scrolling\u001b[22m\n\u001b[2m    - <h3 class=\"text-lg font-semibold text-text-primary\">File Selection</h3> from <div class=\"fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4\">…</div> subtree intercepts pointer events\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n\n\n  273 |     \n  274 |     // Click the delete button\n> 275 |     await deleteButton.click();\n      |                        ^\n  276 |     \n  277 |     // Verify node is removed from canvas\n  278 |     await expect(fileNode).not.toBeVisible({ timeout: 5000 });\n    at /Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts:275:24"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-03T21:26:16.561Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-chromium/error-context.md"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "5da0bb35d22563e4e0b6-a71da41177d9604e08e0",
+              "file": "file-node.spec.ts",
+              "line": 259,
+              "column": 3
+            },
+            {
+              "title": "should have delete button on node and successfully delete node",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "failed",
+                      "duration": 10070,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754256382409\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754256382409\" class=\"react-flow__node react-flow__node-fileNode nopan selected selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754256382409\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754256382409\" class=\"react-flow__node react-flow__node-fileNode nopan selected selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n\n    at /Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts:278:32",
+                        "location": {
+                          "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                          "column": 32,
+                          "line": 278
+                        },
+                        "snippet": "  276 |     \n  277 |     // Verify node is removed from canvas\n> 278 |     await expect(fileNode).not.toBeVisible({ timeout: 5000 });\n      |                                ^\n  279 |     \n  280 |     // Verify canvas is empty or node count decreased\n  281 |     const remainingNodes = page.locator('[data-testid^=\"rf__node-\"]');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                            "column": 32,
+                            "line": 278
+                          },
+                          "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754256382409\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754256382409\" class=\"react-flow__node react-flow__node-fileNode nopan selected selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n\n\n  276 |     \n  277 |     // Verify node is removed from canvas\n> 278 |     await expect(fileNode).not.toBeVisible({ timeout: 5000 });\n      |                                ^\n  279 |     \n  280 |     // Verify canvas is empty or node count decreased\n  281 |     const remainingNodes = page.locator('[data-testid^=\"rf__node-\"]');\n    at /Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts:278:32"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-03T21:26:16.550Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-firefox/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                        "column": 32,
+                        "line": 278
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "5da0bb35d22563e4e0b6-05171882f1f28ceb896c",
+              "file": "file-node.spec.ts",
+              "line": 259,
+              "column": 3
+            },
+            {
+              "title": "should have delete button on node and successfully delete node",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 10264,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754247934082\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754247934082\" class=\"react-flow__node react-flow__node-fileNode nopan selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754247934082\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754247934082\" class=\"react-flow__node react-flow__node-fileNode nopan selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n\n    at /Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts:278:32",
+                        "location": {
+                          "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                          "column": 32,
+                          "line": 278
+                        },
+                        "snippet": "  276 |     \n  277 |     // Verify node is removed from canvas\n> 278 |     await expect(fileNode).not.toBeVisible({ timeout: 5000 });\n      |                                ^\n  279 |     \n  280 |     // Verify canvas is empty or node count decreased\n  281 |     const remainingNodes = page.locator('[data-testid^=\"rf__node-\"]');"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                            "column": 32,
+                            "line": 278
+                          },
+                          "message": "Error: \u001b[31mTimed out 5000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid^=\"rf__node-fileNode_\"]').first()\nExpected: not visible\nReceived: visible\nCall log:\n\u001b[2m  - Expect \"not toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid^=\"rf__node-fileNode_\"]').first()\u001b[22m\n\u001b[2m    9 × locator resolved to <div tabindex=\"0\" role=\"button\" data-id=\"fileNode_1754247934082\" aria-describedby=\"react-flow__node-desc-1\" data-testid=\"rf__node-fileNode_1754247934082\" class=\"react-flow__node react-flow__node-fileNode nopan selectable\">…</div>\u001b[22m\n\u001b[2m      - unexpected value \"visible\"\u001b[22m\n\n\n  276 |     \n  277 |     // Verify node is removed from canvas\n> 278 |     await expect(fileNode).not.toBeVisible({ timeout: 5000 });\n      |                                ^\n  279 |     \n  280 |     // Verify canvas is empty or node count decreased\n  281 |     const remainingNodes = page.locator('[data-testid^=\"rf__node-\"]');\n    at /Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts:278:32"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-08-03T21:26:16.560Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-webkit/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/markmiller/workflow-engine/frontend/test-results/file-node-FileNode-Delete--f2849-nd-successfully-delete-node-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/markmiller/workflow-engine/frontend/tests/e2e/file-node.spec.ts",
+                        "column": 32,
+                        "line": 278
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "5da0bb35d22563e4e0b6-f702bb682e2619546ba2",
+              "file": "file-node.spec.ts",
+              "line": 259,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-08-03T21:26:16.028Z",
+    "duration": 33376.259000000005,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,91 @@
+# Page snapshot
+
+```yaml
+- heading "Dxsh Agents" [level=2]
+- button "Create new agent":
+  - img
+- heading "Test Agent" [level=3]
+- paragraph: Test agent for E2E tests
+- text: INACTIVE runs today
+- button "Edit agent":
+  - img
+- button "Delete agent":
+  - img
+- heading "Test Agent" [level=1]
+- paragraph: Test agent for E2E tests
+- button "Run Workflow":
+  - img
+  - text: Run Workflow
+- button "Workflow":
+  - img
+  - text: Workflow
+- button "Dashboard":
+  - img
+  - text: Dashboard
+- heading "Node Library" [level=3]
+- heading "Data Sources" [level=4]
+- img
+- text: Web Source Monitor web pages for changes
+- img
+- text: Data Structuring Extract structured data with regex
+- img
+- text: HTTP Request Make API calls with authentication
+- heading "AI Processing" [level=4]
+- img
+- text: AI Processor Process data with AI prompts
+- img
+- text: Linear Regression Train linear regression models
+- img
+- text: Random Forest Train ensemble decision tree models
+- heading "Storage" [level=4]
+- img
+- text: PostgreSQL Connect to PostgreSQL database
+- img
+- text: File Node Load from or save to files (JSON, CSV, Excel, TXT, DOC)
+- heading "Visualization" [level=4]
+- img
+- text: Chart Generator Generate structured chart data 💡
+- strong: "Tip:"
+- text: Drag nodes to the canvas to build your workflow
+- img
+- button "Input data for file saving New fileNode File Node Configure Output file data structuredData":
+  - img
+  - text: New fileNode File Node
+  - button "Delete this node":
+    - img
+  - img
+  - text: Configure structuredData
+- button "Input data for file saving New fileNode File Node Configure Output file data structuredData":
+  - img
+  - text: New fileNode File Node
+  - button "Delete this node":
+    - img
+  - img
+  - text: Configure structuredData
+- button "Input data for file saving New fileNode File Node Configure Output file data structuredData":
+  - img
+  - text: New fileNode File Node
+  - button "Delete this node":
+    - img
+  - img
+  - text: Configure structuredData
+- button "Input data for file saving New fileNode File Node Configure Output file data structuredData":
+  - img
+  - text: New fileNode File Node
+  - button "Delete this node":
+    - img
+  - img
+  - text: Configure structuredData
+- img
+- button "zoom in" [disabled]:
+  - img
+- button "zoom out":
+  - img
+- button "fit view":
+  - img
+- button "toggle interactivity":
+  - img
+- link "React Flow attribution":
+  - /url: https://reactflow.dev
+  - text: React Flow
+```

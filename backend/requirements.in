@@ -1,0 +1,33 @@
+# Core Flask dependencies
+Flask
+Flask-Cors
+Flask-Migrate
+Flask-SQLAlchemy
+
+# Database
+alembic
+psycopg2-binary
+
+# Web scraping and automation
+beautifulsoup4
+playwright
+requests
+lxml
+
+# AI and ML
+openai
+scikit-learn
+pandas
+numpy
+matplotlib
+
+# Authentication
+PyJWT
+
+# Docker support
+docker
+
+# Utilities
+python-dotenv
+python-dateutil
+tqdm

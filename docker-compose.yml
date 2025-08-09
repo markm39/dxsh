@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Dashboard Frontend (NEW)
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        VITE_WORKFLOW_API_URL: http://localhost:5000
+    ports:
+      - "3001:3000"
+    environment:
+      - WORKFLOW_API_URL=http://backend:5000
+    depends_on:
+      - backend
+    networks:
+      - workflow-network
+
+  # Workflow Builder Frontend (EXISTING)
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: ../docker/Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - workflow-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../docker/Dockerfile.backend
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
+      - PYTHON_EXECUTOR_URL=http://python-executor:8080
+      # Removed PLAYWRIGHT_BROWSERS_PATH to use default location
+    depends_on:
+      - postgres
+      - python-executor
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - workflow-network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=workflow
+      - POSTGRES_PASSWORD=workflow
+      - POSTGRES_DB=workflow_engine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - workflow-network
+
+  python-executor:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.executor
+    environment:
+      - MAX_EXECUTION_TIME=300
+      - MAX_MEMORY=1G
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    security_opt:
+      - no-new-privileges
+    networks:
+      - workflow-network
+
+# Networks
+networks:
+  workflow-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
