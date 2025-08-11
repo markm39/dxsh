@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 
 interface AuthState {
   authHeaders: Record<string, string>;
@@ -7,7 +7,15 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuth = (): AuthState => {
+interface AuthContextType extends AuthState {}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem('workflow-token')
   );
@@ -29,12 +37,26 @@ export const useAuth = (): AuthState => {
     localStorage.removeItem('workflow-token');
   };
 
-  return {
+  const value = {
     authHeaders,
     isAuthenticated,
     login,
     logout,
   };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = (): AuthState => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
 export default useAuth;

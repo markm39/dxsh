@@ -17,15 +17,18 @@ import {
   BarChart3,
   Activity,
   Type,
-  Brain
+  Brain,
+  LogOut
 } from 'lucide-react';
 import { useDashboard } from '../providers/DashboardProvider';
+import { useAuth } from '../providers/AuthProvider';
 import DashboardGrid from '../components/grid/DashboardGrid';
 import DashboardSettingsModal from '../components/settings/DashboardSettingsModal';
 import type { DashboardWidget } from '@shared/types';
 
 const DashboardEditorPage: React.FC = () => {
   const { dashboardId } = useParams<{ dashboardId?: string }>();
+  const { logout } = useAuth();
   const { 
     state, 
     loadDashboard, 
@@ -292,6 +295,16 @@ const DashboardEditorPage: React.FC = () => {
                 Preview
               </Link>
             )}
+
+            {/* Sign Out */}
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Sign Out</span>
+            </button>
           </div>
         </div>
       </header>

@@ -32,6 +32,18 @@ class ApiService {
         headers,
       });
 
+      // Handle 401 Unauthorized - clear token and redirect to login
+      if (response.status === 401) {
+        // Clear auth tokens
+        localStorage.removeItem('workflow_auth_token');
+        localStorage.removeItem('workflow_auth_user');
+        
+        // Redirect to login page
+        window.location.href = '/login';
+        
+        throw new Error('Authentication expired. Please log in again.');
+      }
+
       const data = await response.json();
 
       if (!response.ok) {

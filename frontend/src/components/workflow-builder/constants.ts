@@ -102,8 +102,8 @@ export const DASHBOARD_TABS: DashboardTab[] = [
     icon: React.createElement(Settings, { className: "w-4 h-4" }),
   },
   {
-    id: "dashboard",
-    label: "Dashboard",
+    id: "results",
+    label: "Results",
     icon: React.createElement(Activity, { className: "w-4 h-4" }),
   },
 ];

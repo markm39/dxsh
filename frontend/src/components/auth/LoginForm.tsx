@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LogIn, UserPlus, Loader2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
 interface LoginFormProps {
@@ -45,70 +46,121 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     }
   };
 
+  const toggleMode = () => {
+    setIsRegistering(!isRegistering);
+    setError('');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-white mb-6 text-center">
-          {isRegistering ? 'Create Account' : 'Login'} - Dxsh
-        </h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <div className="p-8 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-text-primary mb-2">
+              {isRegistering ? 'Create Account' : 'Welcome Back'}
+            </h1>
+            <p className="text-text-secondary">
+              {isRegistering 
+                ? 'Sign up to create and manage workflows' 
+                : 'Sign in to access Dxsh'}
+            </p>
           </div>
 
-          {error && (
-            <div className="text-red-500 text-sm text-center">
-              {error}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border-subtle rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                placeholder="you@example.com"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 bg-background border border-border-subtle rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
+                placeholder="••••••••"
+                required
+                autoComplete={isRegistering ? 'new-password' : 'current-password'}
+              />
+            </div>
+
+            {/* Error message */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2">
+                <AlertCircle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
+            {/* Submit button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {isRegistering ? 'Creating Account...' : 'Signing In...'}
+                </>
+              ) : (
+                <>
+                  {isRegistering ? <UserPlus className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
+                  {isRegistering ? 'Create Account' : 'Sign In'}
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Mode toggle */}
+          <div className="mt-6 text-center">
+            <button
+              onClick={toggleMode}
+              className="text-sm text-text-secondary hover:text-text-primary transition-colors"
+            >
+              {isRegistering 
+                ? 'Already have an account? Sign in' 
+                : "Don't have an account? Create one"}
+            </button>
+          </div>
+
+          {/* Demo credentials */}
+          {!isRegistering && (
+            <div className="mt-6 pt-6 border-t border-border-subtle">
+              <p className="text-xs text-text-muted text-center mb-2">Demo Credentials:</p>
+              <div className="text-xs text-text-muted text-center space-y-1">
+                <p>Email: demo@example.com</p>
+                <p>Password: demo123</p>
+              </div>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : (isRegistering ? 'Register' : 'Login')}
-          </button>
-        </form>
-
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => setIsRegistering(!isRegistering)}
-            className="text-blue-400 hover:text-blue-300 text-sm"
-          >
-            {isRegistering ? 'Already have an account? Login' : "Don't have an account? Register"}
-          </button>
-        </div>
-
-        <div className="mt-6 text-center text-gray-400 text-xs">
-          <p>Demo credentials:</p>
-          <p>Email: demo@example.com</p>
-          <p>Password: demo123</p>
+          {/* Link to dashboard */}
+          <div className="mt-4 text-center">
+            <a
+              href="http://localhost:3000"
+              className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+            >
+              ← Back to Dashboard
+            </a>
+          </div>
         </div>
       </div>
     </div>

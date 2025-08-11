@@ -3,6 +3,14 @@ import { ExecutionHistory } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+// Helper to handle 401 errors
+const handleAuthError = () => {
+  // Clear auth token
+  localStorage.removeItem('workflow-token');
+  // Reload page to trigger auth check
+  window.location.reload();
+};
+
 export const workflowService = {
   async loadWorkflow(
     agentId: number,
@@ -14,6 +22,11 @@ export const workflowService = {
         headers: authHeaders,
       }
     );
+    
+    if (response.status === 401) {
+      handleAuthError();
+      return { nodes: [], edges: [] };
+    }
     
     if (response.ok) {
       const data = await response.json();
@@ -50,6 +63,12 @@ export const workflowService = {
       );
       
       if (!response.ok) {
+        // Handle 401 Unauthorized
+        if (response.status === 401) {
+          handleAuthError();
+          return false;
+        }
+        
         const errorData = await response.json().catch(() => null);
         console.error("Workflow save failed:", response.status, errorData);
         
@@ -72,6 +91,12 @@ export const workflowService = {
               }),
             }
           );
+          
+          if (retryResponse.status === 401) {
+            handleAuthError();
+            return false;
+          }
+          
           return retryResponse.ok;
         }
       }
@@ -94,6 +119,11 @@ export const workflowService = {
           headers: authHeaders,
         }
       );
+      
+      if (response.status === 401) {
+        handleAuthError();
+        return [];
+      }
       
       if (response.ok) {
         const data = await response.json();
@@ -123,6 +153,11 @@ export const workflowService = {
         selectors,
       }),
     });
+
+    if (response.status === 401) {
+      handleAuthError();
+      return { success: false, error: "Authentication expired" };
+    }
 
     return await response.json();
   },

@@ -6,7 +6,7 @@
 
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Settings, Maximize2, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Settings, Maximize2, RefreshCw, AlertTriangle, LogOut } from 'lucide-react';
 import { useDashboard } from '../providers/DashboardProvider';
 import { useTheme } from '../providers/ThemeProvider';
 import { useAuth, useAuthHeaders } from '../providers/AuthProvider';
@@ -19,7 +19,7 @@ const DashboardPage: React.FC = () => {
   const { dashboardId } = useParams<{ dashboardId?: string }>();
   const { state, loadDashboard, refreshAllWidgets, updateDashboard } = useDashboard();
   const { toggleTheme, themeName } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const authHeaders = useAuthHeaders();
 
   // Health check to ensure backend is available
@@ -124,7 +124,25 @@ const DashboardPage: React.FC = () => {
   if (!state.currentDashboard) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="flex items-center justify-center min-h-screen px-4">
+        {/* Header with sign out */}
+        <header className="bg-background border-b border-border-subtle px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl font-bold text-text-primary">Dxsh Dashboards</h1>
+              <p className="text-text-secondary text-sm">Dashboard Management</p>
+            </div>
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Sign Out</span>
+            </button>
+          </div>
+        </header>
+
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
           <div className="max-w-md w-full text-center">
             <div className="p-8 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
               <h1 className="text-3xl font-bold text-text-primary mb-4">
@@ -209,6 +227,16 @@ const DashboardPage: React.FC = () => {
               <Settings className="h-4 w-4" />
               Edit
             </Link>
+
+            {/* Sign Out */}
+            <button
+              onClick={logout}
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Sign Out</span>
+            </button>
           </div>
         </div>
       </header>

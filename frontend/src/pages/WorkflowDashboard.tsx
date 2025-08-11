@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { Play, Loader2, Calculator, Target } from "lucide-react";
+import { Play, Loader2, Calculator, Target, LogOut, User } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import {
   ReactFlow,
@@ -238,7 +238,7 @@ const nodeTypes = {
 };
 
 const AgentsDashboard: React.FC = () => {
-  const { authHeaders } = useAuth();
+  const { authHeaders, logout } = useAuth();
   
   // State management through custom hooks
   const {
@@ -657,6 +657,18 @@ const AgentsDashboard: React.FC = () => {
                       </>
                     )}
                   </button>
+                  
+                  {/* User Menu */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={logout}
+                      className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+                      title="Sign Out"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-sm">Sign Out</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -726,7 +738,7 @@ const AgentsDashboard: React.FC = () => {
                 </div>
               ) : (
                 <div className="flex-1 flex flex-col">
-                  {/* Dashboard Content */}
+                  {/* Results Content */}
                   <div className="flex-1 p-6 overflow-y-auto">
                     {/* Workflow Results */}
                     <div className="space-y-4">
@@ -945,15 +957,38 @@ const AgentsDashboard: React.FC = () => {
         )}
 
         {!selectedAgent && (
-          <div className="flex-1 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-lg text-text-muted mb-4">No agent selected</p>
-              <button
-                onClick={handleCreateAgent}
-                className="px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors"
-              >
-                Create Your First Agent
-              </button>
+          <div className="flex-1 flex flex-col">
+            {/* Header when no agent selected */}
+            <div className="border-b border-border-subtle bg-background p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold text-text-primary">Dxsh Workflow Builder</h1>
+                  <p className="text-text-muted">Visual workflow automation platform</p>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={logout}
+                    className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm">Sign Out</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-lg text-text-muted mb-4">No agent selected</p>
+                <button
+                  onClick={handleCreateAgent}
+                  className="px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors"
+                >
+                  Create Your First Agent
+                </button>
+              </div>
             </div>
           </div>
         )}

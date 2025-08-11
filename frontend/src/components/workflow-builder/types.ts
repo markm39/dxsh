@@ -57,7 +57,7 @@ export interface NodeData {
 }
 
 export interface DashboardTab {
-  id: 'workflow' | 'dashboard';
+  id: 'workflow' | 'results';
   label: string;
   icon: React.ReactNode;
 }

@@ -6,9 +6,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, BarChart3, Calendar, ExternalLink, Settings, Trash2 } from 'lucide-react';
+import { Plus, BarChart3, Calendar, ExternalLink, Settings, Trash2, LogOut } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthHeaders } from '../providers/AuthProvider';
+import { useAuthHeaders, useAuth } from '../providers/AuthProvider';
 import { apiService } from '../services/api';
 import InlineEditableText from '../components/common/InlineEditableText';
 
@@ -27,6 +27,7 @@ interface Dashboard {
 
 const DashboardListPage: React.FC = () => {
   const authHeaders = useAuthHeaders();
+  const { logout } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch all dashboards
@@ -36,6 +37,18 @@ const DashboardListPage: React.FC = () => {
       const response = await fetch(`${import.meta.env.VITE_WORKFLOW_API_URL || 'http://localhost:5000'}/api/v1/dashboards`, {
         headers: authHeaders
       });
+      
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        // Clear auth tokens
+        localStorage.removeItem('workflow_auth_token');
+        localStorage.removeItem('workflow_auth_user');
+        
+        // Force logout
+        logout();
+        
+        throw new Error('Authentication expired. Please log in again.');
+      }
       
       if (!response.ok) {
         throw new Error('Failed to fetch dashboards');
@@ -126,21 +139,38 @@ const DashboardListPage: React.FC = () => {
   }
 
   if (error) {
+    // Check if it's an authentication error
+    const isAuthError = error instanceof Error && 
+      (error.message.includes('Authentication expired') || error.message.includes('401'));
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="max-w-md w-full text-center">
           <div className="p-6 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
             <BarChart3 className="h-8 w-8 text-red-400 mx-auto mb-3" />
-            <div className="font-medium text-text-primary mb-2">Error Loading Dashboards</div>
+            <div className="font-medium text-text-primary mb-2">
+              {isAuthError ? 'Session Expired' : 'Error Loading Dashboards'}
+            </div>
             <div className="text-sm text-text-secondary mb-4">
               {error instanceof Error ? error.message : 'Failed to load dashboards'}
             </div>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white text-sm rounded-lg transition-colors"
-            >
-              Retry
-            </button>
+            <div className="flex gap-2 justify-center">
+              {isAuthError ? (
+                <Link
+                  to="/login"
+                  className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white text-sm rounded-lg transition-colors"
+                >
+                  Go to Login
+                </Link>
+              ) : (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-3 py-1.5 bg-primary hover:bg-primary-hover text-white text-sm rounded-lg transition-colors"
+                >
+                  Retry
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -159,13 +189,23 @@ const DashboardListPage: React.FC = () => {
                 Manage and view your data visualization dashboards
               </p>
             </div>
-            <Link
-              to="/editor/new"
-              className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create Dashboard
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/editor/new"
+                className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create Dashboard
+              </Link>
+              <button
+                onClick={logout}
+                className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+                title="Sign Out"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm">Sign Out</span>
+              </button>
+            </div>
           </div>
         </div>
       </header>
