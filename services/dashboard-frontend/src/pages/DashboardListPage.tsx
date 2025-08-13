@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, BarChart3, Calendar, ExternalLink, Settings, Trash2, LogOut } from 'lucide-react';
+import { Plus, BarChart3, Calendar, ExternalLink, Settings, Trash2, LogOut, Key } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthHeaders, useAuth } from '../providers/AuthProvider';
 import { apiService } from '../services/api';
@@ -190,6 +190,14 @@ const DashboardListPage: React.FC = () => {
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                to="/embed-tokens"
+                className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+                title="Manage Embed Tokens"
+              >
+                <Key className="w-4 h-4" />
+                <span className="text-sm">Embed Tokens</span>
+              </Link>
               <Link
                 to="/editor/new"
                 className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg transition-colors font-medium flex items-center gap-2"

@@ -14,6 +14,9 @@ const LoginPage = React.lazy(() => import('./pages/LoginPage'));
 const DashboardListPage = React.lazy(() => import('./pages/DashboardListPage'));
 const DashboardPage = React.lazy(() => import('./pages/DashboardPage'));
 const DashboardEditorPage = React.lazy(() => import('./pages/DashboardEditorPage'));
+const EmbedTokensPage = React.lazy(() => import('./pages/EmbedTokensPage'));
+const EmbedDashboardPage = React.lazy(() => import('./pages/EmbedDashboardPage'));
+const EmbedWidgetPage = React.lazy(() => import('./pages/EmbedWidgetPage'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 // Loading spinner component
@@ -109,6 +112,37 @@ const App: React.FC = () => {
                 <DashboardEditorPage />
               </RouteErrorBoundary>
             </ProtectedRoute>
+          }
+        />
+
+        {/* Embed tokens management */}
+        <Route
+          path="/embed-tokens"
+          element={
+            <ProtectedRoute>
+              <RouteErrorBoundary>
+                <EmbedTokensPage />
+              </RouteErrorBoundary>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Embed routes - NO authentication required, uses embed tokens */}
+        <Route
+          path="/embed/dashboard/:dashboardId"
+          element={
+            <RouteErrorBoundary>
+              <EmbedDashboardPage />
+            </RouteErrorBoundary>
+          }
+        />
+
+        <Route
+          path="/embed/widget/:widgetId"
+          element={
+            <RouteErrorBoundary>
+              <EmbedWidgetPage />
+            </RouteErrorBoundary>
           }
         />
 

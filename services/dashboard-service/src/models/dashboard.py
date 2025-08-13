@@ -5,10 +5,12 @@ Models for dashboard management and widget-node connections
 Adapted for microservice architecture with external service references
 """
 
-from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, JSON, Boolean, Index
+from datetime import datetime, timedelta
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, JSON, Boolean, Index, ARRAY
 from sqlalchemy.orm import relationship
 from ..database import Base
+import secrets
+import string
 
 
 class Dashboard(Base):
@@ -132,3 +134,97 @@ class DashboardWidget(Base):
         self.cached_data = data
         self.last_updated = datetime.utcnow()
         session.commit()
+
+
+class EmbedToken(Base):
+    """Embed token model - provides secure access to embedded dashboards/widgets"""
+    __tablename__ = 'embed_tokens'
+    
+    id = Column(Integer, primary_key=True)
+    token = Column(String(255), unique=True, nullable=False)
+    
+    # What this token provides access to (either dashboard or widget, not both)
+    dashboard_id = Column(Integer, ForeignKey('dashboards.id'), nullable=True)
+    widget_id = Column(Integer, ForeignKey('dashboard_widgets.id'), nullable=True)
+    
+    # Token metadata
+    name = Column(String(255))  # User-friendly name for the token
+    description = Column(Text)
+    
+    # Security settings
+    expires_at = Column(DateTime, nullable=True)  # null = never expires
+    allowed_domains = Column(JSON, default=[])  # ['*.example.com', 'app.mysite.com']
+    allowed_ips = Column(JSON, default=[])  # ['192.168.1.0/24', '10.0.0.1']
+    
+    # Usage tracking
+    usage_count = Column(Integer, default=0)
+    max_usage = Column(Integer, nullable=True)  # null = unlimited
+    last_used_at = Column(DateTime, nullable=True)
+    
+    # Creation metadata
+    created_by = Column(Integer, nullable=False)  # User ID who created this token
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    
+    # Relationships
+    dashboard = relationship('Dashboard', backref='embed_tokens')
+    widget = relationship('DashboardWidget', backref='embed_tokens')
+    
+    # Indexes for performance
+    __table_args__ = (
+        Index('idx_embed_token', 'token'),
+        Index('idx_embed_dashboard', 'dashboard_id'),
+        Index('idx_embed_widget', 'widget_id'),
+        Index('idx_embed_creator', 'created_by'),
+    )
+    
+    @classmethod
+    def generate_token(cls, length=32):
+        """Generate a secure random token"""
+        alphabet = string.ascii_letters + string.digits
+        return ''.join(secrets.choice(alphabet) for _ in range(length))
+    
+    def is_expired(self):
+        """Check if token is expired"""
+        if not self.expires_at:
+            return False
+        return datetime.utcnow() > self.expires_at
+    
+    def is_usage_exceeded(self):
+        """Check if token usage limit is exceeded"""
+        if not self.max_usage:
+            return False
+        return self.usage_count >= self.max_usage
+    
+    def is_valid(self):
+        """Check if token is valid (not expired and not usage exceeded)"""
+        return not self.is_expired() and not self.is_usage_exceeded()
+    
+    def increment_usage(self, session):
+        """Increment usage count and update last used timestamp"""
+        self.usage_count += 1
+        self.last_used_at = datetime.utcnow()
+        session.commit()
+    
+    def to_dict(self):
+        """Convert embed token to dictionary"""
+        return {
+            'id': self.id,
+            'token': self.token,
+            'name': self.name,
+            'description': self.description,
+            'dashboard_id': self.dashboard_id,
+            'widget_id': self.widget_id,
+            'expires_at': self.expires_at.isoformat() if self.expires_at else None,
+            'allowed_domains': self.allowed_domains or [],
+            'allowed_ips': self.allowed_ips or [],
+            'usage_count': self.usage_count,
+            'max_usage': self.max_usage,
+            'last_used_at': self.last_used_at.isoformat() if self.last_used_at else None,
+            'created_by': self.created_by,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'is_valid': self.is_valid(),
+            'is_expired': self.is_expired(),
+            'is_usage_exceeded': self.is_usage_exceeded()
+        }

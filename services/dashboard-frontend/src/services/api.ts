@@ -117,6 +117,31 @@ class ApiService {
       return false;
     }
   }
+
+  // Generic HTTP methods for embed tokens and other endpoints
+  async get(endpoint: string, authHeaders: Record<string, string> = {}): Promise<any> {
+    return await this.request(endpoint, {}, authHeaders);
+  }
+
+  async post(endpoint: string, data: any, authHeaders: Record<string, string> = {}): Promise<any> {
+    return await this.request(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }, authHeaders);
+  }
+
+  async put(endpoint: string, data: any, authHeaders: Record<string, string> = {}): Promise<any> {
+    return await this.request(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }, authHeaders);
+  }
+
+  async delete(endpoint: string, authHeaders: Record<string, string> = {}): Promise<any> {
+    return await this.request(endpoint, {
+      method: 'DELETE',
+    }, authHeaders);
+  }
 }
 
 export const apiService = new ApiService();

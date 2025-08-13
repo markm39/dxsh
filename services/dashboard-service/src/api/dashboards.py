@@ -9,10 +9,12 @@ from fastapi import APIRouter, Depends, HTTPException, status, Response, Header
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import datetime, timedelta
+import ipaddress
+import fnmatch
 
 from ..database import get_db
-from ..models.dashboard import Dashboard, DashboardWidget
+from ..models.dashboard import Dashboard, DashboardWidget, EmbedToken
 from ..services.workflow_client import WorkflowClient
 from ..auth import get_current_user_id, get_current_user
 
@@ -55,6 +57,26 @@ class WidgetUpdate(BaseModel):
     config: Optional[dict] = None
     refresh_on_workflow_complete: Optional[bool] = None
     refresh_interval: Optional[int] = None
+
+
+class EmbedTokenCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    dashboard_id: Optional[int] = None
+    widget_id: Optional[int] = None
+    expires_in_days: Optional[int] = None  # null = never expires
+    allowed_domains: Optional[List[str]] = []
+    allowed_ips: Optional[List[str]] = []
+    max_usage: Optional[int] = None  # null = unlimited
+
+
+class EmbedTokenUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    expires_in_days: Optional[int] = None
+    allowed_domains: Optional[List[str]] = None
+    allowed_ips: Optional[List[str]] = None
+    max_usage: Optional[int] = None
 
 
 @router.get("/dashboards")
@@ -517,3 +539,211 @@ async def get_available_nodes(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error fetching workflow nodes: {str(e)}"
         )
+
+
+# ==========================================
+# EMBED TOKEN ENDPOINTS
+# ==========================================
+
+@router.post("/dashboards/{dashboard_id}/embed-tokens")
+async def create_dashboard_embed_token(
+    dashboard_id: int,
+    token_data: EmbedTokenCreate,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Create an embed token for a dashboard"""
+    # Verify dashboard ownership
+    dashboard = db.query(Dashboard).filter(
+        Dashboard.id == dashboard_id,
+        Dashboard.user_id == current_user_id
+    ).first()
+    
+    if not dashboard:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Dashboard not found"
+        )
+    
+    # Calculate expiration date
+    expires_at = None
+    if token_data.expires_in_days:
+        expires_at = datetime.utcnow() + timedelta(days=token_data.expires_in_days)
+    
+    # Create embed token
+    embed_token = EmbedToken(
+        token=EmbedToken.generate_token(),
+        name=token_data.name,
+        description=token_data.description,
+        dashboard_id=dashboard_id,
+        expires_at=expires_at,
+        allowed_domains=token_data.allowed_domains or [],
+        allowed_ips=token_data.allowed_ips or [],
+        max_usage=token_data.max_usage,
+        created_by=current_user_id
+    )
+    
+    db.add(embed_token)
+    db.commit()
+    db.refresh(embed_token)
+    
+    return {
+        'success': True,
+        'data': embed_token.to_dict()
+    }
+
+
+@router.post("/widgets/{widget_id}/embed-tokens")
+async def create_widget_embed_token(
+    widget_id: int,
+    token_data: EmbedTokenCreate,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Create an embed token for a widget"""
+    # Verify widget ownership
+    widget = db.query(DashboardWidget).join(Dashboard).filter(
+        DashboardWidget.id == widget_id,
+        Dashboard.user_id == current_user_id
+    ).first()
+    
+    if not widget:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Widget not found"
+        )
+    
+    # Calculate expiration date
+    expires_at = None
+    if token_data.expires_in_days:
+        expires_at = datetime.utcnow() + timedelta(days=token_data.expires_in_days)
+    
+    # Create embed token
+    embed_token = EmbedToken(
+        token=EmbedToken.generate_token(),
+        name=token_data.name,
+        description=token_data.description,
+        widget_id=widget_id,
+        expires_at=expires_at,
+        allowed_domains=token_data.allowed_domains or [],
+        allowed_ips=token_data.allowed_ips or [],
+        max_usage=token_data.max_usage,
+        created_by=current_user_id
+    )
+    
+    db.add(embed_token)
+    db.commit()
+    db.refresh(embed_token)
+    
+    return {
+        'success': True,
+        'data': embed_token.to_dict()
+    }
+
+
+@router.get("/embed-tokens")
+async def get_embed_tokens(
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Get all embed tokens created by the current user"""
+    tokens = db.query(EmbedToken).filter(EmbedToken.created_by == current_user_id).all()
+    
+    return {
+        'success': True,
+        'data': [token.to_dict() for token in tokens]
+    }
+
+
+@router.get("/embed-tokens/{token_id}")
+async def get_embed_token(
+    token_id: int,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Get a specific embed token"""
+    token = db.query(EmbedToken).filter(
+        EmbedToken.id == token_id,
+        EmbedToken.created_by == current_user_id
+    ).first()
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Embed token not found"
+        )
+    
+    return {
+        'success': True,
+        'data': token.to_dict()
+    }
+
+
+@router.put("/embed-tokens/{token_id}")
+async def update_embed_token(
+    token_id: int,
+    token_data: EmbedTokenUpdate,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Update an embed token"""
+    token = db.query(EmbedToken).filter(
+        EmbedToken.id == token_id,
+        EmbedToken.created_by == current_user_id
+    ).first()
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Embed token not found"
+        )
+    
+    # Update fields
+    if token_data.name is not None:
+        token.name = token_data.name
+    if token_data.description is not None:
+        token.description = token_data.description
+    if token_data.expires_in_days is not None:
+        if token_data.expires_in_days:
+            token.expires_at = datetime.utcnow() + timedelta(days=token_data.expires_in_days)
+        else:
+            token.expires_at = None
+    if token_data.allowed_domains is not None:
+        token.allowed_domains = token_data.allowed_domains
+    if token_data.allowed_ips is not None:
+        token.allowed_ips = token_data.allowed_ips
+    if token_data.max_usage is not None:
+        token.max_usage = token_data.max_usage
+    
+    token.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(token)
+    
+    return {
+        'success': True,
+        'data': token.to_dict()
+    }
+
+
+@router.delete("/embed-tokens/{token_id}")
+async def delete_embed_token(
+    token_id: int,
+    current_user_id: int = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Delete an embed token"""
+    token = db.query(EmbedToken).filter(
+        EmbedToken.id == token_id,
+        EmbedToken.created_by == current_user_id
+    ).first()
+    
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Embed token not found"
+        )
+    
+    db.delete(token)
+    db.commit()
+    
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

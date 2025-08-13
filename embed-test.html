@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dxsh Embed Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .embed-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .embed-container {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        iframe {
+            width: 100%;
+            border: none;
+            display: block;
+        }
+        .instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .token-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .update-btn {
+            background: #007cba;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .update-btn:hover {
+            background: #005a87;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Dxsh Dashboard & Widget Embedding Test</h1>
+    <p>This page demonstrates how to embed Dxsh dashboards and widgets using embed tokens.</p>
+
+    <!-- Dashboard Embed Section -->
+    <div class="embed-section">
+        <h2>📊 Dashboard Embed</h2>
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Go to your Dxsh dashboard at <a href="http://localhost:3001/embed-tokens" target="_blank">http://localhost:3001/embed-tokens</a></li>
+                <li>Create a new embed token for a dashboard</li>
+                <li>Copy the token and paste it below</li>
+                <li>Enter your dashboard ID and click "Update Embed"</li>
+            </ol>
+        </div>
+        
+        <div>
+            <label><strong>Dashboard ID:</strong></label>
+            <input type="number" id="dashboardId" class="token-input" placeholder="e.g., 1" value="1">
+            
+            <label><strong>Dashboard Embed Token:</strong></label>
+            <input type="text" id="dashboardToken" class="token-input" placeholder="Paste your dashboard embed token here">
+            
+            <button class="update-btn" onclick="updateDashboardEmbed()">Update Dashboard Embed</button>
+        </div>
+
+        <div class="embed-container">
+            <iframe id="dashboardFrame" height="500" src="about:blank">
+                <p>Your browser doesn't support iframes. Please use a modern browser.</p>
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Widget Embed Section -->
+    <div class="embed-section">
+        <h2>🎯 Widget Embed</h2>
+        <div class="instructions">
+            <strong>Instructions:</strong>
+            <ol>
+                <li>Create a new embed token for a widget</li>
+                <li>Copy the token and paste it below</li>
+                <li>Enter your widget ID and click "Update Embed"</li>
+            </ol>
+        </div>
+
+        <div>
+            <label><strong>Widget ID:</strong></label>
+            <input type="number" id="widgetId" class="token-input" placeholder="e.g., 7" value="7">
+            
+            <label><strong>Widget Embed Token:</strong></label>
+            <input type="text" id="widgetToken" class="token-input" placeholder="Paste your widget embed token here">
+            
+            <button class="update-btn" onclick="updateWidgetEmbed()">Update Widget Embed</button>
+        </div>
+
+        <div class="embed-container">
+            <iframe id="widgetFrame" height="300" src="about:blank">
+                <p>Your browser doesn't support iframes. Please use a modern browser.</p>
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Embed Code Examples -->
+    <div class="embed-section">
+        <h2>💻 Embed Code Examples</h2>
+        <p>Once you have working embeds above, you can use these HTML snippets in your own websites:</p>
+        
+        <h3>Dashboard Embed Code:</h3>
+        <pre id="dashboardEmbedCode" style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">
+&lt;iframe 
+  src="http://localhost:8001/api/v1/embed/dashboard/YOUR_DASHBOARD_ID?token=YOUR_TOKEN&amp;theme=light&amp;refresh=30" 
+  width="100%" 
+  height="500"
+  frameborder="0"&gt;
+&lt;/iframe&gt;
+        </pre>
+
+        <h3>Widget Embed Code:</h3>
+        <pre id="widgetEmbedCode" style="background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto;">
+&lt;iframe 
+  src="http://localhost:8001/api/v1/embed/widget/YOUR_WIDGET_ID?token=YOUR_TOKEN&amp;theme=light&amp;refresh=30" 
+  width="100%" 
+  height="300"
+  frameborder="0"&gt;
+&lt;/iframe&gt;
+        </pre>
+    </div>
+
+    <!-- Status Section -->
+    <div class="embed-section">
+        <h2>🔧 Embed Status & Troubleshooting</h2>
+        <div id="statusSection">
+            <p><strong>Dashboard Embed Status:</strong> <span id="dashboardStatus">Not configured</span></p>
+            <p><strong>Widget Embed Status:</strong> <span id="widgetStatus">Not configured</span></p>
+            
+            <div style="margin-top: 20px;">
+                <button class="update-btn" onclick="checkEmbedHealth()">Check Embed Health</button>
+            </div>
+            <div id="healthResults" style="margin-top: 15px; font-family: monospace; font-size: 12px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:8001';
+
+        function updateDashboardEmbed() {
+            const dashboardId = document.getElementById('dashboardId').value;
+            const token = document.getElementById('dashboardToken').value;
+            
+            if (!dashboardId || !token) {
+                alert('Please enter both Dashboard ID and Token');
+                return;
+            }
+
+            const embedUrl = `${BASE_URL}/api/v1/embed/dashboard/${dashboardId}?token=${token}&theme=light&refresh=30`;
+            const iframe = document.getElementById('dashboardFrame');
+            iframe.src = embedUrl;
+            
+            document.getElementById('dashboardStatus').textContent = `Loading dashboard ${dashboardId}...`;
+            
+            // Update the embed code example
+            const codeExample = document.getElementById('dashboardEmbedCode');
+            codeExample.innerHTML = `&lt;iframe 
+  src="${embedUrl.replace(/&/g, '&amp;')}" 
+  width="100%" 
+  height="500"
+  frameborder="0"&gt;
+&lt;/iframe&gt;`;
+            
+            // Check if iframe loads successfully
+            iframe.onload = function() {
+                document.getElementById('dashboardStatus').textContent = `✅ Dashboard ${dashboardId} loaded successfully`;
+            };
+            
+            iframe.onerror = function() {
+                document.getElementById('dashboardStatus').textContent = `❌ Failed to load dashboard ${dashboardId}`;
+            };
+        }
+
+        function updateWidgetEmbed() {
+            const widgetId = document.getElementById('widgetId').value;
+            const token = document.getElementById('widgetToken').value;
+            
+            if (!widgetId || !token) {
+                alert('Please enter both Widget ID and Token');
+                return;
+            }
+
+            const embedUrl = `${BASE_URL}/api/v1/embed/widget/${widgetId}?token=${token}&theme=light&refresh=30`;
+            const iframe = document.getElementById('widgetFrame');
+            iframe.src = embedUrl;
+            
+            document.getElementById('widgetStatus').textContent = `Loading widget ${widgetId}...`;
+            
+            // Update the embed code example
+            const codeExample = document.getElementById('widgetEmbedCode');
+            codeExample.innerHTML = `&lt;iframe 
+  src="${embedUrl.replace(/&/g, '&amp;')}" 
+  width="100%" 
+  height="300"
+  frameborder="0"&gt;
+&lt;/iframe&gt;`;
+            
+            // Check if iframe loads successfully
+            iframe.onload = function() {
+                document.getElementById('widgetStatus').textContent = `✅ Widget ${widgetId} loaded successfully`;
+            };
+            
+            iframe.onerror = function() {
+                document.getElementById('widgetStatus').textContent = `❌ Failed to load widget ${widgetId}`;
+            };
+        }
+
+        async function checkEmbedHealth() {
+            const results = document.getElementById('healthResults');
+            results.innerHTML = 'Checking embed endpoints...<br>';
+
+            try {
+                // Test dashboard service health
+                const dashboardHealth = await fetch(`${BASE_URL}/api/v1/dashboards`);
+                results.innerHTML += `Dashboard API: ${dashboardHealth.status === 200 ? '✅ OK' : '❌ Failed'}<br>`;
+                
+                // Test if embed endpoints are accessible (will fail without token, but should not 404)
+                const embedTest = await fetch(`${BASE_URL}/api/v1/embed/dashboard/1?token=test`);
+                results.innerHTML += `Embed Endpoint: ${embedTest.status !== 404 ? '✅ Accessible' : '❌ Not Found (404)'}<br>`;
+                
+                results.innerHTML += '<br>✅ Health check complete! If embed endpoint shows "Not Found", the dashboard service may need to be restarted.';
+                
+            } catch (error) {
+                results.innerHTML += `❌ Error: ${error.message}<br>`;
+            }
+        }
+
+        // Show initial instructions
+        window.onload = function() {
+            document.getElementById('healthResults').innerHTML = 
+                '💡 Tip: Use the browser developer tools (F12) to see any iframe loading errors.';
+        };
+    </script>
+</body>
+</html>

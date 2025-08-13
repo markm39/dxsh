@@ -5,8 +5,8 @@
  */
 
 import React, { useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Settings, Maximize2, RefreshCw, AlertTriangle, LogOut } from 'lucide-react';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
+import { Settings, Maximize2, RefreshCw, AlertTriangle, LogOut, Home, Key } from 'lucide-react';
 import { useDashboard } from '../providers/DashboardProvider';
 import { useTheme } from '../providers/ThemeProvider';
 import { useAuth, useAuthHeaders } from '../providers/AuthProvider';
@@ -17,10 +17,15 @@ import { apiService } from '../services/api';
 
 const DashboardPage: React.FC = () => {
   const { dashboardId } = useParams<{ dashboardId?: string }>();
+  const [searchParams] = useSearchParams();
   const { state, loadDashboard, refreshAllWidgets, updateDashboard } = useDashboard();
-  const { toggleTheme, themeName } = useTheme();
   const { user, logout } = useAuth();
   const authHeaders = useAuthHeaders();
+
+  // Check if this is an embed view
+  const isEmbed = searchParams.get('embed') === 'true' || searchParams.get('embed') === 'widget';
+  const isWidgetEmbed = searchParams.get('embed') === 'widget';
+  const embedWidgetId = searchParams.get('widgetId');
 
   // Health check to ensure backend is available
   const { data: isBackendHealthy } = useQuery({
@@ -177,6 +182,28 @@ const DashboardPage: React.FC = () => {
     );
   }
 
+  // Embed mode: show only the dashboard content
+  if (isEmbed) {
+    const widgetsToShow = isWidgetEmbed && embedWidgetId 
+      ? state.currentDashboard.widgets.filter(w => w.id.toString() === embedWidgetId)
+      : state.currentDashboard.widgets;
+
+    return (
+      <div className="min-h-screen bg-background" style={{ 
+        margin: 0, 
+        padding: isWidgetEmbed ? '8px' : '16px',
+        overflow: 'hidden'
+      }}>
+        <DashboardGrid
+          dashboardId={state.currentDashboard.id}
+          widgets={widgetsToShow}
+          isEditMode={false}
+        />
+      </div>
+    );
+  }
+
+  // Normal mode: show full dashboard interface
   return (
     <div className="min-h-screen bg-background">
       {/* Dashboard Header */}
@@ -198,6 +225,26 @@ const DashboardPage: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2 ml-4">
+            {/* Home */}
+            <Link
+              to="/"
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="All Dashboards"
+            >
+              <Home className="w-4 h-4" />
+              <span className="text-sm">Home</span>
+            </Link>
+
+            {/* Embed Tokens */}
+            <Link
+              to="/embed-tokens"
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="Manage Embed Tokens"
+            >
+              <Key className="w-4 h-4" />
+              <span className="text-sm">Embed</span>
+            </Link>
+
             {/* Refresh all widgets */}
             <button
               onClick={handleRefreshAll}

@@ -18,7 +18,9 @@ import {
   Activity,
   Type,
   Brain,
-  LogOut
+  LogOut,
+  Home,
+  Key
 } from 'lucide-react';
 import { useDashboard } from '../providers/DashboardProvider';
 import { useAuth } from '../providers/AuthProvider';
@@ -295,6 +297,26 @@ const DashboardEditorPage: React.FC = () => {
                 Preview
               </Link>
             )}
+
+            {/* Home */}
+            <Link
+              to="/"
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="All Dashboards"
+            >
+              <Home className="w-4 h-4" />
+              <span className="text-sm">Home</span>
+            </Link>
+
+            {/* Embed Tokens */}
+            <Link
+              to="/embed-tokens"
+              className="flex items-center gap-2 px-3 py-2 text-text-muted hover:text-text-primary hover:bg-surface rounded-lg transition-colors border border-border-subtle"
+              title="Manage Embed Tokens"
+            >
+              <Key className="w-4 h-4" />
+              <span className="text-sm">Embed</span>
+            </Link>
 
             {/* Sign Out */}
             <button

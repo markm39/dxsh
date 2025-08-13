@@ -194,6 +194,64 @@ async def proxy_widgets(
                 if k.lower() not in ['content-encoding', 'transfer-encoding']}
     )
 
+# Embed Token Management Routes (require auth)
+@app.api_route(
+    "/api/v1/embed-tokens/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_embed_tokens_with_path(
+    request: Request,
+    path: str,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy embed token management requests to dashboard-service"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/embed-tokens/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+@app.api_route(
+    "/api/v1/embed-tokens",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_embed_tokens_root(
+    request: Request,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy embed token list requests to dashboard-service"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/embed-tokens")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+# Support widgets embed-tokens endpoint
+@app.api_route(
+    "/api/v1/widgets/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_api_widgets(
+    request: Request,
+    path: str,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy widget-related API requests to dashboard-service"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/widgets/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
 # Embedding Routes (publicly accessible for iframe embedding)
 @app.api_route(
     "/v1/embed/{path:path}",
@@ -204,6 +262,24 @@ async def proxy_embed(
     path: str
 ):
     """Proxy embed-related requests to dashboard-service (no auth required)"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/embed/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+@app.api_route(
+    "/api/v1/embed/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_api_embed(
+    request: Request,
+    path: str
+):
+    """Proxy embed-related API requests to dashboard-service (no auth required)"""
     response_data = await proxy.route_dashboard_request(request, f"/v1/embed/{path}")
     
     return Response(
