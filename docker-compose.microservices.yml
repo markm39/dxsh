@@ -1,0 +1,146 @@
+# Docker Compose for Dxsh Microservices Architecture
+# Complete deployment with all services
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: workflow
+      POSTGRES_PASSWORD: workflow
+      POSTGRES_DB: workflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for job queues and caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Gateway - Single entry point for all requests
+  api-gateway:
+    build: 
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
+      - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
+      - DASHBOARD_SERVICE_URL=http://dashboard-service:5000
+      - BUILDER_SERVICE_URL=http://builder-service:3000
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Workflow Engine Service - Execute workflows and manage nodes
+  workflow-engine:
+    build:
+      context: ./services/workflow-engine
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    volumes:
+      - workflow_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Dashboard Service - Manage dashboards and widgets
+  dashboard-service:
+    build:
+      context: ./services/dashboard-service
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
+    depends_on:
+      postgres:
+        condition: service_healthy
+      workflow-engine:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Builder Service - Visual workflow builder interface
+  builder-service:
+    build:
+      context: ./services/builder-service
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8001
+        VITE_APP_NAME: Dxsh Workflow Builder
+        VITE_NODE_ENV: production
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8001
+      - VITE_APP_NAME=Dxsh Workflow Builder
+      - VITE_NODE_ENV=production
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  dxsh-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  workflow_uploads:

@@ -1,0 +1,86 @@
+/* src/index.css */
+@import "tailwindcss";
+
+@theme {
+  /* Define your design tokens (colors, fonts, etc.) here */
+  --color-background: #0a0a0a;
+  --color-surface: #1a1b1c; /* Lighter background */
+  --color-surface-secondary: #212529;
+
+  --color-text-primary: #f7f7f7;
+  --color-text-secondary: oklch(95% 0 0 / 0.75);
+  --color-text-muted: oklch(95% 0 0 / 0.5);
+
+  --color-border: #333;
+  --color-border-subtle: oklch(95% 0 0 / 0.1);
+
+  --color-primary: #0d6efd;
+  --color-primary-hover: #4094ff;
+
+  /* === ADD THESE NEW COLORS FROM YOUR DASHBOARD DESIGN === */
+  --color-accent-blue: #00d4ff;
+  --color-accent-orange: #ff6b35;
+  --color-accent-purple: #7c4dff;
+  --color-accent-green: #22c55e;
+  --color-accent-gold: #fbbf24;
+  --color-accent-silver: #9ca3af;
+  --color-accent-bronze: #a16207;
+  --color-accent-yellow: #ffc107;
+
+  --font-sans: "Roboto", sans-serif;
+
+  --radius-sm: 0.15rem;
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem;   /* 8px */
+  --radius-xl: 0.75rem;  /* 12px */
+  --radius-2xl: 1rem;    /* 16px */
+  --radius-3xl: 1.25rem; /* 20px */
+
+  --color-background: #0a0a0a;
+  --color-surface: #1a1b1c;
+  --color-surface-secondary: #212529;
+  --color-surface-elevated: #181818;
+
+  --color-user-message-bg: theme(--color-primary); /* User messages will use the primary color */
+  --color-user-message-text: oklch(100% 0 0); /* White */
+  
+  --width-sidebar: 280px;
+
+  --color-accent-gold: #fbbf24;
+
+    /* Gem Card Tier Colors */
+    --color-tier-elite: #1e40af;       /* Blue */
+    --color-tier-gold: #fbbf24;        /* Gold */
+    --color-tier-silver: #9ca3af;      /* Silver */
+    --color-tier-bronze: #a16207;      /* Bronze */
+    --color-tier-rookie: #6b7280;      /* Gray */
+
+}
+
+
+body {
+    background-color: theme(--color-background);
+    color: theme(--color-text-primary);
+    font-family: theme(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* A utility class we can use for the hero background gradient */
+.hero-gradient {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(95% 0 0 / 0.1), transparent);
+}
+
+.react-flow__node {
+  font-size: 12px;
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}

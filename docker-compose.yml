@@ -38,7 +38,7 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
       - PYTHON_EXECUTOR_URL=http://python-executor:8080
       # Removed PLAYWRIGHT_BROWSERS_PATH to use default location
     depends_on:
@@ -54,7 +54,7 @@ services:
     environment:
       - POSTGRES_USER=workflow
       - POSTGRES_PASSWORD=workflow
-      - POSTGRES_DB=workflow_engine
+      - POSTGRES_DB=workflow
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

@@ -1,0 +1,124 @@
+# Docker Compose for Dashboard-Only Mode
+# Dashboard service + API for embedding - no workflow builder
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: workflow
+      POSTGRES_PASSWORD: workflow
+      POSTGRES_DB: workflow_engine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis for job queues and caching
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # API Gateway (configured for dashboard-only mode)
+  api-gateway:
+    build: 
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
+      - JWT_SECRET=your-jwt-secret-key-change-in-production
+      - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
+      - DASHBOARD_SERVICE_URL=http://dashboard-service:5000
+      - BUILDER_SERVICE_URL=disabled
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      workflow-engine:
+        condition: service_healthy
+      dashboard-service:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Workflow Engine Service (for data retrieval)
+  workflow-engine:
+    build:
+      context: ./services/workflow-engine
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
+      - REDIS_URL=redis://redis:6379
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET=your-jwt-secret-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    volumes:
+      - workflow_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Dashboard Service - Manage dashboards and widgets (with embedding)
+  dashboard-service:
+    build:
+      context: ./services/dashboard-service
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
+      - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - JWT_SECRET=your-jwt-secret-key-change-in-production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      workflow-engine:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  dxsh-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  workflow_uploads:

@@ -1102,14 +1102,16 @@ export class WorkflowExecutionEngine {
       
       const aiResult = await aiResponse.json();
       
+      console.log('🤖 Raw AI API response:', aiResult);
+      
       if (!aiResult.success) {
         throw new Error(aiResult.error || 'AI processing failed');
       }
       
       console.log('🤖 AI processing completed successfully:', {
-        model: aiResult.model_used,
-        tokens: aiResult.tokens_used,
-        outputLength: aiResult.output?.length || 0
+        model: aiResult.ai_metadata?.model,
+        tokens: aiResult.ai_metadata?.tokens_used,
+        outputLength: aiResult.ai_output?.length || 0
       });
       
       // Update node execution record with results
@@ -1121,9 +1123,9 @@ export class WorkflowExecutionEngine {
         },
         body: JSON.stringify({
           status: 'completed',
-          output_data: aiResult.output,
-          ai_output: aiResult.output,
-          ai_tokens_used: aiResult.tokens_used
+          output_data: aiResult.ai_output,
+          ai_output: aiResult.ai_output,
+          ai_tokens_used: aiResult.ai_metadata?.tokens_used
         })
       });
       
@@ -1131,7 +1133,7 @@ export class WorkflowExecutionEngine {
         console.warn(`Failed to update node execution record: ${updateResponse.statusText}`);
       }
       
-      return aiResult.output;
+      return aiResult.ai_output;
       
     } catch (error) {
       console.error('🤖 AI Processor execution failed:', error);
@@ -1572,9 +1574,9 @@ export class WorkflowExecutionEngine {
       throw new Error('PostgreSQL node is not configured');
     }
 
-    const apiBaseUrl = process.env.NODE_ENV === 'production' 
+    const apiBaseUrl = import.meta.env.MODE === 'production' 
       ? 'https://your-production-api.com' 
-      : 'http://localhost:5000';
+      : 'http://localhost:8001';
 
     try {
       // Handle source mode (query execution)
@@ -2526,7 +2528,7 @@ export class WorkflowExecutionEngine {
     }
 
     // Use the same API base URL as other components for consistency
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
 
     console.log('🔄 Executing FileNode with config:', config);
     console.log('🔄 FilePath from config:', config.filePath);
