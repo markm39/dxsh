@@ -16,7 +16,8 @@ import {
   FileType,
   FolderOpen,
   Eye,
-  Save
+  Save,
+  Monitor
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -27,6 +28,7 @@ import {
   SchemaField
 } from "../workflow-builder/workflow-types";
 import ColumnMappingInterface from "../workflow-builder/components/ColumnMappingInterface";
+import DashboardConnector from "../dashboard-connect/DashboardConnector";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -104,6 +106,8 @@ interface FileNodeSetupProps {
   inputData?: any[];
   isConfigured?: boolean;
   inputVariables?: InputVariable[];
+  agentId?: number;
+  nodeId?: string;
 }
 
 const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
@@ -113,6 +117,8 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
   inputData = [],
   isConfigured = false,
   inputVariables = [],
+  agentId,
+  nodeId,
 }) => {
   const { authHeaders } = useAuth();
   
@@ -134,6 +140,8 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
   const [isPreviewingFile, setIsPreviewingFile] = useState(false);
   const [filePreview, setFilePreview] = useState<any>(null);
   const [fileDataTypeInfo, setFileDataTypeInfo] = useState<any>(null);
+  const [showDashboardConnector, setShowDashboardConnector] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState<string | null>(null);
 
   // File upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -381,6 +389,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
   const canOperateInMode = currentFileType?.supports[config.operationMode] ?? true;
 
   return (
+    <>
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-background rounded-xl shadow-xl border border-border-subtle max-w-4xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
@@ -1061,6 +1070,18 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
               >
                 Cancel
               </button>
+              {agentId && nodeId && (
+                <button
+                  onClick={() => {
+                    setShowDashboardConnector(true);
+                    setConnectionSuccess(null); // Reset success state when opening
+                  }}
+                  className="px-4 py-3 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                  <Monitor className="w-4 h-4" />
+                  Connect to Dashboard
+                </button>
+              )}
               <button
                 onClick={handleSave}
                 className="px-8 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
@@ -1073,6 +1094,33 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
         </div>
       </div>
     </div>
+
+    {/* Dashboard Connector Modal */}
+    {showDashboardConnector && agentId && nodeId && config.operationMode === 'source' && (
+      <DashboardConnector
+        agentId={agentId}
+        nodeId={nodeId}
+        nodeType="fileNode"
+        nodeLabel="File Node"
+        nodeOutputType={
+          config.fileType === 'json' ? 'STRUCTURED_DATA' :
+          config.fileType === 'csv' || config.fileType === 'excel' ? 'STRUCTURED_DATA' :
+          config.fileType === 'txt' ? 'TEXT_DATA' :
+          'RAW_DATA'
+        }
+        onClose={() => {
+          setShowDashboardConnector(false);
+          setConnectionSuccess(null); // Reset success state when closing
+        }}
+        onConnect={(widgetId) => {
+          console.log('Connected to widget:', widgetId);
+          setConnectionSuccess(`Successfully connected to widget ${widgetId}`);
+          // Don't immediately close - let user see success and choose to close
+        }}
+        successMessage={connectionSuccess}
+      />
+    )}
+    </>
   );
 };
 

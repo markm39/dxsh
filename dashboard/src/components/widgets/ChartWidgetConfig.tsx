@@ -164,7 +164,8 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
 
   // Generate preview data when config changes
   useEffect(() => {
-    if (!primaryTable || !config.xAxis || !config.yAxis) {
+    const requiresXAxis = !(config.chartType === 'pie' && isSingleObjectArray);
+    if (!primaryTable || (requiresXAxis && !config.xAxis) || !config.yAxis) {
       setPreviewData([]);
       return;
     }
@@ -174,7 +175,7 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
       _index: index,
     }));
     setPreviewData(preview);
-  }, [primaryTable, config.xAxis, config.yAxis]);
+  }, [primaryTable, config.xAxis, config.yAxis, config.chartType, isSingleObjectArray]);
 
   const handleConfigChange = (updates: Partial<ChartWidgetConfig>) => {
     console.log('🔧 Config change:', updates);
@@ -241,7 +242,10 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
   };
 
   // Check if chart type supports multiple Y-axis fields
-  const supportsMultipleY = (currentChartType as any)?.allowMultipleY || false;
+  // For single-object arrays (like HTTP request data), allow multiple selection even for pie charts
+  const isSingleObjectArray = primaryTable && primaryTable.rowCount === 1 && primaryTable.fields.length > 1;
+  const supportsMultipleY = (currentChartType as any)?.allowMultipleY || 
+    (config.chartType === 'pie' && isSingleObjectArray);
 
   // Helper function to get nested values
   const getNestedValue = (obj: any, path: string): any => {
@@ -679,7 +683,8 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
                   {/* Conditional Field Selection */}
                   <div className="grid grid-cols-1 gap-4">
                     {/* X-Axis Field (conditional) */}
-                    {currentChartType && currentChartType.xAxisType !== 'none' && (
+                    {currentChartType && currentChartType.xAxisType !== 'none' && 
+                     !(config.chartType === 'pie' && isSingleObjectArray) && (
                       <div>
                         <label className="block text-sm font-medium text-text-primary mb-2">
                           {getAxisLabel('x')}
@@ -1023,7 +1028,9 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
                   </div>
 
                   {/* Live Preview */}
-                  {previewData.length > 0 && config.xAxis && config.yAxis && (
+                  {previewData.length > 0 && 
+                   (!(config.chartType === 'pie' && isSingleObjectArray) ? config.xAxis : true) && 
+                   config.yAxis && (
                     <div>
                       <h4 className="text-sm font-medium text-text-primary mb-2 flex items-center gap-2">
                         <Eye className="w-4 h-4" />
@@ -1091,7 +1098,10 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
             </button>
             <button
               onClick={handleSave}
-              disabled={!config.xAxis || !config.yAxis}
+              disabled={
+                (!(config.chartType === 'pie' && isSingleObjectArray) && !config.xAxis) || 
+                !config.yAxis
+              }
               className="px-8 py-3 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />

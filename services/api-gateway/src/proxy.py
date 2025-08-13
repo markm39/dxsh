@@ -6,7 +6,9 @@ import json
 
 class ServiceProxy:
     def __init__(self):
-        self.workflow_engine_url = os.environ.get('WORKFLOW_ENGINE_URL', 'http://workflow-engine:5000')
+        # Use WORKFLOW_ENGINE_BACKEND_URL for actual service location, fallback to WORKFLOW_ENGINE_URL for compatibility
+        self.workflow_engine_url = os.environ.get('WORKFLOW_ENGINE_BACKEND_URL', 
+                                                  os.environ.get('WORKFLOW_ENGINE_URL', 'http://workflow-engine:5000'))
         self.dashboard_service_url = os.environ.get('DASHBOARD_SERVICE_URL', 'http://dashboard-service:5000')
         self.builder_service_url = os.environ.get('BUILDER_SERVICE_URL', 'http://builder-service:3000')
         

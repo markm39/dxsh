@@ -20,6 +20,7 @@ from datetime import datetime
 
 from ..auth import get_current_user, AuthUser
 from ..database import get_db
+from ..models import WorkflowExecution, NodeExecution
 
 router = APIRouter(prefix="/api/v1/file-node", tags=["file-node"])
 logger = logging.getLogger(__name__)
@@ -258,7 +259,8 @@ def load_document_file(file_path: Path, max_rows: Optional[int] = None) -> List[
 @router.post("/load")
 async def load_file(
     request_data: dict,
-    current_user: AuthUser = Depends(get_current_user)
+    current_user: AuthUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
     """
     Load and parse file content into structured data
@@ -318,11 +320,32 @@ async def load_file(
         else:
             raise HTTPException(status_code=400, detail=f"Unsupported file type: {file_type}")
         
+        # Sanitize data to handle NaN and Infinity values that can't be JSON serialized
+        def sanitize_value(value):
+            """Clean NaN and Infinity values for JSON serialization"""
+            if isinstance(value, float):
+                import math
+                if math.isnan(value) or math.isinf(value):
+                    return None
+            return value
+        
+        def sanitize_data(obj):
+            """Recursively sanitize data structure"""
+            if isinstance(obj, dict):
+                return {k: sanitize_data(v) for k, v in obj.items()}
+            elif isinstance(obj, list):
+                return [sanitize_data(item) for item in obj]
+            else:
+                return sanitize_value(obj)
+        
+        # Clean the data
+        sanitized_data = sanitize_data(data)
+        
         # Prepare response
         response = {
             "success": True,
-            "data": data,
-            "row_count": len(data),
+            "data": sanitized_data,
+            "row_count": len(sanitized_data),
             "file_type": file_type
         }
         
@@ -341,6 +364,60 @@ async def load_file(
             }
         
         logger.info(f"User {current_user.user_id} loaded file: {full_path.name} ({len(data)} rows)")
+        
+        # Save execution data for dashboard widgets (same pattern as other nodes)
+        node_id = request_data.get('nodeId')
+        agent_id = request_data.get('agentId')
+        
+        if node_id and agent_id:
+            try:
+                # Create or get workflow execution
+                workflow_execution = WorkflowExecution(
+                    agent_id=agent_id,
+                    user_id=current_user.user_id,
+                    workflow_nodes=[{"id": node_id, "type": "fileNode"}],
+                    workflow_edges=[],
+                    status='completed',
+                    started_at=datetime.utcnow(),
+                    completed_at=datetime.utcnow()
+                )
+                db.add(workflow_execution)
+                db.commit()
+                db.refresh(workflow_execution)
+                
+                # Create node execution record
+                node_execution = NodeExecution(
+                    node_id=node_id,
+                    node_type='fileNode',
+                    execution_id=workflow_execution.id,
+                    status='completed',
+                    started_at=datetime.utcnow(),
+                    completed_at=datetime.utcnow(),
+                    output_data=sanitized_data,
+                    input_config={
+                        'file_path': str(full_path),
+                        'file_type': file_type,
+                        'encoding': encoding,
+                        'delimiter': delimiter,
+                        'has_headers': has_headers,
+                        'max_rows': max_rows,
+                        'skip_rows': skip_rows
+                    },
+                    node_specific_data={
+                        'file_size': full_path.stat().st_size,
+                        'file_name': full_path.name,
+                        'row_count': len(sanitized_data)
+                    }
+                )
+                db.add(node_execution)
+                db.commit()
+                
+                logger.info(f"✅ Saved file node execution: node_id={node_id}, agent_id={agent_id}, execution_id={workflow_execution.id}")
+                
+            except Exception as e:
+                logger.error(f"Failed to save file node execution: {e}")
+                # Don't fail the entire request if execution tracking fails
+        
         return response
         
     except HTTPException:

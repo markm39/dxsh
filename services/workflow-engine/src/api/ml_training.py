@@ -23,6 +23,7 @@ from pydantic import BaseModel
 
 from ..auth import get_current_user, AuthUser
 from ..database import get_db, Base
+from ..models import WorkflowExecution, NodeExecution
 
 router = APIRouter(prefix="/api/v1/ml", tags=["ml-training"])
 logger = logging.getLogger(__name__)
@@ -370,6 +371,11 @@ async def train_model(
         model_info = SUPPORTED_MODEL_TYPES[request.model_type]
         model_params = request.model_parameters or {}
         
+        # Initialize variables that will be used later for NodeExecution update
+        y_pred = None
+        metrics = {}
+        model_metadata = {}
+        
         if request.model_type == "linear_regression":
             if is_classifier:
                 raise HTTPException(
@@ -466,6 +472,70 @@ async def train_model(
         db.refresh(db_model)
         
         logger.info(f"User {current_user.user_id} trained {request.model_type} model (ID: {db_model.id})")
+        
+        # Update the NodeExecution record with the output data for dashboard widgets
+        try:
+            logger.info(f"🔍 Looking for NodeExecution with ID: {request.node_execution_id}")
+            node_execution = db.query(NodeExecution).filter(
+                NodeExecution.id == request.node_execution_id
+            ).first()
+            
+            if node_execution:
+                # Prepare output data for dashboard consumption
+                # Create sample predictions for visualization (limit to 20 samples)
+                sample_size = min(20, len(X_test))
+                sample_predictions = []
+                for i in range(sample_size):
+                    sample_predictions.append({
+                        "actual": float(y_test.iloc[i]) if hasattr(y_test, 'iloc') else float(y_test[i]),
+                        "predicted": float(y_pred[i]),
+                        "index": i
+                    })
+                
+                output_data = {
+                    "model_id": db_model.id,
+                    "model_name": model_name,
+                    "model_type": request.model_type,
+                    "metrics": metrics,
+                    "features": final_features,
+                    "target": target,
+                    "predictions": sample_predictions,
+                    "feature_importance": model_metadata.get("feature_importance", []) if model_metadata else [],
+                    "training_samples": len(X_train),
+                    "test_samples": len(X_test),
+                    "is_classifier": is_classifier
+                }
+                
+                # Update the node execution with results
+                node_execution.output_data = output_data
+                node_execution.status = 'completed'
+                node_execution.completed_at = datetime.utcnow()
+                node_execution.node_specific_data = {
+                    "model_id": db_model.id,
+                    "tokens_used": tokens_used,
+                    "preprocessing_method": "ai" if request.use_ai_preprocessing else "manual"
+                }
+                
+                db.commit()
+                logger.info(f"✅ Updated NodeExecution {request.node_execution_id} with ML results")
+                
+                # Debug: Check what was saved
+                logger.info(f"📊 NodeExecution details: node_id={node_execution.node_id}, " +
+                          f"execution_id={node_execution.execution_id}, " +
+                          f"status={node_execution.status}, " +
+                          f"has_output_data={bool(node_execution.output_data)}")
+            else:
+                logger.warning(f"❌ NodeExecution {request.node_execution_id} not found for update")
+                
+                # Debug: Check all NodeExecutions
+                all_node_execs = db.query(NodeExecution).all()
+                logger.info(f"📊 Total NodeExecutions in DB: {len(all_node_execs)}")
+                for ne in all_node_execs[-5:]:  # Show last 5
+                    logger.info(f"   - ID: {ne.id}, node_id: {ne.node_id}, status: {ne.status}")
+                
+        except Exception as e:
+            logger.error(f"Failed to update NodeExecution: {e}")
+            # Don't fail the entire request if execution tracking fails
         
         return {
             "success": True,
@@ -633,3 +703,84 @@ async def delete_model(
     except Exception as e:
         logger.error(f"Error deleting model {model_id}: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/models/{model_id}/predict")
+async def predict_with_model(
+    model_id: int,
+    request: Dict[str, Any],
+    current_user: AuthUser = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Make predictions using a trained model
+    """
+    try:
+        # Get the model
+        model = db.query(MLModel).filter(
+            MLModel.id == model_id,
+            MLModel.user_id == current_user.user_id
+        ).first()
+        
+        if not model:
+            raise HTTPException(status_code=404, detail="Model not found")
+        
+        # Check if model file exists
+        if not model.model_file_path or not Path(model.model_file_path).exists():
+            raise HTTPException(status_code=404, detail="Model file not found")
+        
+        # Load the model
+        try:
+            trained_model = joblib.load(model.model_file_path)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to load model: {str(e)}")
+        
+        # Get input data
+        input_data = request.get('input_data', [])
+        if not input_data:
+            raise HTTPException(status_code=400, detail="No input_data provided")
+        
+        # Parse features and prepare input
+        features = json.loads(model.features) if model.features else []
+        if not features:
+            raise HTTPException(status_code=500, detail="Model has no feature information")
+        
+        # Convert input data to DataFrame for prediction
+        try:
+            df_input = pd.DataFrame(input_data)
+            
+            # Ensure all required features are present
+            missing_features = [f for f in features if f not in df_input.columns]
+            if missing_features:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Missing required features: {missing_features}"
+                )
+            
+            # Select only the features used in training (in correct order)
+            X_input = df_input[features]
+            
+            # Make predictions
+            predictions = trained_model.predict(X_input)
+            
+            # Convert numpy types to Python types for JSON serialization
+            predictions_list = [float(pred) for pred in predictions]
+            
+            logger.info(f"User {current_user.user_id} made predictions with model {model_id}")
+            
+            return {
+                "success": True,
+                "predictions": predictions_list,
+                "model_id": model_id,
+                "model_name": model.name,
+                "features_used": features,
+                "input_count": len(input_data)
+            }
+            
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Prediction failed: {str(e)}")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error making predictions with model {model_id}: {e}")
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")

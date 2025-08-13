@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from .database import create_tables
-from .api import workflows, executions, scraping, postgres, file_node, ai_processing, chart_generation, ml_training, agents, executions_api, http_request, data_structuring, monitoring, css_selector, cors_proxy
+from .api import workflows, executions, scraping, postgres, file_node, ai_processing, chart_generation, ml_training, agents, executions_api, http_request, data_structuring, monitoring, css_selector, cors_proxy, nodes
 from .api.agents import executions_router
 import logging
 import os
@@ -54,6 +54,7 @@ app.include_router(data_structuring.router)
 app.include_router(monitoring.router)
 app.include_router(css_selector.router)
 app.include_router(cors_proxy.router)
+app.include_router(nodes.router)
 
 @app.get("/")
 async def root():

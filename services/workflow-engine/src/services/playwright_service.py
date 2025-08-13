@@ -31,25 +31,39 @@ class PlaywrightService:
         """Initialize Playwright browser with context"""
         try:
             self.playwright = await async_playwright().start()
+            # Enhanced browser args for better compatibility and stealth
+            browser_args = [
+                '--no-sandbox', 
+                '--disable-dev-shm-usage', 
+                '--disable-blink-features=AutomationControlled',
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--disable-ipc-flooding-protection',
+                '--force-color-profile=srgb',
+                '--metrics-recording-only',
+                '--no-first-run',
+                '--password-store=basic',
+                '--use-mock-keychain',
+                '--disable-extensions-except',
+                '--disable-plugins-discovery',
+                '--disable-sync',
+                '--disable-translate',
+                '--hide-scrollbars',
+                '--disable-notifications',
+                '--disable-default-apps',
+                '--no-default-browser-check',
+                '--disable-background-networking',
+                '--disable-client-side-phishing-detection',
+                '--disable-hang-monitor',
+                '--disable-prompt-on-repost'
+            ]
+            
             self.browser = await self.playwright.chromium.launch(
                 headless=headless,
-                args=[
-                    '--no-sandbox', 
-                    '--disable-dev-shm-usage', 
-                    '--disable-blink-features=AutomationControlled',
-                    '--disable-web-security',
-                    '--disable-features=VizDisplayCompositor',
-                    '--disable-background-timer-throttling',
-                    '--disable-backgrounding-occluded-windows',
-                    '--disable-renderer-backgrounding',
-                    '--disable-ipc-flooding-protection',
-                    '--force-color-profile=srgb',
-                    '--metrics-recording-only',
-                    '--no-first-run',
-                    '--enable-automation',
-                    '--password-store=basic',
-                    '--use-mock-keychain'
-                ]
+                args=browser_args
             )
             
             # Use realistic user agents that change over time
@@ -119,19 +133,42 @@ class PlaywrightService:
             raise
     
     async def cleanup(self):
-        """Clean up Playwright resources"""
+        """Clean up Playwright resources with timeout protection"""
+        cleanup_timeout = 10  # seconds
         try:
-            if self.page:
-                await self.page.close()
-            if self.context:
-                await self.context.close()
-            if self.browser:
-                await self.browser.close()
-            if hasattr(self, 'playwright'):
-                await self.playwright.stop()
-            logger.info("Playwright resources cleaned up")
+            # Use asyncio.wait_for to prevent hanging during cleanup
+            await asyncio.wait_for(self._perform_cleanup(), timeout=cleanup_timeout)
+            logger.info("Playwright resources cleaned up successfully")
+        except asyncio.TimeoutError:
+            logger.warning(f"Playwright cleanup timed out after {cleanup_timeout}s")
         except Exception as e:
             logger.error(f"Error during Playwright cleanup: {e}")
+    
+    async def _perform_cleanup(self):
+        """Internal cleanup method"""
+        if self.page:
+            try:
+                await self.page.close()
+            except Exception as e:
+                logger.warning(f"Error closing page: {e}")
+        
+        if self.context:
+            try:
+                await self.context.close()
+            except Exception as e:
+                logger.warning(f"Error closing context: {e}")
+        
+        if self.browser:
+            try:
+                await self.browser.close()
+            except Exception as e:
+                logger.warning(f"Error closing browser: {e}")
+        
+        if hasattr(self, 'playwright'):
+            try:
+                await self.playwright.stop()
+            except Exception as e:
+                logger.warning(f"Error stopping playwright: {e}")
     
     async def load_page(self, url: str, wait_for_load: bool = True) -> Page:
         """Load a webpage and return the page object"""
@@ -139,6 +176,13 @@ class PlaywrightService:
             await self.initialize()
         
         try:
+            # Close existing page if it exists to prevent resource buildup
+            if self.page:
+                try:
+                    await self.page.close()
+                except:
+                    pass  # Ignore errors when closing
+            
             # Create new page from context (user agent already set in context)
             self.page = await self.context.new_page()
             
@@ -152,6 +196,11 @@ class PlaywrightService:
                 except Exception as e:
                     logger.warning(f"Network idle timeout for {url}, continuing anyway: {e}")
                     # Continue without network idle - page might still be usable
+                    # Additional wait for basic content loading
+                    try:
+                        await self.page.wait_for_timeout(2000)  # Give page 2 more seconds
+                    except:
+                        pass
             
             if response and response.status >= 400:
                 raise Exception(f"HTTP {response.status} error loading {url}")
@@ -1105,6 +1154,10 @@ class PlaywrightService:
             Dict with page HTML and metadata
         """
         try:
+            # Ensure service is initialized
+            if not self.browser or not self.context:
+                await self.initialize()
+            
             await self.load_page(url, wait_for_load=True)
             
             # Get page HTML

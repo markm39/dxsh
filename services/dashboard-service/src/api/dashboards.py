@@ -5,7 +5,7 @@ Manages dashboards and widgets, including connections to workflow nodes
 Adapted from Flask backend to FastAPI microservice architecture
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Response
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Header
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -14,7 +14,7 @@ from datetime import datetime
 from ..database import get_db
 from ..models.dashboard import Dashboard, DashboardWidget
 from ..services.workflow_client import WorkflowClient
-from ..auth import get_current_user_id
+from ..auth import get_current_user_id, get_current_user
 
 
 router = APIRouter()
@@ -326,10 +326,13 @@ async def delete_widget(
 async def get_widget_data(
     dashboard_id: int,
     widget_id: int,
-    current_user_id: int = Depends(get_current_user_id),
-    db: Session = Depends(get_db)
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    authorization: str = Header(None)
 ):
     """Get data for a specific widget"""
+    current_user_id = int(current_user.user_id)
+    
     # Verify dashboard ownership and widget exists
     widget = db.query(DashboardWidget).join(Dashboard).filter(
         DashboardWidget.id == widget_id,
@@ -346,9 +349,15 @@ async def get_widget_data(
     # If widget is connected to a workflow node, get fresh data
     if widget.agent_id and widget.node_id:
         try:
+            # Extract token from authorization header
+            auth_token = None
+            if authorization and authorization.startswith("Bearer "):
+                auth_token = authorization.split(" ")[1]
+            
             node_data = await workflow_client.get_node_execution_data(
                 widget.agent_id, 
-                widget.node_id
+                widget.node_id,
+                auth_token=auth_token
             )
             
             if node_data:

@@ -196,35 +196,37 @@ async def load_for_selection(
         # Validate URL
         validated_url = validate_url(url)
         
-        # Use Playwright service to load page
-        playwright_service = PlaywrightService()
-        
-        # Load page with Playwright
-        result = await playwright_service.load_page_for_selection(validated_url)
-        
-        if not result.get('success'):
-            raise HTTPException(
-                status_code=500,
-                detail=f"Failed to load page: {result.get('error', 'Unknown error')}"
+        # Use Playwright service with proper context management
+        async with PlaywrightService() as playwright_service:
+            # Load page with Playwright
+            result = await playwright_service.load_page_for_selection(validated_url)
+            
+            if not result.get('success'):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to load page: {result.get('error', 'Unknown error')}"
+                )
+            
+            # Get HTML content and inject visual selector
+            html_content = result.get('html', '')
+            html_with_selector = inject_visual_selector_script(html_content)
+            
+            return Response(
+                content=html_with_selector,
+                status_code=200,
+                headers={
+                    'Content-Type': 'text/html',
+                    'X-Frame-Options': 'ALLOWALL',
+                    'Content-Security-Policy': "frame-ancestors *",
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                    'Access-Control-Allow-Headers': '*',
+                }
             )
         
-        # Get HTML content and inject visual selector
-        html_content = result.get('html', '')
-        html_with_selector = inject_visual_selector_script(html_content)
-        
-        return Response(
-            content=html_with_selector,
-            status_code=200,
-            headers={
-                'Content-Type': 'text/html',
-                'X-Frame-Options': 'ALLOWALL',
-                'Content-Security-Policy': "frame-ancestors *",
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-                'Access-Control-Allow-Headers': '*',
-            }
-        )
-        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
         logger.error(f"Headless scraping error for {url}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")

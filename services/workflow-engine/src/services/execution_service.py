@@ -34,6 +34,7 @@ class ExecutionService:
     
     def __init__(self, db: Session):
         self.db = db
+        self.current_workflow_execution_id = None  # Track current execution context
         # Registry of node executors - All 9 node types
         self.node_executors = {
             'webSource': WebSourceExecutor,
@@ -59,6 +60,9 @@ class ExecutionService:
                 return
             
             logger.info(f"Starting execution {execution_id} with {len(execution.workflow_nodes)} nodes")
+            
+            # Set execution context
+            self.current_workflow_execution_id = execution_id
             
             # Parse workflow definition
             nodes = execution.workflow_nodes
@@ -255,10 +259,14 @@ class ExecutionService:
             # If result is already a NodeExecutionResult, just update the execution time
             if isinstance(result, NodeExecutionResult):
                 result.execution_time_ms = execution_time
+                
+                # Save node execution result to database
+                await self._save_node_execution(node_id, result, start_time, end_time, node_type)
+                
                 return result
             
             # Otherwise, assume it's a dictionary and convert to NodeExecutionResult
-            return NodeExecutionResult(
+            node_result = NodeExecutionResult(
                 node_id=node_id,
                 success=result.get('success', False),
                 data=result.get('data'),
@@ -267,18 +275,71 @@ class ExecutionService:
                 execution_time_ms=execution_time
             )
             
+            # Save node execution result to database
+            await self._save_node_execution(node_id, node_result, start_time, end_time, node_type)
+            
+            return node_result
+            
         except Exception as e:
             end_time = datetime.utcnow()
             execution_time = (end_time - start_time).total_seconds() * 1000
             
             logger.error(f"Error executing node {node_id}: {e}")
-            return NodeExecutionResult(
+            error_result = NodeExecutionResult(
                 node_id=node_id,
                 success=False,
                 data=None,
                 error=str(e),
                 execution_time_ms=execution_time
             )
+            
+            # Save failed execution to database
+            await self._save_node_execution(node_id, error_result, start_time, end_time, node_type)
+            
+            return error_result
+    
+    async def _save_node_execution(self, node_id: str, result: NodeExecutionResult, start_time: datetime, end_time: datetime, node_type: str):
+        """Save node execution result to database"""
+        try:
+            # Skip if no workflow execution context
+            if not self.current_workflow_execution_id:
+                logger.warning(f"No workflow execution ID set - cannot save node execution for {node_id}")
+                return
+            
+            # Handle database session errors
+            try:
+                # Try to commit any pending changes first
+                self.db.commit()
+            except Exception:
+                # If there's an error, rollback and continue
+                self.db.rollback()
+            
+            # Create node execution record
+            node_execution = NodeExecution(
+                node_id=node_id,
+                node_type=node_type,  # Added node_type field
+                execution_id=self.current_workflow_execution_id,  # Fixed field name
+                status='completed' if result.success else 'failed',
+                started_at=start_time,
+                completed_at=end_time,
+                output_data=result.data,
+                error_message=result.error,
+                node_specific_data=result.metadata or {}  # Fixed field name
+            )
+            
+            # Save to database
+            self.db.add(node_execution)
+            self.db.commit()
+            
+            logger.info(f"✅ Saved node execution: {node_id} - Success: {result.success} - WF Exec ID: {self.current_workflow_execution_id}")
+            
+        except Exception as e:
+            logger.error(f"Error saving node execution for {node_id}: {e}")
+            # Rollback on error
+            try:
+                self.db.rollback()
+            except:
+                pass
     
     async def execute_single_node_by_id(self, workflow_id: int, node_id: str, user_id: int, input_data: Optional[Dict] = None) -> Dict[str, Any]:
         """Execute a single node from a workflow (useful for testing)"""
@@ -309,8 +370,31 @@ class ExecutionService:
                     'error': f'Node {node_id} not found in workflow'
                 }
             
+            # Create a temporary workflow execution context for single node execution
+            # This allows the node execution to be saved properly
+            from ..models import WorkflowExecution
+            temp_execution = WorkflowExecution(
+                agent_id=workflow_id,
+                user_id=user_id,
+                workflow_nodes=[target_node],
+                workflow_edges=[],
+                status='running'
+            )
+            self.db.add(temp_execution)
+            self.db.commit()
+            
+            # Set execution context
+            self.current_workflow_execution_id = temp_execution.id
+            
             # Execute the single node
             result = await self._execute_single_node(target_node, input_data or {})
+            
+            # Update temp execution status
+            temp_execution.status = 'completed' if result.success else 'failed'
+            temp_execution.completed_at = datetime.utcnow()
+            if not result.success:
+                temp_execution.error_message = result.error
+            self.db.commit()
             
             return {
                 'success': result.success,

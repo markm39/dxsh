@@ -175,10 +175,25 @@ class HttpRequestExecutor(BaseNodeExecutor):
                     # Parse response
                     response_data = self._parse_response(response)
                     
+                    # Transform single-object arrays to chartable format for dashboard widgets
+                    transformed_data = response_data
+                    if isinstance(response_data, list) and len(response_data) == 1 and isinstance(response_data[0], dict):
+                        # Convert single object to key-value pairs for charting
+                        single_obj = response_data[0]
+                        transformed_data = [
+                            {"metric": key, "value": value, "original_key": key}
+                            for key, value in single_obj.items()
+                            if isinstance(value, (int, float)) and not key.startswith('_')
+                        ]
+                        # Keep original data as well
+                        if not transformed_data:  # fallback if no numeric fields
+                            transformed_data = response_data
+                    
                     result_data = {
                         'status': response.status_code,
                         'statusText': response.reason_phrase or '',
-                        'data': response_data,
+                        'data': transformed_data,
+                        'original_data': response_data,  # Keep original for reference
                         'headers': dict(response.headers),
                         'url': final_url,
                         'method': method,
@@ -328,9 +343,21 @@ class HttpRequestExecutor(BaseNodeExecutor):
         try:
             content_type = response.headers.get('content-type', '').lower()
             
+            # First try to parse as JSON if content-type suggests it
             if 'application/json' in content_type:
                 return response.json()
-            elif content_type.startswith('text/'):
+            
+            # If no explicit JSON content-type, try to detect JSON by content
+            text_content = response.text.strip()
+            if text_content and (text_content.startswith('{') or text_content.startswith('[')):
+                try:
+                    import json
+                    return json.loads(text_content)
+                except (json.JSONDecodeError, ValueError):
+                    # Not valid JSON, continue with content-type based parsing
+                    pass
+            
+            if content_type.startswith('text/'):
                 return response.text
             else:
                 # For binary content, return basic info
@@ -339,6 +366,15 @@ class HttpRequestExecutor(BaseNodeExecutor):
                     'content_length': len(response.content),
                     'data': response.text if response.text else f"Binary content ({len(response.content)} bytes)"
                 }
-        except Exception:
-            # Fallback to text if JSON parsing fails
+        except Exception as e:
+            # Try one more time to parse as JSON before falling back to text
+            try:
+                text_content = response.text.strip()
+                if text_content and (text_content.startswith('{') or text_content.startswith('[')):
+                    import json
+                    return json.loads(text_content)
+            except:
+                pass
+            
+            # Final fallback to text
             return response.text

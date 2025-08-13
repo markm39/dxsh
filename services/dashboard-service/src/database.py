@@ -10,8 +10,12 @@ from sqlalchemy.orm import sessionmaker
 # Database URL from environment
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./dashboard_service.db")
 
-# Create database engine
-engine = create_engine(DATABASE_URL, echo=False)
+# Create database engine with SQLite threading support
+connect_args = {}
+if DATABASE_URL.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+
+engine = create_engine(DATABASE_URL, echo=False, connect_args=connect_args)
 
 # Create sessionmaker
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -76,6 +76,8 @@ async def create_agent_execution(
         
         # Initialize execution service with database session
         execution_service = ExecutionService(db)
+        # Set the current workflow execution context
+        execution_service.current_workflow_execution_id = execution.id
         
         # Execute the workflow/node
         try:

@@ -389,7 +389,7 @@ export class WorkflowExecutionEngine {
         break;
         
       case 'fileNode':
-        result = await this.executeFileNode(nodeData, inputs);
+        result = await this.executeFileNode(node.id, nodeData, inputs);
         dataType = DataType.STRUCTURED_DATA;
         break;
         
@@ -2570,7 +2570,7 @@ export class WorkflowExecutionEngine {
     };
   }
 
-  private async executeFileNode(nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
+  private async executeFileNode(nodeId: string, nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
     const config = nodeData.fileNode;
     
     console.log('🔄 Raw nodeData received:', nodeData);
@@ -2606,6 +2606,9 @@ export class WorkflowExecutionEngine {
           fileName: config.fileName,
           fileType: config.fileType,
           operationMode: 'source',
+          // Add execution tracking parameters
+          nodeId: nodeId,
+          agentId: this.context.agentId,
           // Include file parsing options with defaults
           hasHeaders: config.hasHeaders ?? true,
           delimiter: config.delimiter || ',',

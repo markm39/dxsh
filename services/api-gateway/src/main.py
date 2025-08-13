@@ -40,6 +40,11 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "api-gateway"}
 
+@app.get("/api/v1/health")
+async def health_check_v1():
+    """Health check endpoint for API v1"""
+    return {"status": "healthy", "service": "api-gateway"}
+
 @app.get("/")
 async def root():
     """Root endpoint"""
@@ -123,6 +128,45 @@ async def proxy_dashboards(
 ):
     """Proxy dashboard-related requests to dashboard-service"""
     response_data = await proxy.route_dashboard_request(request, f"/v1/dashboards/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+# Dashboard Service Routes (with /api prefix)
+@app.api_route(
+    "/api/v1/dashboards/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_api_dashboards(
+    request: Request,
+    path: str,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy dashboard-related API requests to dashboard-service"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/dashboards/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+# Support dashboards without path for list endpoint
+@app.api_route(
+    "/api/v1/dashboards",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_api_dashboards_root(
+    request: Request,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy dashboard list requests to dashboard-service"""
+    response_data = await proxy.route_dashboard_request(request, f"/v1/dashboards")
     
     return Response(
         content=response_data['content'],

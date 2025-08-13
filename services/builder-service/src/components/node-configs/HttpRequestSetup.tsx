@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Globe2, CheckCircle, X, Eye, EyeOff, TestTube, Lock, Key, AlertCircle, Plus, Trash2, Settings, History, RotateCw } from "lucide-react";
+import { Globe2, CheckCircle, X, Eye, EyeOff, TestTube, Lock, Key, AlertCircle, Plus, Trash2, Settings, History, RotateCw, Monitor } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { InputVariable } from "../workflow-builder/workflow-types";
+import DashboardConnector from "../dashboard-connect/DashboardConnector";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -160,6 +161,8 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
   const [saving, setSaving] = useState(false);
   const [executionHistory, setExecutionHistory] = useState<any[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [showDashboardConnector, setShowDashboardConnector] = useState(false);
+  const [connectionSuccess, setConnectionSuccess] = useState<string | null>(null);
 
   const handleConfigChange = (field: keyof HttpRequestConfig, value: any) => {
     setConfig(prev => ({ ...prev, [field]: value }));
@@ -1163,6 +1166,7 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
   );
 
   return (
+    <>
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-background rounded-xl shadow-xl border border-border-subtle max-w-4xl w-full max-h-[90vh] flex flex-col">
         {/* Header */}
@@ -1267,6 +1271,18 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
               >
                 Cancel
               </button>
+              {agentId && nodeId && (
+                <button
+                  onClick={() => {
+                    setShowDashboardConnector(true);
+                    setConnectionSuccess(null); // Reset success state when opening
+                  }}
+                  className="px-4 py-3 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                  <Monitor className="w-4 h-4" />
+                  Connect to Dashboard
+                </button>
+              )}
               <button
                 onClick={handleSave}
                 disabled={saving}
@@ -1280,6 +1296,28 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
         </div>
       </div>
     </div>
+
+    {/* Dashboard Connector Modal */}
+    {showDashboardConnector && agentId && nodeId && (
+      <DashboardConnector
+        agentId={agentId}
+        nodeId={nodeId}
+        nodeType="httpRequest"
+        nodeLabel="HTTP Request"
+        nodeOutputType="STRUCTURED_DATA"
+        onClose={() => {
+          setShowDashboardConnector(false);
+          setConnectionSuccess(null); // Reset success state when closing
+        }}
+        onConnect={(widgetId) => {
+          console.log('Connected to widget:', widgetId);
+          setConnectionSuccess(`Successfully connected to widget ${widgetId}`);
+          // Don't immediately close - let user see success and choose to close
+        }}
+        successMessage={connectionSuccess}
+      />
+    )}
+    </>
   );
 };
 

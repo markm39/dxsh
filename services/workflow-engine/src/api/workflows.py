@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from typing import List
 from ..models.workflow import AgentWorkflow, WorkflowNode, WorkflowCreate, WorkflowUpdate, WorkflowResponse
+from ..models import WorkflowExecution, NodeExecution
 from ..database import get_db
 from ..auth import get_current_user, AuthUser
 import logging

@@ -1434,6 +1434,8 @@ const AgentsDashboard: React.FC = () => {
           }
           inputData={getNodeInputData(selectedNodeForConfig)}
           isConfigured={!!reactFlowNodes.find((n) => n.id === selectedNodeForConfig)?.data?.configured}
+          agentId={selectedAgentId || undefined}
+          nodeId={selectedNodeForConfig}
         />
       )}
     </div>

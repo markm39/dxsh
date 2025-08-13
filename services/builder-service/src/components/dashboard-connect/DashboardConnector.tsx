@@ -44,6 +44,7 @@ interface DashboardConnectorProps {
   nodeOutputType?: string; // Dynamic output type from the node's current configuration
   onClose: () => void;
   onConnect?: (widgetId: number) => void;
+  successMessage?: string | null; // Success message to display
 }
 
 const DashboardConnector: React.FC<DashboardConnectorProps> = ({
@@ -53,7 +54,8 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
   nodeLabel,
   nodeOutputType,
   onClose,
-  onConnect
+  onConnect,
+  successMessage
 }) => {
   const { authHeaders } = useAuth();
   const [dashboards, setDashboards] = useState<Dashboard[]>([]);
@@ -124,11 +126,9 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            dataSource: {
-              agentId,
-              nodeId,
-              refreshOnWorkflowComplete: true
-            }
+            agent_id: agentId,
+            node_id: nodeId,
+            refresh_on_workflow_complete: true
           })
         }
       );
@@ -136,7 +136,8 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
       const data = await response.json();
       
       if (data.success) {
-        setConnectedWidgets(prev => [...prev, { ...widget, dataSource: { agentId, nodeId } }]);
+        // Refresh the dashboard list to get the updated widget data
+        await loadDashboards();
         onConnect?.(widget.id);
       } else {
         throw new Error(data.error || 'Failed to connect widget');
@@ -158,7 +159,9 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            dataSource: null
+            agent_id: null,
+            node_id: null,
+            refresh_on_workflow_complete: false
           })
         }
       );
@@ -166,7 +169,8 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
       const data = await response.json();
       
       if (data.success) {
-        setConnectedWidgets(prev => prev.filter(w => w.id !== widget.id));
+        // Refresh the dashboard list to get the updated widget data
+        await loadDashboards();
       } else {
         throw new Error(data.error || 'Failed to disconnect widget');
       }
@@ -194,11 +198,10 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
           body: JSON.stringify({
             type: newWidgetType,
             title: newWidgetTitle,
-            dataSource: {
-              agentId,
-              nodeId,
-              refreshOnWorkflowComplete: true
-            },
+            position: { x: 0, y: 0, w: 6, h: 4 },
+            agent_id: agentId,
+            node_id: nodeId,
+            refresh_on_workflow_complete: true,
             config: getDefaultWidgetConfig(newWidgetType)
           })
         }
@@ -225,7 +228,7 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
     }
   };
 
-  const getDefaultWidgetConfig = (type: 'chart' | 'metric') => {
+  const getDefaultWidgetConfig = (type: ConnectableWidgetType) => {
     switch (type) {
       case 'chart':
         return {
@@ -240,6 +243,22 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
           format: 'number',
           precision: 0,
           showTrend: true
+        };
+      case 'table':
+        return {
+          showHeaders: true,
+          pageSize: 10,
+          sortable: true
+        };
+      case 'text':
+        return {
+          textAlign: 'left',
+          fontSize: 'normal'
+        };
+      case 'markdown':
+        return {
+          showToc: false,
+          syntaxHighlight: true
         };
       default:
         return {};
@@ -321,6 +340,13 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
               >
                 <X className="w-3 h-3 text-red-400" />
               </button>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <span className="text-sm text-green-400">{successMessage}</span>
             </div>
           )}
 
