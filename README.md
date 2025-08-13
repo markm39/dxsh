@@ -1,10 +1,10 @@
-# Dxsh
+# dxsh
 
 A self-hostable visual workflow automation platform for data processing, analytics, and integration tasks.
 
 ## Overview
 
-Dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
+dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
 
 ## Architecture
 
@@ -13,21 +13,25 @@ The platform consists of five core microservices:
 ### Services
 
 1. **Workflow Engine** (Port 8000)
+
    - Core workflow execution engine
    - Handles workflow orchestration and node execution
    - Manages workflow state and execution history
 
 2. **API Gateway** (Port 8001)
+
    - Central routing service for all API requests
    - Handles authentication and request forwarding
    - Provides unified API interface
 
 3. **Dashboard Service** (Port 8002)
+
    - Manages dashboard configurations and widgets
    - Handles dashboard data aggregation
    - Provides embed token management
 
 4. **Workflow Frontend** (Port 3000)
+
    - React-based workflow builder interface
    - Visual workflow design and configuration
    - Real-time workflow execution monitoring
@@ -40,6 +44,7 @@ The platform consists of five core microservices:
 ## Features
 
 ### Workflow Builder
+
 - Visual drag-and-drop workflow design
 - Extensive library of processing nodes
 - Real-time execution monitoring
@@ -47,12 +52,14 @@ The platform consists of five core microservices:
 - Workflow templates and versioning
 
 ### Data Processing Nodes
+
 - **Input Nodes**: HTTP requests, database queries, file uploads, web scraping
 - **Processing Nodes**: Data transformation, filtering, aggregation, calculations
 - **ML/AI Nodes**: GPT integration, text analysis, predictions
 - **Output Nodes**: Database storage, file exports, API calls, notifications
 
 ### Dashboard System
+
 - Customizable dashboard layouts
 - Multiple widget types (charts, tables, metrics, text)
 - Real-time data updates
@@ -60,6 +67,7 @@ The platform consists of five core microservices:
 - Token-based public sharing
 
 ### Security Features
+
 - JWT-based authentication
 - Role-based access control
 - API rate limiting
@@ -69,6 +77,7 @@ The platform consists of five core microservices:
 ## Quick Start
 
 ### Prerequisites
+
 - Docker and Docker Compose
 - Node.js 18+ (for local development)
 - Python 3.9+ (for local development)
@@ -77,12 +86,14 @@ The platform consists of five core microservices:
 ### Docker Deployment
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/dxsh.git
 cd dxsh
 ```
 
 2. Copy environment files:
+
 ```bash
 cp .env.example .env
 cp services/workflow-engine/.env.example services/workflow-engine/.env
@@ -92,11 +103,13 @@ cp services/workflow-frontend/.env.example services/workflow-frontend/.env
 ```
 
 3. Start all services:
+
 ```bash
 docker-compose -f docker-compose.microservices.yml up -d
 ```
 
 4. Access the applications:
+
 - Workflow Builder: http://localhost:3000
 - Dashboard Interface: http://localhost:3001
 - API Documentation: http://localhost:8001/docs
@@ -124,6 +137,7 @@ See individual service `.env.example` files for complete configuration options.
 The system uses PostgreSQL for data persistence. On first run, the database schema is automatically created through SQLAlchemy migrations.
 
 For production deployments, ensure you:
+
 1. Use a dedicated PostgreSQL instance
 2. Configure proper backup strategies
 3. Set secure database credentials
@@ -156,12 +170,14 @@ For production deployments, ensure you:
 4. Use the generated embed code in your application
 
 Example embed code:
+
 ```html
-<iframe 
+<iframe
   src="http://localhost:3001/embed/dashboard/123?token=your-token-here"
   width="100%"
   height="600"
-  frameborder="0">
+  frameborder="0"
+>
 </iframe>
 ```
 
@@ -260,12 +276,14 @@ npm test
 ### Production Considerations
 
 1. **Security**
+
    - Use HTTPS for all services
    - Configure proper CORS policies
    - Rotate JWT secrets regularly
    - Implement rate limiting
 
 2. **Performance**
+
    - Use Redis for caching
    - Configure database connection pooling
    - Implement horizontal scaling for services
@@ -290,11 +308,13 @@ docker-compose -f docker-compose.microservices.yml up -d --scale workflow-engine
 ### Common Issues
 
 1. **Database Connection Errors**
+
    - Verify PostgreSQL is running
    - Check DATABASE_URL configuration
    - Ensure database exists
 
 2. **CORS Errors**
+
    - Update CORS_ORIGINS in API Gateway
    - Verify frontend URLs are correct
 
@@ -323,6 +343,3 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) file for 
 - Documentation: [docs/](docs/)
 - Issues: GitHub Issues
 - Discussions: GitHub Discussions
-
-
-
