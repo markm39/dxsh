@@ -48,7 +48,8 @@ services:
       - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
       - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
       - DASHBOARD_SERVICE_URL=http://dashboard-service:5000
-      - BUILDER_SERVICE_URL=http://builder-service:3000
+      - WORKFLOW_FRONTEND_URL=http://workflow-frontend:3000
+      - DASHBOARD_FRONTEND_URL=http://dashboard-frontend:3000
       - REDIS_URL=redis://redis:6379
     depends_on:
       postgres:
@@ -68,6 +69,8 @@ services:
     build:
       context: ./services/workflow-engine
       dockerfile: Dockerfile
+    ports:
+      - "8000:5000"
     environment:
       - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
       - REDIS_URL=redis://redis:6379
@@ -93,9 +96,13 @@ services:
     build:
       context: ./services/dashboard-service
       dockerfile: Dockerfile
+    ports:
+      - "8002:5000"
     environment:
       - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
       - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
+      - DASHBOARD_FRONTEND_URL=http://dashboard-frontend:3000
+      - API_GATEWAY_URL=http://api-gateway:8001
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
     depends_on:
@@ -111,10 +118,10 @@ services:
       timeout: 10s
       retries: 3
 
-  # Builder Service - Visual workflow builder interface
-  builder-service:
+  # Workflow Frontend - Visual workflow builder interface
+  workflow-frontend:
     build:
-      context: ./services/builder-service
+      context: ./services/workflow-frontend
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: http://localhost:8001
@@ -126,6 +133,31 @@ services:
       - VITE_API_BASE_URL=http://localhost:8001
       - VITE_APP_NAME=Dxsh Workflow Builder
       - VITE_NODE_ENV=production
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - dxsh-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Dashboard Frontend - Dashboard visualization interface
+  dashboard-frontend:
+    build:
+      context: ./services/dashboard-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8001
+        VITE_WORKFLOW_API_URL: http://localhost:8001
+    ports:
+      - "3001:3000"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8001
+      - VITE_WORKFLOW_API_URL=http://localhost:8001
+      - VITE_WORKFLOW_FRONTEND_URL=http://localhost:3000
     depends_on:
       api-gateway:
         condition: service_healthy

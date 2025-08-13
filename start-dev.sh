@@ -24,7 +24,7 @@ export WORKFLOW_ENGINE_URL=http://localhost:8001
 # For API Gateway to call actual services
 export WORKFLOW_ENGINE_BACKEND_URL=http://localhost:8000
 export DASHBOARD_SERVICE_URL=http://localhost:8002
-export BUILDER_SERVICE_URL=http://localhost:3000
+export WORKFLOW_FRONTEND_URL=http://localhost:3000
 export DASHBOARD_FRONTEND_URL=http://localhost:3001
 
 # For frontend clients to call API Gateway
@@ -51,9 +51,9 @@ echo "   Starting Dashboard Service on :8002"
 
 sleep 2
 
-# Start Builder Service
-echo "   Starting Builder Service on :3000"
-(cd services/builder-service && npm run dev -- --host 0.0.0.0 --port 3000) > builder-service.log 2>&1 &
+# Start Workflow Frontend
+echo "   Starting Workflow Frontend on :3000"
+(cd services/workflow-frontend && npm run dev -- --host 0.0.0.0 --port 3000) > workflow-frontend.log 2>&1 &
 
 sleep 2
 

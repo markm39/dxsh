@@ -1,45 +1,59 @@
-/**
- * Login Page Component
- * 
- * Authentication page for dashboard access
- */
+import React, { useState } from "react";
+import { LogIn, UserPlus, Loader2, AlertCircle } from "lucide-react";
+import { useAuth } from "../../hooks/useAuth";
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LogIn, UserPlus, Loader2, AlertCircle } from 'lucide-react';
-import { useAuth } from '../providers/AuthProvider';
+interface LoginFormProps {
+  onSuccess: () => void;
+}
 
-const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { login, register, error, clearError } = useAuth();
-  
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
-    setIsSubmitting(true);
+    setError("");
+    setLoading(true);
 
     try {
-      if (isRegistering) {
-        await register(email, password);
+      const endpoint = isRegistering
+        ? "/api/v1/auth/register"
+        : "/api/v1/auth/login";
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+      console.log("Login response data:", data);
+      console.log("Token path data.token:", data.token);
+
+      if (response.ok) {
+        login(data.token);
+        onSuccess();
       } else {
-        await login(email, password);
+        setError(data.error || "Authentication failed");
       }
-      navigate('/');
     } catch (err) {
-      // Error is handled by the auth provider
+      setError("Network error. Please try again.");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   const toggleMode = () => {
     setIsRegistering(!isRegistering);
-    clearError();
+    setError("");
   };
 
   return (
@@ -49,19 +63,22 @@ const LoginPage: React.FC = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-text-primary mb-2">
-              {isRegistering ? 'Create Account' : 'Welcome Back'}
+              {isRegistering ? "Create Account" : "Welcome Back"}
             </h1>
             <p className="text-text-secondary">
-              {isRegistering 
-                ? 'Sign up to create and manage dashboards' 
-                : 'Sign in to access your dashboards'}
+              {isRegistering
+                ? "Sign up to create and manage workflows"
+                : "Sign in to access Dxsh"}
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-text-primary mb-2"
+              >
                 Email
               </label>
               <input
@@ -77,7 +94,10 @@ const LoginPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-text-primary mb-2"
+              >
                 Password
               </label>
               <input
@@ -88,7 +108,9 @@ const LoginPage: React.FC = () => {
                 className="w-full px-3 py-2 bg-background border border-border-subtle rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors"
                 placeholder="••••••••"
                 required
-                autoComplete={isRegistering ? 'new-password' : 'current-password'}
+                autoComplete={
+                  isRegistering ? "new-password" : "current-password"
+                }
               />
             </div>
 
@@ -103,18 +125,22 @@ const LoginPage: React.FC = () => {
             {/* Submit button */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={loading}
               className="w-full px-4 py-2 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
-              {isSubmitting ? (
+              {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  {isRegistering ? 'Creating Account...' : 'Signing In...'}
+                  {isRegistering ? "Creating Account..." : "Signing In..."}
                 </>
               ) : (
                 <>
-                  {isRegistering ? <UserPlus className="h-4 w-4" /> : <LogIn className="h-4 w-4" />}
-                  {isRegistering ? 'Create Account' : 'Sign In'}
+                  {isRegistering ? (
+                    <UserPlus className="h-4 w-4" />
+                  ) : (
+                    <LogIn className="h-4 w-4" />
+                  )}
+                  {isRegistering ? "Create Account" : "Sign In"}
                 </>
               )}
             </button>
@@ -126,30 +152,19 @@ const LoginPage: React.FC = () => {
               onClick={toggleMode}
               className="text-sm text-text-secondary hover:text-text-primary transition-colors"
             >
-              {isRegistering 
-                ? 'Already have an account? Sign in' 
+              {isRegistering
+                ? "Already have an account? Sign in"
                 : "Don't have an account? Create one"}
             </button>
           </div>
 
-          {/* Demo credentials */}
-          {!isRegistering && (
-            <div className="mt-6 pt-6 border-t border-border-subtle">
-              <p className="text-xs text-text-muted text-center mb-2">Demo Credentials:</p>
-              <div className="text-xs text-text-muted text-center space-y-1">
-                <p>Email: demo@example.com</p>
-                <p>Password: demo123</p>
-              </div>
-            </div>
-          )}
-
-          {/* Link to main app */}
+          {/* Link to dashboard */}
           <div className="mt-4 text-center">
             <a
-              href={import.meta.env['VITE_WORKFLOW_FRONTEND_URL'] || 'http://localhost:3000'}
+              href="http://localhost:3000"
               className="text-xs text-text-muted hover:text-text-secondary transition-colors"
             >
-              ← Back to Workflow Builder
+              ← Back to Dashboard
             </a>
           </div>
         </div>
@@ -158,4 +173,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default LoginForm;

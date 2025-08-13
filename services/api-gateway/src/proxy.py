@@ -10,7 +10,7 @@ class ServiceProxy:
         self.workflow_engine_url = os.environ.get('WORKFLOW_ENGINE_BACKEND_URL', 
                                                   os.environ.get('WORKFLOW_ENGINE_URL', 'http://workflow-engine:5000'))
         self.dashboard_service_url = os.environ.get('DASHBOARD_SERVICE_URL', 'http://dashboard-service:5000')
-        self.builder_service_url = os.environ.get('BUILDER_SERVICE_URL', 'http://builder-service:3000')
+        self.workflow_frontend_url = os.environ.get('WORKFLOW_FRONTEND_URL', 'http://workflow-frontend:3000')
         
     async def forward_request(
         self,
@@ -86,7 +86,7 @@ class ServiceProxy:
         body = await request.body() if request.method in ['POST', 'PUT', 'PATCH'] else None
         
         return await self.forward_request(
-            service_url=self.builder_service_url,
+            service_url=self.workflow_frontend_url,
             path=path,
             method=request.method,
             headers=dict(request.headers),

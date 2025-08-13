@@ -48,7 +48,7 @@ services:
       - JWT_SECRET=your-jwt-secret-key-change-in-production
       - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
       - DASHBOARD_SERVICE_URL=disabled
-      - BUILDER_SERVICE_URL=disabled
+      - WORKFLOW_FRONTEND_URL=disabled
       - REDIS_URL=redis://redis:6379
     depends_on:
       postgres:

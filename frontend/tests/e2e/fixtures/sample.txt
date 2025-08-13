@@ -1,5 +1,0 @@
-This is a sample text file for testing.
-It contains multiple lines of text.
-Each line will be processed separately.
-This file can be used to test text file loading.
-Line 5: Testing special characters & symbols!

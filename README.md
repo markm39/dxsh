@@ -1,261 +1,328 @@
-# 🚀 Dxsh - Visual Workflow Automation Platform
+# Dxsh
 
-> **Self-hostable visual workflow automation platform for data science, analytics, and mathematical operations**
+A self-hostable visual workflow automation platform for data processing, analytics, and integration tasks.
 
-Dxsh is a powerful, Docker-containerized visual workflow builder that transforms complex data operations into intuitive drag-and-drop workflows. Born from the workflow system originally developed within the Chatmark sports analytics platform, Dxsh represents a complete reimagining of data processing automation.
+## Overview
 
-## ✨ Features
+Dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
 
-### Core Capabilities
-- 🎨 **Visual Workflow Builder** - Intuitive drag-and-drop interface powered by React Flow
-- 🐍 **Python Script Execution** - Run custom Python code in secure, sandboxed Docker containers  
-- 🤖 **Machine Learning** - Built-in Linear Regression, Random Forest, and expanding ML toolkit
-- 🌐 **Web Scraping** - Visual element selector with robust Playwright backend
-- 📊 **Data Processing** - Transform, structure, and analyze data with powerful nodes
-- 🗄️ **Database Integration** - PostgreSQL support with visual query builder
-- 📈 **Real-time Dashboards** - Interactive charts and metrics visualization
-- 🔄 **Live Execution** - Watch workflows run in real-time with live results
-- 📦 **Extensible Architecture** - Easy custom node development
-- 🔒 **Security-First** - Sandboxed execution environments and secure by design
+## Architecture
 
-### Workflow Types
-- **Data Collection**: Web scraping, API integration, database queries, file imports
-- **Data Processing**: Statistical analysis, ML models, transformations, validations  
-- **AI Integration**: GPT-powered analysis, natural language processing, intelligent insights
-- **Visualization**: Dynamic chart generation, dashboard feeds, export capabilities
-- **Automation**: Scheduled execution, parameter looping, conditional logic
+The platform consists of five core microservices:
 
-## 🚀 Quick Start
+### Services
+
+1. **Workflow Engine** (Port 8000)
+   - Core workflow execution engine
+   - Handles workflow orchestration and node execution
+   - Manages workflow state and execution history
+
+2. **API Gateway** (Port 8001)
+   - Central routing service for all API requests
+   - Handles authentication and request forwarding
+   - Provides unified API interface
+
+3. **Dashboard Service** (Port 8002)
+   - Manages dashboard configurations and widgets
+   - Handles dashboard data aggregation
+   - Provides embed token management
+
+4. **Workflow Frontend** (Port 3000)
+   - React-based workflow builder interface
+   - Visual workflow design and configuration
+   - Real-time workflow execution monitoring
+
+5. **Dashboard Frontend** (Port 3001)
+   - React-based dashboard visualization interface
+   - Widget management and configuration
+   - Embeddable dashboard and widget views
+
+## Features
+
+### Workflow Builder
+- Visual drag-and-drop workflow design
+- Extensive library of processing nodes
+- Real-time execution monitoring
+- Parameter configuration and validation
+- Workflow templates and versioning
+
+### Data Processing Nodes
+- **Input Nodes**: HTTP requests, database queries, file uploads, web scraping
+- **Processing Nodes**: Data transformation, filtering, aggregation, calculations
+- **ML/AI Nodes**: GPT integration, text analysis, predictions
+- **Output Nodes**: Database storage, file exports, API calls, notifications
+
+### Dashboard System
+- Customizable dashboard layouts
+- Multiple widget types (charts, tables, metrics, text)
+- Real-time data updates
+- Embeddable dashboards and widgets
+- Token-based public sharing
+
+### Security Features
+- JWT-based authentication
+- Role-based access control
+- API rate limiting
+- Token-based embed authentication
+- CORS configuration for embedding
+
+## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
-- Git
+- Node.js 18+ (for local development)
+- Python 3.9+ (for local development)
+- PostgreSQL 13+ (or use Docker container)
 
-### Using Docker (Recommended)
+### Docker Deployment
 
+1. Clone the repository:
 ```bash
-# 1. Clone the repository
-git clone https://github.com/markmiller/dxsh.git
-cd dxsh
-
-# 2. Set up environment variables
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-
-# 3. Configure your settings (optional)
-# Edit backend/.env to add your OpenAI API key, database settings, etc.
-
-# 4. Start the platform
-docker-compose up
-
-# 5. Access the applications
-# Workflow Builder: http://localhost:3000
-# Dashboard: http://localhost:3001
-# API: http://localhost:5000
-```
-
-The platform will automatically:
-- Set up PostgreSQL database with required tables
-- Install all dependencies
-- Start all services in the correct order
-
-### Manual Development Setup
-
-If you prefer to run components individually for development:
-
-```bash
-# Backend setup
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-cp .env.example .env
-flask db upgrade
-python run.py
-
-# Frontend setup (new terminal)
-cd frontend
-npm install
-npm run dev
-
-# Dashboard setup (new terminal)  
-cd dashboard
-npm install
-npm run dev
-```
-
-## 📚 Documentation
-
-- [Adding Custom Nodes](docs/ADDING_NEW_NODES.md) - Extend Dxsh with custom workflow nodes
-- [Dashboard Architecture](docs/DASHBOARD_ARCHITECTURE.md) - Understanding the dashboard system
-- [Playwright Service Guide](backend/docs/playwright_service.md) - Web scraping capabilities
-
-## 🎯 Use Cases
-
-### Data Science & Analytics
-- **ETL Pipelines** - Extract, transform, and load data from multiple sources
-- **ML Model Training** - Build and train machine learning models visually
-- **Statistical Analysis** - Perform complex statistical operations on datasets
-- **Data Validation** - Automated data quality checks and cleaning
-
-### Web Automation & Monitoring  
-- **Web Scraping** - Extract structured data from websites with visual selectors
-- **Site Monitoring** - Track website changes and performance metrics
-- **Content Aggregation** - Collect and organize data from multiple web sources
-- **Competitive Intelligence** - Monitor competitor websites and pricing
-
-### Business Intelligence
-- **Interactive Dashboards** - Real-time data visualization and KPI tracking
-- **Automated Reports** - Scheduled data reports with custom visualizations
-- **Multi-source Analytics** - Combine data from APIs, databases, and files
-- **Performance Tracking** - Monitor business metrics across different systems
-
-### AI & Machine Learning
-- **GPT Integration** - Natural language processing and content analysis
-- **Predictive Analytics** - Forecast trends using machine learning models
-- **Data Classification** - Automated categorization and pattern recognition
-- **Intelligent Insights** - AI-powered data analysis and recommendations
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                        DXSH CORE                        │
-│  ┌─────────┐    ┌─────────┐    ┌─────────┐            │
-│  │ Collect │───▶│ Process │───▶│ Output  │            │
-│  │  Data   │    │  Data   │    │ Results │            │
-│  └─────────┘    └─────────┘    └─────────┘            │
-│       ▲              ▲               │                  │
-│       │              │               ▼                  │
-│  ┌─────────┐   ┌──────────┐   ┌───────────┐          │
-│  │   API   │   │ ML/Stats │   │ Dashboard │          │
-│  │ Scraper │   │  Models  │   │   Feeds   │          │
-│  │Database │   │ Analysis │   │  Storage  │          │
-│  └─────────┘   └──────────┘   └───────────┘          │
-└─────────────────────────────────────────────────────────┘
-
-    Frontend (React)     Backend (Flask)      Database (PostgreSQL)
-    ┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
-    │ Workflow    │────▶│ API Server  │────▶│ User Data       │
-    │ Builder     │     │             │     │ Workflows       │
-    │             │     │ Execution   │     │ Results         │
-    │ Dashboard   │     │ Engine      │     │ Models          │
-    │ Interface   │     │             │     │                 │
-    └─────────────┘     └─────────────┘     └─────────────────┘
-                               │
-                               ▼
-                        ┌─────────────────┐
-                        │ Docker Executor │
-                        │ (Sandboxed)     │
-                        │ - Python Code   │
-                        │ - ML Training   │
-                        │ - Data Processing│
-                        └─────────────────┘
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
-- Setting up the development environment
-- Code style and conventions  
-- Submitting pull requests
-- Creating new workflow nodes
-- Reporting issues
-
-### Development Workflow
-
-```bash
-# 1. Fork and clone the repository
 git clone https://github.com/yourusername/dxsh.git
 cd dxsh
-
-# 2. Set up development environment
-./scripts/dev-setup.sh  # Sets up all services for development
-
-# 3. Make your changes and test
-npm run test          # Frontend tests
-pytest               # Backend tests
-docker-compose up -d  # Integration testing
-
-# 4. Submit your pull request
 ```
 
-## 📦 Examples & Templates
+2. Copy environment files:
+```bash
+cp .env.example .env
+cp services/workflow-engine/.env.example services/workflow-engine/.env
+cp services/dashboard-service/.env.example services/dashboard-service/.env
+cp services/dashboard-frontend/.env.example services/dashboard-frontend/.env
+cp services/workflow-frontend/.env.example services/workflow-frontend/.env
+```
 
-Check out the `examples/` directory for sample workflows:
-- **[Chatmark Sports Analytics](examples/chatmark/)** - Advanced sports data analysis
-- **Stock Market Analysis** - Financial data processing and prediction
-- **Web Scraping Pipeline** - Automated data collection workflows  
-- **ML Training Pipeline** - End-to-end machine learning workflows
+3. Start all services:
+```bash
+docker-compose -f docker-compose.microservices.yml up -d
+```
 
-## 🛣️ Roadmap
+4. Access the applications:
+- Workflow Builder: http://localhost:3000
+- Dashboard Interface: http://localhost:3001
+- API Documentation: http://localhost:8001/docs
 
-### Core Platform
-- [ ] Advanced ML nodes (XGBoost, Neural Networks, Time Series)
-- [ ] Workflow scheduling and cron job integration
-- [ ] Version control for workflows (Git-like)
-- [ ] Multi-tenant support and user management
-- [ ] REST API for workflow management
-- [ ] Workflow templates marketplace
+### Local Development
 
-### Infrastructure & Deployment
-- [ ] Kubernetes deployment configurations
-- [ ] Cloud provider integrations (AWS, GCP, Azure)
-- [ ] Horizontal scaling for high-volume processing
-- [ ] Workflow execution monitoring and alerts
-- [ ] Performance optimization and caching
+See the [Local Development Guide](docs/development/local-setup.md) for detailed instructions on running services locally.
 
-### Integrations & Ecosystem
-- [ ] Pre-built integrations (Salesforce, HubSpot, etc.)
-- [ ] Plugin system for custom nodes
-- [ ] Mobile app for monitoring workflows
-- [ ] Slack/Teams notifications
-- [ ] Enterprise SSO support
+## Configuration
 
-## 🏢 Business Model & Distribution
+### Environment Variables
 
-1. **Open Source Core** - Free workflow engine with essential nodes
-2. **Enterprise License** - Advanced nodes (ML, AI, enterprise integrations)  
-3. **Cloud Hosting** - Managed service with scalable infrastructure
-4. **Template Marketplace** - Pre-built workflows for specific industries
-5. **White-Label Solutions** - Branded platforms for enterprise clients
+Each service requires specific environment variables. Key variables include:
 
-## 📄 License
+- `DATABASE_URL`: PostgreSQL connection string
+- `JWT_SECRET`: Secret key for JWT token generation
+- `CORS_ORIGINS`: Allowed origins for CORS
+- `API_BASE_URL`: Base URL for API services
+- `FRONTEND_URL`: URL for frontend services
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+See individual service `.env.example` files for complete configuration options.
 
-## 🙏 Acknowledgments & Technology Stack
+### Database Setup
 
-**Core Technologies:**
-- [React Flow](https://reactflow.dev/) - Powerful flow diagram library
-- [Flask](https://flask.palletsprojects.com/) - Lightweight Python web framework  
-- [PostgreSQL](https://postgresql.org/) - Advanced open source database
-- [Docker](https://docker.com/) - Containerization and sandboxing
-- [Playwright](https://playwright.dev/) - Reliable web automation
+The system uses PostgreSQL for data persistence. On first run, the database schema is automatically created through SQLAlchemy migrations.
 
-**Frontend Stack:**
-- [React](https://reactjs.org/) + [TypeScript](https://typescriptlang.org/)
-- [Vite](https://vitejs.dev/) for fast development builds
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [Recharts](https://recharts.org/) for data visualization
+For production deployments, ensure you:
+1. Use a dedicated PostgreSQL instance
+2. Configure proper backup strategies
+3. Set secure database credentials
+4. Enable SSL for database connections
 
-**Backend Stack:**
-- [Flask](https://flask.palletsprojects.com/) + [SQLAlchemy](https://sqlalchemy.org/)
-- [Alembic](https://alembic.sqlalchemy.org/) for database migrations
-- [Celery](https://celeryproject.org/) for background tasks
-- [Playwright](https://playwright.dev/) for web scraping
+## Usage
 
-## 🌟 Star History
+### Creating a Workflow
 
-[![Star History Chart](https://api.star-history.com/svg?repos=markmiller/dxsh&type=Date)](https://star-history.com/#markmiller/dxsh&Date)
+1. Access the Workflow Builder at http://localhost:3000
+2. Click "New Workflow" to create a workflow
+3. Drag nodes from the sidebar to the canvas
+4. Connect nodes by dragging from output to input ports
+5. Configure each node by clicking on it
+6. Save and execute the workflow
 
-## 💬 Community & Support
+### Building Dashboards
 
-- 📧 **Email**: support@dxsh.dev
-- 💬 **GitHub Discussions**: [Ask questions and share workflows](https://github.com/markmiller/dxsh/discussions)  
-- 🐛 **Issue Tracker**: [Report bugs and request features](https://github.com/markmiller/dxsh/issues)
-- 📖 **Wiki**: [Community documentation and tutorials](https://github.com/markmiller/dxsh/wiki)
+1. Access the Dashboard interface at http://localhost:3001
+2. Create a new dashboard or edit existing ones
+3. Add widgets and configure data sources
+4. Arrange widgets using the grid layout
+5. Save and share dashboards
 
----
+### Embedding Dashboards
 
-**Made with ❤️ by the Dxsh community** | [Website](https://dxsh.dev) | [Documentation](https://docs.dxsh.dev)
+1. Navigate to Settings > Embed Tokens
+2. Create a new embed token for a dashboard or widget
+3. Configure security settings (domains, expiration)
+4. Use the generated embed code in your application
+
+Example embed code:
+```html
+<iframe 
+  src="http://localhost:3001/embed/dashboard/123?token=your-token-here"
+  width="100%"
+  height="600"
+  frameborder="0">
+</iframe>
+```
+
+## API Reference
+
+### Authentication
+
+All API endpoints require JWT authentication except public embed endpoints.
+
+```bash
+# Login
+POST /api/v1/auth/login
+{
+  "username": "user@example.com",
+  "password": "password"
+}
+
+# Returns
+{
+  "access_token": "jwt-token-here",
+  "token_type": "bearer"
+}
+```
+
+### Workflows
+
+```bash
+# List workflows
+GET /api/v1/workflows
+
+# Create workflow
+POST /api/v1/workflows
+{
+  "name": "My Workflow",
+  "description": "Process data",
+  "nodes": [...],
+  "connections": [...]
+}
+
+# Execute workflow
+POST /api/v1/workflows/{id}/execute
+```
+
+### Dashboards
+
+```bash
+# List dashboards
+GET /api/v1/dashboards
+
+# Create dashboard
+POST /api/v1/dashboards
+{
+  "name": "Analytics Dashboard",
+  "description": "Main analytics",
+  "layout": {...}
+}
+
+# Get dashboard data
+GET /api/v1/dashboards/{id}/data
+```
+
+For complete API documentation, visit `/docs` on the API Gateway service.
+
+## Development
+
+### Adding New Nodes
+
+See the [Node Development Guide](docs/development/creating-nodes.md) for instructions on creating custom workflow nodes.
+
+### Creating Widgets
+
+See the [Widget Development Guide](docs/development/creating-widgets.md) for instructions on building custom dashboard widgets.
+
+### Testing
+
+Run tests for each service:
+
+```bash
+# Backend services
+cd services/workflow-engine
+python -m pytest
+
+# Frontend services
+cd services/workflow-frontend
+npm test
+```
+
+### Code Style
+
+- Python: Follow PEP 8, use Black formatter
+- TypeScript/React: Use ESLint and Prettier
+- Commit messages: Follow conventional commits
+
+## Deployment
+
+### Production Considerations
+
+1. **Security**
+   - Use HTTPS for all services
+   - Configure proper CORS policies
+   - Rotate JWT secrets regularly
+   - Implement rate limiting
+
+2. **Performance**
+   - Use Redis for caching
+   - Configure database connection pooling
+   - Implement horizontal scaling for services
+   - Use CDN for static assets
+
+3. **Monitoring**
+   - Set up logging aggregation
+   - Configure health checks
+   - Implement metrics collection
+   - Set up alerting
+
+### Scaling
+
+Each microservice can be scaled independently:
+
+```bash
+docker-compose -f docker-compose.microservices.yml up -d --scale workflow-engine=3
+```
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Errors**
+   - Verify PostgreSQL is running
+   - Check DATABASE_URL configuration
+   - Ensure database exists
+
+2. **CORS Errors**
+   - Update CORS_ORIGINS in API Gateway
+   - Verify frontend URLs are correct
+
+3. **Authentication Failures**
+   - Check JWT_SECRET matches across services
+   - Verify token expiration settings
+
+See the [Troubleshooting Guide](docs/troubleshooting.md) for more solutions.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) file for details.
+
+## Support
+
+- Documentation: [docs/](docs/)
+- Issues: GitHub Issues
+- Discussions: GitHub Discussions
+
+
+

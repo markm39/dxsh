@@ -1,347 +1,271 @@
-# 🤝 Contributing to Dxsh
+# Contributing to Dxsh
 
-Thank you for your interest in contributing to Dxsh! We welcome contributions from the community and are excited to see what amazing workflows and features you'll help us build.
+Thank you for your interest in contributing to Dxsh! This document provides guidelines and instructions for contributing to the project.
 
-## 📋 Table of Contents
+## Code of Conduct
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [Contributing Guidelines](#contributing-guidelines)
-- [Creating Custom Nodes](#creating-custom-nodes)
-- [Testing](#testing)
-- [Submitting Changes](#submitting-changes)
-- [Community](#community)
+By participating in this project, you agree to maintain a respectful and inclusive environment for all contributors.
 
-## 📜 Code of Conduct
+## Getting Started
 
-This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to [support@dxsh.dev](mailto:support@dxsh.dev).
+1. Fork the repository on GitHub
+2. Clone your fork locally
+3. Set up the development environment following the [Local Development Guide](docs/development/local-setup.md)
+4. Create a feature branch for your work
 
-**In short: Be respectful, inclusive, and collaborative.**
+## Development Process
 
-## 🚀 Getting Started
-
-### What Can You Contribute?
-
-- 🐛 **Bug Reports**: Help us identify and fix issues
-- 💡 **Feature Requests**: Suggest new capabilities and improvements
-- 📝 **Documentation**: Improve our docs, tutorials, and examples
-- 🔧 **Code**: Fix bugs, add features, create new workflow nodes
-- 🎨 **UI/UX**: Enhance the user interface and experience
-- 🧪 **Testing**: Write tests and improve our testing infrastructure
-- 📦 **Examples**: Create workflow templates and use case examples
-
-### Ways to Get Involved
-
-1. **Star the repository** ⭐ to show your support
-2. **Join our discussions** 💬 to share ideas and ask questions
-3. **Report bugs** 🐛 to help improve stability
-4. **Submit pull requests** 🔄 to contribute code
-5. **Write tutorials** 📚 to help other users
-
-## 🛠️ Development Setup
-
-### Prerequisites
-
-- **Docker & Docker Compose** - For containerized development
-- **Node.js 18+** - For frontend development
-- **Python 3.11+** - For backend development
-- **Git** - For version control
-
-### Quick Setup
+### 1. Create a Feature Branch
 
 ```bash
-# 1. Fork and clone the repository
-git clone https://github.com/yourusername/dxsh.git
-cd dxsh
-
-# 2. Set up environment files
-cp backend/.env.example backend/.env
-cp frontend/.env.example frontend/.env
-
-# 3. Start development environment
-docker-compose up -d
-
-# 4. Access the applications
-# Workflow Builder: http://localhost:3000
-# Dashboard: http://localhost:3001
-# API: http://localhost:5000
+git checkout -b feature/your-feature-name
 ```
 
-### Manual Development Setup
+Use descriptive branch names:
+- `feature/add-csv-export`
+- `fix/workflow-execution-error`
+- `docs/update-api-guide`
 
-If you prefer to run services individually:
+### 2. Make Your Changes
+
+Follow the coding standards for the language you're working with:
+
+**Python (Backend Services):**
+- Follow PEP 8
+- Use type hints where appropriate
+- Add docstrings to functions and classes
+- Run Black formatter: `black .`
+
+**TypeScript/React (Frontend Services):**
+- Use TypeScript strict mode
+- Follow ESLint rules
+- Use functional components with hooks
+- Run Prettier: `npm run format`
+
+### 3. Write Tests
+
+All new features should include tests:
+
+**Backend Tests:**
+```bash
+cd services/workflow-engine
+python -m pytest tests/
+```
+
+**Frontend Tests:**
+```bash
+cd services/workflow-frontend
+npm test
+```
+
+### 4. Update Documentation
+
+- Update relevant documentation in the `docs/` directory
+- Add JSDoc comments for TypeScript functions
+- Update README if adding new features
+
+### 5. Commit Your Changes
+
+Follow conventional commit format:
 
 ```bash
-# Backend setup
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-flask db upgrade
-python run.py
-
-# Frontend setup (new terminal)
-cd frontend
-npm install
-npm run dev
-
-# Dashboard setup (new terminal)
-cd dashboard
-npm install
-npm run dev
+git commit -m "feat: add CSV export to workflow results"
+git commit -m "fix: resolve database connection timeout"
+git commit -m "docs: update API authentication guide"
 ```
 
-## 🎯 Contributing Guidelines
-
-### Before You Start
-
-1. **Check existing issues** to see if your bug/feature is already tracked
-2. **Create an issue** to discuss major changes before implementing
-3. **Follow our coding standards** outlined below
-4. **Write tests** for new functionality
-5. **Update documentation** as needed
-
-### Coding Standards
-
-#### Python (Backend)
-- Follow **PEP 8** style guidelines
-- Use **type hints** where appropriate
-- Write **docstrings** for functions and classes
-- Maximum line length: **88 characters** (Black formatter)
-- Use **meaningful variable names**
-
-```python
-# Good
-def execute_workflow(workflow_id: int, user_id: int) -> ExecutionResult:
-    """
-    Execute a workflow for a specific user.
-    
-    Args:
-        workflow_id: The ID of the workflow to execute
-        user_id: The ID of the user executing the workflow
-        
-    Returns:
-        ExecutionResult containing success status and output data
-    """
-    pass
-
-# Bad
-def exec_wf(w_id, u_id):
-    pass
-```
-
-#### TypeScript/React (Frontend)
-- Use **TypeScript** for all new code
-- Follow **React best practices** (hooks, functional components)
-- Use **meaningful component names**
-- **Export types** and interfaces
-- Prefer **composition over inheritance**
-
-```typescript
-// Good
-interface WorkflowNodeProps {
-  nodeId: string;
-  data: NodeData;
-  onUpdate: (nodeId: string, data: NodeData) => void;
-}
-
-export const WorkflowNode: React.FC<WorkflowNodeProps> = ({ 
-  nodeId, 
-  data, 
-  onUpdate 
-}) => {
-  // Component implementation
-};
-
-// Bad
-export const Node = (props: any) => {
-  // Component implementation
-};
-```
-
-#### General Guidelines
-- **Write clear commit messages** following conventional commits
-- **Keep commits focused** - one logical change per commit
-- **Rebase before merging** to maintain clean history
-- **Remove debugging code** before submitting
-
-### Commit Message Format
-
-We use [Conventional Commits](https://conventionalcommits.org/) for clear commit history:
-
-```
-type(scope): description
-
-[optional body]
-
-[optional footer(s)]
-```
-
-**Types:**
+Commit types:
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
 - `style`: Code style changes (formatting, etc.)
 - `refactor`: Code refactoring
-- `test`: Adding or updating tests
+- `test`: Test additions or modifications
 - `chore`: Build process or auxiliary tool changes
 
-**Examples:**
-```bash
-feat(nodes): add XGBoost machine learning node
-fix(backend): resolve workflow execution timeout issue
-docs(readme): update installation instructions
-refactor(frontend): simplify node connection logic
-```
-
-## 🔧 Creating Custom Nodes
-
-One of the most valuable contributions is creating new workflow nodes! See our [Adding New Nodes Guide](docs/ADDING_NEW_NODES.md) for detailed instructions.
-
-### Quick Node Creation Checklist
-
-- [ ] Backend API endpoint in `/backend/app/api/`
-- [ ] Frontend React component in `/frontend/src/components/nodes/`
-- [ ] Node configuration component in `/frontend/src/components/node-configs/`
-- [ ] Add to node library in `/frontend/src/components/workflow-builder/components/NodeLibrary.tsx`
-- [ ] Write tests for both frontend and backend
-- [ ] Update documentation with usage examples
-
-## 🧪 Testing
-
-We maintain high code quality through comprehensive testing:
-
-### Running Tests
+### 6. Push and Create Pull Request
 
 ```bash
-# Frontend tests
-cd frontend
-npm test
-
-# Backend tests
-cd backend
-source venv/bin/activate
-pytest
-
-# Integration tests
-docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit
+git push origin feature/your-feature-name
 ```
 
-### Test Requirements
+Then create a pull request on GitHub with:
+- Clear description of changes
+- Link to related issues
+- Screenshots for UI changes
+- Test results
 
-- **Unit tests** for new functions and classes
-- **Integration tests** for API endpoints
-- **Component tests** for React components
-- **End-to-end tests** for critical workflows
+## Project Structure
 
-### Test Guidelines
-
-- Write **descriptive test names**
-- **Mock external dependencies**
-- Test **both success and failure cases**
-- Maintain **high test coverage** (aim for >80%)
-
-## 📝 Submitting Changes
-
-### Pull Request Process
-
-1. **Create a feature branch** from `main`
-   ```bash
-   git checkout -b feat/awesome-new-feature
-   ```
-
-2. **Make your changes** following our coding standards
-
-3. **Test your changes** thoroughly
-   ```bash
-   npm test && pytest
-   ```
-
-4. **Commit with clear messages**
-   ```bash
-   git commit -m "feat(nodes): add awesome new feature"
-   ```
-
-5. **Push to your fork**
-   ```bash
-   git push origin feat/awesome-new-feature
-   ```
-
-6. **Create a pull request** with:
-   - Clear title and description
-   - Screenshots/GIFs for UI changes
-   - Links to related issues
-   - Testing instructions
-
-### Pull Request Template
-
-```markdown
-## Description
-Brief description of the changes and their purpose.
-
-## Type of Change
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to change)
-- [ ] Documentation update
-
-## Testing
-- [ ] Tests pass locally
-- [ ] New tests added for new functionality
-- [ ] Manual testing completed
-
-## Screenshots (if applicable)
-Add screenshots or GIFs to demonstrate UI changes.
-
-## Checklist
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Documentation updated
-- [ ] No sensitive information committed
+```
+dxsh/
+├── services/
+│   ├── workflow-engine/      # Core workflow execution
+│   ├── dashboard-service/    # Dashboard management
+│   ├── workflow-frontend/    # Workflow builder UI
+│   └── dashboard-frontend/   # Dashboard UI
+├── docs/                     # Documentation
+├── scripts/                  # Development scripts
+└── docker/                   # Docker configurations
 ```
 
-### Review Process
+## Adding New Features
 
-1. **Automated checks** must pass (tests, linting, security)
-2. **Code review** by at least one maintainer
-3. **Manual testing** for significant changes
-4. **Documentation review** if applicable
-5. **Final approval** and merge
+### Creating a New Node
 
-## 📚 Documentation
+See the [Node Development Guide](docs/development/creating-nodes.md) for detailed instructions.
 
-Help us improve our documentation:
+Quick checklist:
+1. Create node class in `services/workflow-engine/src/nodes/`
+2. Add to node registry
+3. Create frontend configuration
+4. Add tests
+5. Update documentation
 
-- **README updates** for new features
-- **API documentation** for backend changes
-- **Component documentation** for frontend changes
-- **Tutorial creation** for complex workflows
-- **Example workflows** for real-world use cases
+### Creating a New Widget
 
-## 🎉 Recognition
+See the [Widget Development Guide](docs/development/creating-widgets.md) for detailed instructions.
 
-Contributors are recognized in several ways:
+Quick checklist:
+1. Create React component in `services/dashboard-frontend/src/widgets/`
+2. Define widget configuration
+3. Register widget
+4. Add styling
+5. Test in dashboard
 
-- **Contributors list** in README
-- **Release notes** mention significant contributions
-- **Community highlights** in discussions
-- **Special badges** for significant contributors
+## Code Review Process
 
-## ❓ Getting Help
+All pull requests require:
+1. Passing CI/CD checks
+2. Code review from maintainers
+3. Tests for new functionality
+4. Documentation updates
 
-Need help with your contribution?
+### Review Criteria
 
-- 💬 **GitHub Discussions**: Ask questions and get help
-- 📧 **Email**: [support@dxsh.dev](mailto:support@dxsh.dev)
-- 🐛 **Issues**: Create an issue for bugs or feature requests
+- Code quality and style
+- Test coverage
+- Performance impact
+- Security considerations
+- Documentation completeness
 
-## 🏢 Contributor License Agreement
+## Testing Guidelines
 
-By contributing to Dxsh, you agree that your contributions will be licensed under the same MIT License that covers the project. You also confirm that you have the right to make these contributions.
+### Unit Tests
 
----
+Test individual components and functions:
 
-**Thank you for contributing to Dxsh!** 🎉
+```python
+# Backend example
+def test_workflow_execution():
+    workflow = create_test_workflow()
+    result = workflow.execute()
+    assert result.status == 'completed'
+```
 
-Your contributions help make data workflow automation accessible to everyone. Together, we're building something amazing! 🚀
+```typescript
+// Frontend example
+test('renders workflow node', () => {
+  render(<WorkflowNode type="http_request" />);
+  expect(screen.getByText('HTTP Request')).toBeInTheDocument();
+});
+```
+
+### Integration Tests
+
+Test component interactions:
+- API endpoint tests
+- Database operations
+- Service communication
+- UI workflows
+
+### End-to-End Tests
+
+Test complete user flows:
+- Create and execute workflow
+- Build and share dashboard
+- User authentication flow
+
+## Security Guidelines
+
+### Reporting Security Issues
+
+Do not create public issues for security vulnerabilities. Instead, email security@dxsh.dev with:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+### Security Best Practices
+
+- Never commit secrets or API keys
+- Validate all user inputs
+- Use parameterized queries
+- Follow OWASP guidelines
+- Keep dependencies updated
+
+## Performance Considerations
+
+When contributing, consider:
+- Query optimization for large datasets
+- Efficient data structures
+- Caching opportunities
+- Memory usage
+- API response times
+
+## Documentation Standards
+
+### Code Documentation
+
+**Python:**
+```python
+def process_data(input_data: List[Dict]) -> Dict[str, Any]:
+    """
+    Process input data and return aggregated results.
+    
+    Args:
+        input_data: List of dictionaries containing raw data
+        
+    Returns:
+        Dictionary with processed results and metadata
+    """
+```
+
+**TypeScript:**
+```typescript
+/**
+ * Renders a workflow node on the canvas
+ * @param props - Node properties including type and position
+ * @returns React component
+ */
+export const WorkflowNode: React.FC<NodeProps> = (props) => {
+```
+
+### User Documentation
+
+- Use clear, concise language
+- Include code examples
+- Add screenshots for UI features
+- Keep formatting consistent
+
+## Release Process
+
+1. Features are developed in feature branches
+2. Merged to `develop` branch after review
+3. Released to `main` branch periodically
+4. Tagged with semantic version numbers
+
+## Getting Help
+
+- GitHub Issues: Bug reports and feature requests
+- GitHub Discussions: General questions and discussions
+- Development chat: Join our Discord server
+
+## Recognition
+
+Contributors are recognized in:
+- GitHub contributors page
+- Release notes
+- Project documentation
+
+Thank you for contributing to Dxsh!

@@ -177,7 +177,7 @@ const EmbedTokensPage: React.FC = () => {
   };
 
   const copyEmbedCode = (token: EmbedToken) => {
-    const apiUrl = 'http://localhost:8001'; // API Gateway URL
+    const apiUrl = import.meta.env['VITE_API_BASE_URL'] || `${window.location.protocol}//${window.location.hostname}:8001`;
     const embedType = token.dashboard_id ? 'dashboard' : 'widget';
     const resourceId = token.dashboard_id || token.widget_id;
     const height = token.dashboard_id ? '500' : '300'; // Different heights for dashboard vs widget
@@ -351,7 +351,7 @@ const EmbedTokensPage: React.FC = () => {
                   <h4 className="text-sm font-medium text-text-primary mb-2">📋 Embed Information</h4>
                   <div className="text-xs text-text-muted mb-1">Embed URL:</div>
                   <code className="block text-xs bg-background px-2 py-1 rounded border text-blue-600 break-all">
-                    http://localhost:8001/api/v1/embed/{token.dashboard_id ? 'dashboard' : 'widget'}/{resourceInfo.id}?token={token.token}
+                    {import.meta.env['VITE_API_BASE_URL'] || `${window.location.protocol}//${window.location.hostname}:8001`}/api/v1/embed/{token.dashboard_id ? 'dashboard' : 'widget'}/{resourceInfo.id}?token={token.token}
                   </code>
                   <div className="text-xs text-text-muted mt-2">
                     Use this {resourceInfo.type} ID ({resourceInfo.id}) and token for embedding

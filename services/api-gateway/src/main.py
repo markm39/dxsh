@@ -54,7 +54,7 @@ async def root():
         "services": {
             "workflow_engine": proxy.workflow_engine_url,
             "dashboard_service": proxy.dashboard_service_url,
-            "builder_service": proxy.builder_service_url
+            "workflow_frontend": proxy.workflow_frontend_url
         }
     }
 

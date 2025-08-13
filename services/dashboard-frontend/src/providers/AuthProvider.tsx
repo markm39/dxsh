@@ -39,7 +39,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const API_BASE_URL = import.meta.env.VITE_WORKFLOW_API_URL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001';
+const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || import.meta.env['VITE_WORKFLOW_API_URL'] || 'http://localhost:8001';
 const TOKEN_KEY = 'workflow-token';
 const USER_KEY = 'workflow_auth_user';
 
