@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_USER: workflow
       POSTGRES_PASSWORD: workflow
-      POSTGRES_DB: workflow
+      POSTGRES_DB: workflow_engine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -44,7 +44,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
       - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
       - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
       - DASHBOARD_SERVICE_URL=http://dashboard-service:5000
@@ -69,7 +69,7 @@ services:
       context: ./services/workflow-engine
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
       - REDIS_URL=redis://redis:6379
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ
@@ -94,7 +94,7 @@ services:
       context: ./services/dashboard-service
       dockerfile: Dockerfile
     environment:
-      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow
+      - DATABASE_URL=postgresql://workflow:workflow@postgres:5432/workflow_engine
       - WORKFLOW_ENGINE_URL=http://workflow-engine:5000
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - JWT_SECRET_KEY=m-mzi7y0NbXvYldwk5wElxTRzC8mm_BR2V9Tn8R5TcQ

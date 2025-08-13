@@ -10,8 +10,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install dependencies (including devDependencies for build)
+RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -42,15 +42,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy startup script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S dashboard -u 1001 -G nodejs && \
-    chown -R dashboard:nodejs /usr/share/nginx/html && \
-    chown dashboard:nodejs /docker-entrypoint.sh
-
-# Switch to non-root user
-USER dashboard
 
 # Expose port
 EXPOSE 3000

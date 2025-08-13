@@ -35,8 +35,7 @@ mkdir -p /var/cache/nginx
 mkdir -p /var/log/nginx
 
 # Set proper permissions
-chown -R nginx:nginx /var/cache/nginx
-chown -R nginx:nginx /var/log/nginx
+chmod 755 /var/cache/nginx /var/log/nginx
 
 # Test nginx configuration
 log "Testing nginx configuration..."

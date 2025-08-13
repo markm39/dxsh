@@ -36,6 +36,14 @@ htmlcov/
 *.db
 *.sqlite3
 postgres_data/
+dashboard_service.db
+workflow_engine.db
+api_gateway.db
+*.pid
+
+# Uploaded files and models
+uploads/
+ml_models/
 
 # Misc
 .cache/
