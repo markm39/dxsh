@@ -1,8 +1,6 @@
 # Docker Compose for Dxsh Microservices Architecture
 # Complete deployment with all services
 
-version: '3.8'
-
 services:
   # PostgreSQL Database
   postgres:

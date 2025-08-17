@@ -91,6 +91,10 @@ The platform consists of five core microservices:
 
 ### Docker Deployment
 
+**⚠️ Docker deployment is currently not working due to build issues. Please use local development instead.**
+
+### Local Development (Recommended)
+
 1. Clone the repository:
 
 ```bash
@@ -98,31 +102,17 @@ git clone https://github.com/yourusername/dxsh.git
 cd dxsh
 ```
 
-2. Copy environment files:
+2. Run the development script:
 
 ```bash
-cp .env.example .env
-cp services/workflow-engine/.env.example services/workflow-engine/.env
-cp services/dashboard-service/.env.example services/dashboard-service/.env
-cp services/dashboard-frontend/.env.example services/dashboard-frontend/.env
-cp services/workflow-frontend/.env.example services/workflow-frontend/.env
+./start-dev.sh
 ```
 
-3. Start all services:
+This will start all services locally. Access the applications at:
 
-```bash
-docker-compose -f docker-compose.microservices.yml up -d
-```
-
-4. Access the applications:
-
-- Workflow Builder: http://localhost:3000
+- Workflow Builder: http://localhost:3002
 - Dashboard Interface: http://localhost:3001
-- API Documentation: http://localhost:8001/docs
-
-### Local Development
-
-See the [Local Development Guide](docs/development/local-setup.md) for detailed instructions on running services locally.
+- API Documentation: http://localhost:5000/docs
 
 ## Configuration
 

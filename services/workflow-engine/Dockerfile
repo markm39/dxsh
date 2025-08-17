@@ -2,34 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install system dependencies (including for Playwright browser support)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
     curl \
-    libnss3 \
-    libatk-bridge2.0-0 \
-    libdrm2 \
-    libxkbcommon0 \
-    libgtk-3-0 \
-    libgbm1 \
-    libasound2 \
-    libxrandr2 \
-    libasound2 \
-    libpangocairo-1.0-0 \
-    libatk1.0-0 \
-    libcairo-gobject2 \
-    libgtk-3-0 \
-    libgdk-pixbuf2.0-0 \
+    wget \
+    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy and install Python dependencies
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Playwright browsers with system dependencies
-RUN playwright install --with-deps chromium
+# Install Playwright and browsers after Python deps
+RUN playwright install-deps && playwright install chromium
 
 COPY src/ ./src/
+
+# Create uploads directory
+RUN mkdir -p /app/uploads
 
 EXPOSE 5000
 
