@@ -1,19 +1,90 @@
 #!/bin/bash
 
-echo "🎯 Starting Dxsh Development Server"
+echo "Starting Dxsh Development Server"
 echo "=================================="
 
 # Function to cleanup on exit
 cleanup() {
     echo ""
-    echo "🛑 Stopping all services..."
+    echo "Stopping all services..."
     kill $(jobs -p) 2>/dev/null
-    echo "✅ All services stopped"
+    echo "All services stopped"
     exit 0
 }
 
 # Set trap to cleanup on Ctrl+C
 trap cleanup SIGINT
+
+# Check if Python is installed
+if ! command -v python3 &> /dev/null; then
+    echo "Error: Python 3 is required but not installed"
+    echo "Please install Python 3.9+ and try again"
+    exit 1
+fi
+
+# Check if Node.js is installed
+if ! command -v node &> /dev/null; then
+    echo "Error: Node.js is required but not installed"
+    echo "Please install Node.js 18+ and try again"
+    exit 1
+fi
+
+echo "Setting up development environment..."
+
+# Setup Python services
+setup_python_service() {
+    local service_path=$1
+    local service_name=$2
+    
+    echo "  Setting up $service_name..."
+    
+    if [ ! -d "$service_path/venv" ]; then
+        echo "    Creating virtual environment..."
+        (cd "$service_path" && python3 -m venv venv)
+    fi
+    
+    echo "    Installing Python dependencies..."
+    (cd "$service_path" && source venv/bin/activate && pip install -r requirements.txt > /dev/null 2>&1)
+    
+    if [ "$service_name" == "Workflow Engine" ]; then
+        echo "    Installing Playwright browser..."
+        (cd "$service_path" && source venv/bin/activate && playwright install chromium > /dev/null 2>&1)
+    fi
+}
+
+# Setup Node.js services
+setup_node_service() {
+    local service_path=$1
+    local service_name=$2
+    
+    echo "  Setting up $service_name..."
+    
+    if [ ! -d "$service_path/node_modules" ]; then
+        echo "    Installing Node.js dependencies..."
+        (cd "$service_path" && npm install > /dev/null 2>&1)
+    else
+        echo "    Node.js dependencies already installed"
+    fi
+}
+
+# Setup backend services
+setup_python_service "services/workflow-engine" "Workflow Engine"
+setup_python_service "services/api-gateway" "API Gateway"
+setup_python_service "services/dashboard-service" "Dashboard Service"
+
+# Setup frontend services
+setup_node_service "services/workflow-frontend" "Workflow Frontend"
+setup_node_service "services/dashboard-frontend" "Dashboard Frontend"
+
+# Copy environment files if they don't exist
+if [ ! -f ".env" ]; then
+    echo "Creating .env file from template..."
+    cp .env.example .env
+    echo "Please edit .env to add your OpenAI API key for AI features"
+fi
+
+echo "Setup complete!"
+echo ""
 
 # Set environment variables for service communication
 export DATABASE_URL=sqlite:///workflow_engine.db
