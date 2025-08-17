@@ -44,7 +44,12 @@ setup_python_service() {
     fi
     
     echo "    Installing Python dependencies..."
-    (cd "$service_path" && source venv/bin/activate && pip install -r requirements.txt > /dev/null 2>&1)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS: Install with conda-forge for better compatibility
+        (cd "$service_path" && source venv/bin/activate && pip install -r requirements.txt --find-links https://download.pytorch.org/whl/torch_stable.html > /dev/null 2>&1)
+    else
+        (cd "$service_path" && source venv/bin/activate && pip install -r requirements.txt > /dev/null 2>&1)
+    fi
     
     if [ "$service_name" == "Workflow Engine" ]; then
         echo "    Installing Playwright browser..."
