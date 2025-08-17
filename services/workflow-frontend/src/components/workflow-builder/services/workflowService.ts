@@ -18,7 +18,7 @@ export const workflowService = {
     authHeaders: Record<string, string>
   ): Promise<{ nodes: Node[]; edges: Edge[] }> {
     try {
-      console.log(`🔍 Loading workflow for agent ${agentId}`);
+      console.log(` Loading workflow for agent ${agentId}`);
       const response = await fetch(
         `${API_BASE_URL}/v1/workflows/${agentId}`,
         {
@@ -26,17 +26,17 @@ export const workflowService = {
         }
       );
       
-      console.log(`📡 Workflow API response: ${response.status} ${response.statusText}`);
+      console.log(` Workflow API response: ${response.status} ${response.statusText}`);
       
       if (response.status === 401) {
-        console.warn('⚠️ Workflow loading failed: Authentication error');
+        console.warn(' Workflow loading failed: Authentication error');
         handleAuthError();
         return { nodes: [], edges: [] };
       }
       
       if (response.ok) {
         const data = await response.json();
-        console.log('📊 Workflow data received:', {
+        console.log(' Workflow data received:', {
           success: data.success,
           hasWorkflow: !!data.workflow,
           nodeCount: data.workflow?.nodes?.length || 0,
@@ -48,21 +48,21 @@ export const workflowService = {
             nodes: data.workflow.nodes || [],
             edges: data.workflow.edges || [],
           };
-          console.log(`✅ Successfully loaded ${result.nodes.length} nodes and ${result.edges.length} edges`);
+          console.log(` Successfully loaded ${result.nodes.length} nodes and ${result.edges.length} edges`);
           return result;
         } else {
-          console.warn('⚠️ Workflow data structure invalid:', data);
+          console.warn(' Workflow data structure invalid:', data);
         }
       } else {
-        console.error(`❌ Workflow API failed: ${response.status} ${response.statusText}`);
+        console.error(` Workflow API failed: ${response.status} ${response.statusText}`);
         const errorText = await response.text();
-        console.error('📄 Error response:', errorText);
+        console.error(' Error response:', errorText);
       }
     } catch (error) {
-      console.error('❌ Failed to load workflow:', error);
+      console.error(' Failed to load workflow:', error);
     }
     
-    console.log('📭 Returning empty workflow');
+    console.log('Returning empty workflow');
     return { nodes: [], edges: [] };
   },
 
@@ -195,33 +195,33 @@ export const workflowService = {
   ): Promise<boolean> {
     try {
       const url = `${API_BASE_URL}/v1/workflows/${workflowId}/nodes/${nodeId}`;
-      console.log(`🗑️ API: Making DELETE request to: ${url}`);
-      console.log('🗑️ API: Auth headers:', Object.keys(authHeaders));
+      console.log(` API: Making DELETE request to: ${url}`);
+      console.log(' API: Auth headers:', Object.keys(authHeaders));
       
       const response = await fetch(url, {
         method: "DELETE",
         headers: authHeaders,
       });
       
-      console.log(`🗑️ API: Response status: ${response.status} ${response.statusText}`);
+      console.log(` API: Response status: ${response.status} ${response.statusText}`);
       
       if (response.status === 401) {
-        console.log('🗑️ API: Authentication error');
+        console.log(' API: Authentication error');
         handleAuthError();
         return false;
       }
       
       if (response.ok) {
         const result = await response.json();
-        console.log('🗑️ API: Success response:', result);
+        console.log(' API: Success response:', result);
         return true;
       } else {
         const errorText = await response.text();
-        console.error('🗑️ API: Error response:', errorText);
+        console.error(' API: Error response:', errorText);
         return false;
       }
     } catch (error) {
-      console.error("🗑️ API: Exception:", error);
+      console.error(" API: Exception:", error);
       return false;
     }
   },

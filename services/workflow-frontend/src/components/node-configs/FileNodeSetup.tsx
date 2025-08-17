@@ -276,7 +276,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
         };
       }
 
-      console.log('🧪 Testing file operation with payload:', requestBody);
+      console.log(' Testing file operation with payload:', requestBody);
 
       const response = await fetch(`${API_BASE_URL}/api/v1/file-node/${endpoint}`, {
         method: 'POST',

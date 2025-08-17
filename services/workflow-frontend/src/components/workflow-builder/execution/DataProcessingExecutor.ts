@@ -22,7 +22,7 @@ export class DataProcessingExecutor {
    * Execute AI processor node (exact logic from old system)
    */
   async executeAIProcessor(nodeId: string, nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
-    console.log('🤖 Executing AI Processor node:', nodeId);
+    console.log(' Executing AI Processor node:', nodeId);
     
     if (inputs.length === 0) {
       throw new Error('AI processor requires input data');
@@ -37,7 +37,7 @@ export class DataProcessingExecutor {
     
     // Get the input data from the previous node
     const inputData = inputs[0].data;
-    console.log('🤖 AI Processor input data:', {
+    console.log(' AI Processor input data:', {
       type: typeof inputData,
       isArray: Array.isArray(inputData),
       length: Array.isArray(inputData) ? inputData.length : 'N/A',
@@ -77,7 +77,7 @@ export class DataProcessingExecutor {
           is_array: Array.isArray(inputData)
         }
       };
-      console.log('🤖 Request payload:', requestPayload);
+      console.log(' Request payload:', requestPayload);
       const nodeExecutionResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/executions/${executionId}/nodes`, {
         method: 'POST',
         headers: {
@@ -94,7 +94,7 @@ export class DataProcessingExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution.id;
       
-      console.log(`✅ Created AI processor node execution record: ${nodeExecutionId}`);
+      console.log(` Created AI processor node execution record: ${nodeExecutionId}`);
       
       // Call AI processing API
       const aiResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/ai/process`, {
@@ -121,7 +121,7 @@ export class DataProcessingExecutor {
         throw new Error(aiResult.error || 'AI processing failed');
       }
       
-      console.log('🤖 AI processing completed successfully:', {
+      console.log(' AI processing completed successfully:', {
         model: aiResult.model_used,
         tokens: aiResult.tokens_used,
         outputLength: aiResult.output?.length || 0
@@ -149,7 +149,7 @@ export class DataProcessingExecutor {
       return aiResult.output;
       
     } catch (error) {
-      console.error('🤖 AI Processor execution failed:', error);
+      console.error(' AI Processor execution failed:', error);
       throw error;
     }
   }
@@ -164,7 +164,7 @@ export class DataProcessingExecutor {
 
     // Get the input data from the previous node (exact logic from old system)
     const rawInputData = inputs[0].data;
-    console.log('🤖 RAW INPUT DATA for linear regression:', {
+    console.log(' RAW INPUT DATA for linear regression:', {
       type: typeof rawInputData,
       isArray: Array.isArray(rawInputData),
       length: Array.isArray(rawInputData) ? rawInputData.length : 'N/A',
@@ -188,14 +188,14 @@ export class DataProcessingExecutor {
                   typeof value[0] === 'object' && 
                   !key.startsWith('_')) {
                 // This looks like table data
-                console.log(`📊 Found table data in execution for key "${key}":`, value);
+                console.log(` Found table data in execution for key "${key}":`, value);
                 flattenedData.push(...value);
               }
             }
           }
         }
         if (flattenedData.length > 0) {
-          console.log('📊 Using flattened table data for execution:', flattenedData);
+          console.log(' Using flattened table data for execution:', flattenedData);
           inputData = flattenedData;
         }
       }
@@ -205,14 +205,14 @@ export class DataProcessingExecutor {
         if (Array.isArray(value) && value.length > 0 && 
             typeof value[0] === 'object' && 
             !key.startsWith('_')) {
-          console.log(`📊 Found table data in execution for key "${key}":`, value);
+          console.log(` Found table data in execution for key "${key}":`, value);
           inputData = value;
           break;
         }
       }
     }
 
-    console.log('🤖 PROCESSED INPUT DATA for linear regression:', {
+    console.log(' PROCESSED INPUT DATA for linear regression:', {
       type: typeof inputData,
       isArray: Array.isArray(inputData),
       length: Array.isArray(inputData) ? inputData.length : 'N/A',
@@ -234,7 +234,7 @@ export class DataProcessingExecutor {
       throw new Error('No target column selected. Please configure the linear regression node.');
     }
 
-    console.log('🎯 Linear regression configuration:', {
+    console.log(' Linear regression configuration:', {
       features,
       target,
       modelName,
@@ -293,7 +293,7 @@ export class DataProcessingExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution.id;
 
-      console.log(`✅ Created execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
+      console.log(` Created execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
 
       // Call ML training API with exact payload from old system
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/ml/models/train`, {
@@ -325,7 +325,7 @@ export class DataProcessingExecutor {
         throw new Error(result.error || 'Training failed');
       }
 
-      console.log('✅ Linear regression training completed:', {
+      console.log(' Linear regression training completed:', {
         modelId: result.model.id,
         metrics: result.model.metrics,
         features: result.model.features,
@@ -358,7 +358,7 @@ export class DataProcessingExecutor {
       };
 
     } catch (error) {
-      console.error('❌ Linear regression training failed:', error);
+      console.error(' Linear regression training failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Linear regression training failed: ${errorMessage}`);
     }
@@ -374,7 +374,7 @@ export class DataProcessingExecutor {
 
     // Get the input data from the previous node (exact logic from old system)
     const rawInputData = inputs[0].data;
-    console.log('🌲 RAW INPUT DATA for random forest:', {
+    console.log(' RAW INPUT DATA for random forest:', {
       type: typeof rawInputData,
       isArray: Array.isArray(rawInputData),
       length: Array.isArray(rawInputData) ? rawInputData.length : 'N/A',
@@ -398,14 +398,14 @@ export class DataProcessingExecutor {
                   typeof value[0] === 'object' && 
                   !key.startsWith('_')) {
                 // This looks like table data
-                console.log(`📊 Found table data in execution for key "${key}":`, value);
+                console.log(` Found table data in execution for key "${key}":`, value);
                 flattenedData.push(...value);
               }
             }
           }
         }
         if (flattenedData.length > 0) {
-          console.log('📊 Using flattened table data for execution:', flattenedData);
+          console.log(' Using flattened table data for execution:', flattenedData);
           inputData = flattenedData;
         }
       }
@@ -415,14 +415,14 @@ export class DataProcessingExecutor {
         if (Array.isArray(value) && value.length > 0 && 
             typeof value[0] === 'object' && 
             !key.startsWith('_')) {
-          console.log(`📊 Found table data in execution for key "${key}":`, value);
+          console.log(` Found table data in execution for key "${key}":`, value);
           inputData = value;
           break;
         }
       }
     }
 
-    console.log('🌲 PROCESSED INPUT DATA for random forest:', {
+    console.log(' PROCESSED INPUT DATA for random forest:', {
       type: typeof inputData,
       isArray: Array.isArray(inputData),
       length: Array.isArray(inputData) ? inputData.length : 'N/A',
@@ -444,7 +444,7 @@ export class DataProcessingExecutor {
       throw new Error('No target column selected. Please configure the Random Forest node.');
     }
 
-    console.log('🎯 Random Forest configuration:', {
+    console.log(' Random Forest configuration:', {
       features,
       target,
       modelName,
@@ -503,7 +503,7 @@ export class DataProcessingExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution.id;
 
-      console.log(`✅ Created execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
+      console.log(` Created execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
 
       // Call ML training API with exact payload from old system
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/ml/models/train`, {
@@ -535,7 +535,7 @@ export class DataProcessingExecutor {
         throw new Error(result.error || 'Training failed');
       }
 
-      console.log('✅ Random Forest training completed:', {
+      console.log(' Random Forest training completed:', {
         modelId: result.model.id,
         metrics: result.model.metrics,
         features: result.model.features,
@@ -569,7 +569,7 @@ export class DataProcessingExecutor {
         }
       };
     } catch (error) {
-      console.error('❌ Random Forest training failed:', error);
+      console.error(' Random Forest training failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
       throw new Error(`Random Forest training failed: ${errorMessage}`);
     }
@@ -579,7 +579,7 @@ export class DataProcessingExecutor {
    * Execute chart generator node (exact logic from old system)
    */
   async executeChartGenerator(nodeId: string, nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
-    console.log('📊 Executing Chart Generator node:', nodeId);
+    console.log(' Executing Chart Generator node:', nodeId);
     
     if (inputs.length === 0) {
       throw new Error('Chart generator requires input data');
@@ -587,7 +587,7 @@ export class DataProcessingExecutor {
 
     // Get the input data from the previous node
     const rawInputData = inputs[0].data;
-    console.log('📊 Chart Generator input data:', {
+    console.log(' Chart Generator input data:', {
       type: typeof rawInputData,
       isArray: Array.isArray(rawInputData),
       length: Array.isArray(rawInputData) ? rawInputData.length : 'N/A',
@@ -610,14 +610,14 @@ export class DataProcessingExecutor {
                   typeof value[0] === 'object' && 
                   !key.startsWith('_')) {
                 // This looks like table data
-                console.log(`📊 Found table data in execution for key "${key}":`, value);
+                console.log(` Found table data in execution for key "${key}":`, value);
                 flattenedData.push(...value);
               }
             }
           }
         }
         if (flattenedData.length > 0) {
-          console.log('📊 Using flattened table data for chart generation:', flattenedData);
+          console.log(' Using flattened table data for chart generation:', flattenedData);
           inputData = flattenedData;
         }
       }
@@ -627,14 +627,14 @@ export class DataProcessingExecutor {
         if (Array.isArray(value) && value.length > 0 && 
             typeof value[0] === 'object' && 
             !key.startsWith('_')) {
-          console.log(`📊 Found table data in execution for key "${key}":`, value);
+          console.log(` Found table data in execution for key "${key}":`, value);
           inputData = value;
           break;
         }
       }
     }
 
-    console.log('📊 PROCESSED INPUT DATA for chart generation:', {
+    console.log(' PROCESSED INPUT DATA for chart generation:', {
       type: typeof inputData,
       isArray: Array.isArray(inputData),
       length: Array.isArray(inputData) ? inputData.length : 'N/A',
@@ -693,7 +693,7 @@ export class DataProcessingExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution?.id;
 
-      console.log(`✅ Created Chart Generator execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
+      console.log(` Created Chart Generator execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
 
       // Simple chart generation logic (like the old system)
       const chartResult = {
@@ -704,7 +704,7 @@ export class DataProcessingExecutor {
         dataPoints: Array.isArray(inputData) ? inputData.length : 1
       };
 
-      console.log('📊 Chart generation completed successfully:', {
+      console.log(' Chart generation completed successfully:', {
         chartType: chartResult.chartType,
         dataPoints: chartResult.dataPoints
       });
@@ -726,7 +726,7 @@ export class DataProcessingExecutor {
       return chartResult;
 
     } catch (error) {
-      console.error('📊 Chart Generator execution failed:', error);
+      console.error(' Chart Generator execution failed:', error);
       throw error;
     }
   }
@@ -749,7 +749,7 @@ export class DataProcessingExecutor {
   private extractTableData(inputs: NodeOutput[]): any[] {
     const rawInputData = inputs.length > 0 ? inputs[0].data : [];
     
-    console.log('🔍 ML Input data analysis:', {
+    console.log(' ML Input data analysis:', {
       type: typeof rawInputData,
       isArray: Array.isArray(rawInputData),
       length: Array.isArray(rawInputData) ? rawInputData.length : 'N/A',
@@ -773,7 +773,7 @@ export class DataProcessingExecutor {
                   typeof value[0] === 'object' && 
                   !key.startsWith('_')) {
                 // This looks like table data
-                console.log(`🔍 Found table data in key '${key}' with ${value.length} rows`);
+                console.log(` Found table data in key '${key}' with ${value.length} rows`);
                 flattenedData.push(...value);
               }
             }
@@ -781,13 +781,13 @@ export class DataProcessingExecutor {
         }
         
         if (flattenedData.length > 0) {
-          console.log(`🔍 Extracted ${flattenedData.length} rows from table data`);
+          console.log(` Extracted ${flattenedData.length} rows from table data`);
           inputData = flattenedData;
         }
       }
     }
     
-    console.log('🔍 Final ML input data:', {
+    console.log(' Final ML input data:', {
       type: typeof inputData,
       isArray: Array.isArray(inputData),
       length: Array.isArray(inputData) ? inputData.length : 'N/A',

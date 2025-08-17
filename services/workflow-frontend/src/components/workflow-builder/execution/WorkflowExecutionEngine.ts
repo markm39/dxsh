@@ -57,7 +57,7 @@ export class WorkflowExecutionEngine {
    * Execute a subgraph starting from a specific node
    */
   async executeSubgraph(nodeId: string, forceStartingNode: boolean = false): Promise<ExecutionResult[]> {
-    console.log(`🚀 Starting subgraph execution from node ${nodeId}`);
+    console.log(` Starting subgraph execution from node ${nodeId}`);
     
     const results: ExecutionResult[] = [];
     const visited = new Set<string>();
@@ -81,7 +81,7 @@ export class WorkflowExecutionEngine {
         stack.push(...downstreamNodes.reverse()); // Reverse to maintain order
         
       } catch (error: any) {
-        console.error(`❌ Node ${currentNodeId} execution failed:`, error);
+        console.error(` Node ${currentNodeId} execution failed:`, error);
         results.push({
           nodeId: currentNodeId,
           success: false,
@@ -94,7 +94,7 @@ export class WorkflowExecutionEngine {
       }
     }
 
-    console.log(`✅ Subgraph execution completed. ${results.length} nodes processed.`);
+    console.log(` Subgraph execution completed. ${results.length} nodes processed.`);
     return results;
   }
 
@@ -102,7 +102,7 @@ export class WorkflowExecutionEngine {
    * Execute a single node
    */
   async executeNode(nodeId: string, forceExecution: boolean = false): Promise<ExecutionResult> {
-    console.log(`🔄 Executing node ${nodeId} (force: ${forceExecution})`);
+    console.log(` Executing node ${nodeId} (force: ${forceExecution})`);
     
     if (this.executionQueue.has(nodeId)) {
       throw new Error(`Circular dependency detected involving node ${nodeId}`);
@@ -118,7 +118,7 @@ export class WorkflowExecutionEngine {
 
       // Check if we have cached output and don't need to force execution
       if (!forceExecution && this.outputCache.has(nodeId)) {
-        console.log(`📦 Using cached output for node ${nodeId}`);
+        console.log(` Using cached output for node ${nodeId}`);
         const cachedOutput = this.outputCache.get(nodeId)!;
         return {
           nodeId,
@@ -152,7 +152,7 @@ export class WorkflowExecutionEngine {
       };
 
     } catch (error: any) {
-      console.error(`❌ Node ${nodeId} execution failed:`, error);
+      console.error(` Node ${nodeId} execution failed:`, error);
       
       // Notify context about node error
       if (this.context.onNodeUpdate) {
@@ -179,19 +179,19 @@ export class WorkflowExecutionEngine {
     const upstreamNodeIds = this.getUpstreamNodes(nodeId);
     const inputs: NodeOutput[] = [];
 
-    console.log(`🔍 Gathering inputs for node ${nodeId} from ${upstreamNodeIds.length} upstream nodes`);
+    console.log(` Gathering inputs for node ${nodeId} from ${upstreamNodeIds.length} upstream nodes`);
 
     for (const upstreamNodeId of upstreamNodeIds) {
       let output = this.outputCache.get(upstreamNodeId);
 
       if (!output) {
-        console.log(`📊 No cached output for ${upstreamNodeId}, checking node data...`);
+        console.log(` No cached output for ${upstreamNodeId}, checking node data...`);
         
         const upstreamNode = this.getNode(upstreamNodeId);
         if (upstreamNode?.data?.executionResult) {
           // Create a NodeOutput object from existing execution result
           const executionResultData = upstreamNode.data.executionResult;
-          console.log(`🔍 Raw executionResult data:`, {
+          console.log(` Raw executionResult data:`, {
             type: typeof executionResultData,
             isArray: Array.isArray(executionResultData),
             length: Array.isArray(executionResultData) ? executionResultData.length : 'N/A',
@@ -216,7 +216,7 @@ export class WorkflowExecutionEngine {
           this.cacheOutput(upstreamNodeId, output);
         } else {
           // Try to fetch execution data from database
-          console.log(`🔍 Checking database for execution data for node ${upstreamNodeId}`);
+          console.log(` Checking database for execution data for node ${upstreamNodeId}`);
           try {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/nodes/${upstreamNodeId}/output`, {
               headers: this.context.authHeaders
@@ -225,7 +225,7 @@ export class WorkflowExecutionEngine {
             if (response.ok) {
               const dbData = await response.json();
               if (dbData.success && dbData.data) {
-                console.log(`✅ Found execution data in database for node ${upstreamNodeId}:`, dbData.data);
+                console.log(` Found execution data in database for node ${upstreamNodeId}:`, dbData.data);
                 
                 const upstreamNode = this.getNode(upstreamNodeId);
                 output = {
@@ -247,20 +247,20 @@ export class WorkflowExecutionEngine {
               }
             }
           } catch (error) {
-            console.warn(`⚠️ Failed to fetch database output for ${upstreamNodeId}:`, error);
+            console.warn(` Failed to fetch database output for ${upstreamNodeId}:`, error);
           }
         }
       }
 
       if (output) {
         inputs.push(output);
-        console.log(`✅ Added input from ${upstreamNodeId}: ${Array.isArray(output.data) ? output.data.length : 'single'} items`);
+        console.log(` Added input from ${upstreamNodeId}: ${Array.isArray(output.data) ? output.data.length : 'single'} items`);
       } else {
-        console.warn(`⚠️ No output available from upstream node ${upstreamNodeId}`);
+        console.warn(` No output available from upstream node ${upstreamNodeId}`);
       }
     }
 
-    console.log(`📥 Total inputs gathered: ${inputs.length}`);
+    console.log(` Total inputs gathered: ${inputs.length}`);
     return inputs;
   }
 
@@ -275,7 +275,7 @@ export class WorkflowExecutionEngine {
       throw new Error(`Unknown node type: ${node.type}`);
     }
 
-    console.log(`⚡ Executing ${node.type} node logic`);
+    console.log(` Executing ${node.type} node logic`);
     
     let result: any;
     let dataType: DataType = definition.outputType;
@@ -417,7 +417,7 @@ export class WorkflowExecutionEngine {
    * Execute the entire workflow
    */
   async executeWorkflow(): Promise<ExecutionResult[]> {
-    console.log('🏁 Starting full workflow execution');
+    console.log(' Starting full workflow execution');
     
     const allResults: ExecutionResult[] = [];
     const visited = new Set<string>();
@@ -427,7 +427,7 @@ export class WorkflowExecutionEngine {
       !this.context.edges.some(edge => edge.target === node.id)
     );
 
-    console.log(`📍 Found ${sourceNodes.length} source nodes:`, sourceNodes.map(n => n.id));
+    console.log(` Found ${sourceNodes.length} source nodes:`, sourceNodes.map(n => n.id));
 
     // Execute from each source node
     for (const sourceNode of sourceNodes) {
@@ -448,7 +448,7 @@ export class WorkflowExecutionEngine {
       }
     });
 
-    console.log(`✅ Full workflow execution completed. ${allResults.length} nodes processed.`);
+    console.log(` Full workflow execution completed. ${allResults.length} nodes processed.`);
     return allResults;
   }
 

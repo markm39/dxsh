@@ -8,7 +8,7 @@ export class DatabaseExecutor {
    */
   async executePostgres(nodeId: string, nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
     const config = nodeData.postgres;
-    console.log('🐘 Starting PostgreSQL execution', { nodeId, config });
+    console.log(' Starting PostgreSQL execution', { nodeId, config });
     
     if (!config) {
       throw new Error('PostgreSQL not configured');
@@ -64,7 +64,7 @@ export class DatabaseExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution?.id;
 
-      console.log(`✅ Created PostgreSQL execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
+      console.log(` Created PostgreSQL execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
 
       // Handle source mode (query execution) - exact logic from old system
       if (config.operationMode === 'source') {
@@ -100,7 +100,7 @@ export class DatabaseExecutor {
           throw new Error(result.error || 'PostgreSQL query failed');
         }
 
-        console.log('🐘 PostgreSQL query completed successfully:', {
+        console.log(' PostgreSQL query completed successfully:', {
           rowCount: result.data?.length || 0
         });
 
@@ -137,12 +137,12 @@ export class DatabaseExecutor {
             const isMultiTableStructure = keys.every(key => Array.isArray(firstItem[key]));
             
             if (isMultiTableStructure) {
-              console.log('🗂️ Multi-table structure detected:', keys);
+              console.log(' Multi-table structure detected:', keys);
               
               // Use the first table or a specified table
               const selectedTable = keys[0];
               inputData = firstItem[selectedTable];
-              console.log(`📊 Using table '${selectedTable}' with ${inputData.length} rows`);
+              console.log(` Using table '${selectedTable}' with ${inputData.length} rows`);
             }
           }
         }
@@ -339,7 +339,7 @@ export class DatabaseExecutor {
       selectedFields: config.selectedFields
     };
 
-    console.log('🔄 File load request body:', requestBody);
+    console.log(' File load request body:', requestBody);
 
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/file-node/load`, {
       method: 'POST',
@@ -394,7 +394,7 @@ export class DatabaseExecutor {
       mode: config.mode || 'overwrite'
     };
 
-    console.log('🔄 File save request body:', requestBody);
+    console.log(' File save request body:', requestBody);
 
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/file-node/save`, {
       method: 'POST',

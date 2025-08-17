@@ -8,7 +8,7 @@ export class HTTPExecutor {
    */
   async execute(nodeId: string, nodeData: WorkflowNodeData, inputs: NodeOutput[]): Promise<any> {
     const config = nodeData.httpRequest;
-    console.log('🌐 Starting HTTP request execution', { nodeId, url: config?.url });
+    console.log(' Starting HTTP request execution', { nodeId, url: config?.url });
     
     if (!config) {
       throw new Error('HTTP request not configured');
@@ -70,7 +70,7 @@ export class HTTPExecutor {
       const nodeExecutionData = await nodeExecutionResponse.json();
       const nodeExecutionId = nodeExecutionData.node_execution?.id;
       
-      console.log(`✅ Created HTTP request execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
+      console.log(` Created HTTP request execution tracking: workflow=${executionId}, node=${nodeExecutionId}`);
 
       // Apply input variable substitutions to URL, headers, and body (exact logic from old system)
       let processedUrl = config.url;
@@ -201,7 +201,7 @@ export class HTTPExecutor {
         }
       }
 
-      console.log('🌐 HTTP Request execution:', {
+      console.log(' HTTP Request execution:', {
         method: config.method || 'GET',
         url: finalUrl,
         headers: Object.keys(finalHeaders),
@@ -225,7 +225,7 @@ export class HTTPExecutor {
         }
       }
 
-      console.log('🌐 Making HTTP request via backend proxy');
+      console.log(' Making HTTP request via backend proxy');
       
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/proxy/request`, {
         method: 'POST',
@@ -253,7 +253,7 @@ export class HTTPExecutor {
       const statusCode = result.status_code || 200;
       const responseSize = JSON.stringify(responseData).length;
 
-      console.log('🌐 HTTP request completed successfully:', {
+      console.log(' HTTP request completed successfully:', {
         status: statusCode,
         responseTime,
         responseSize

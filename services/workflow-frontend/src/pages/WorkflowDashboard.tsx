@@ -324,18 +324,18 @@ const AgentsDashboard: React.FC = () => {
     // Check if the source node has execution results
     const executionResult = sourceNode.data?.executionResult;
     if (executionResult && Array.isArray(executionResult)) {
-      console.log(`📊 Found input data for ${nodeId}:`, executionResult.slice(0, 2));
+      console.log(`Found input data for ${nodeId}:`, executionResult.slice(0, 2));
       return executionResult;
     }
     
     // Check for cached output data
     const cachedData = sourceNode.data?.cachedOutput?.data;
     if (cachedData && Array.isArray(cachedData)) {
-      console.log(`💾 Found cached input data for ${nodeId}:`, cachedData.slice(0, 2));
+      console.log(`Found cached input data for ${nodeId}:`, cachedData.slice(0, 2));
       return cachedData;
     }
     
-    console.log(`❌ No input data found for ${nodeId}`);
+    console.log(`No input data found for ${nodeId}`);
     return [];
   };
 
@@ -401,12 +401,12 @@ const AgentsDashboard: React.FC = () => {
     async (deleted: Node[]) => {
       const deletedNodeIds = deleted.map(node => node.id);
       
-      console.log('🗑️ Deleting nodes from database:', deletedNodeIds);
-      console.log('🗑️ Using agent ID:', selectedAgentId);
+      console.log('Deleting nodes from database:', deletedNodeIds);
+      console.log('Using agent ID:', selectedAgentId);
       
       // Clear any pending debounced saves to prevent overwriting our deletion
       if (saveTimeoutRef.current) {
-        console.log('🗑️ Cancelling pending save to prevent overwriting deletion');
+        console.log('Cancelling pending save to prevent overwriting deletion');
         clearTimeout(saveTimeoutRef.current);
         saveTimeoutRef.current = null;
       }
@@ -414,17 +414,17 @@ const AgentsDashboard: React.FC = () => {
       // Delete nodes from database first
       if (selectedAgentId) {
         for (const nodeId of deletedNodeIds) {
-          console.log(`🗑️ Calling deleteNode(${selectedAgentId}, ${nodeId})`);
+          console.log(`Calling deleteNode(${selectedAgentId}, ${nodeId})`);
           const success = await deleteNode(selectedAgentId, nodeId);
-          console.log(`🗑️ Delete result for ${nodeId}:`, success);
+          console.log(`Delete result for ${nodeId}:`, success);
           if (!success) {
-            console.error('❌ Failed to delete node from database:', nodeId);
+            console.error('Failed to delete node from database:', nodeId);
             return; // Don't update UI state if database deletion failed
           }
         }
-        console.log('✅ Successfully deleted nodes from database');
+        console.log('Successfully deleted nodes from database');
       } else {
-        console.error('❌ No selectedAgentId available for deletion');
+        console.error('No selectedAgentId available for deletion');
         return;
       }
       
@@ -438,8 +438,8 @@ const AgentsDashboard: React.FC = () => {
         edge => !deletedNodeIds.includes(edge.source) && !deletedNodeIds.includes(edge.target)
       );
       
-      console.log('🗑️ Updating UI state - remaining nodes:', remainingNodes.length);
-      console.log('🗑️ Updating UI state - remaining edges:', remainingEdges.length);
+      console.log('Updating UI state - remaining nodes:', remainingNodes.length);
+      console.log('Updating UI state - remaining edges:', remainingEdges.length);
       
       // CRITICAL: Update both React Flow state AND useAgentManagement state
       // to prevent the useEffect from restoring deleted nodes
@@ -448,23 +448,23 @@ const AgentsDashboard: React.FC = () => {
       setReactFlowNodes(remainingNodes);  // Update React Flow state
       setReactFlowEdges(remainingEdges);  // Update React Flow edges
       
-      console.log('🗑️ Node deletion completed - no additional saves should occur');
+      console.log('Node deletion completed - no additional saves should occur');
     },
     [reactFlowNodes, reactFlowEdges, setReactFlowNodes, setReactFlowEdges, selectedAgentId, deleteNode, setNodes, setEdges]
   );
 
   const handleDeleteNode = useCallback(
     (nodeId: string) => {
-      console.log('🗑️ WorkflowDashboard: Attempting to delete node:', nodeId);
-      console.log('🗑️ Available nodes:', reactFlowNodes.map(n => ({ id: n.id, type: n.type })));
+      console.log('WorkflowDashboard: Attempting to delete node:', nodeId);
+      console.log('Available nodes:', reactFlowNodes.map(n => ({ id: n.id, type: n.type })));
       
       const nodeToDelete = reactFlowNodes.find(node => node.id === nodeId);
       if (nodeToDelete) {
-        console.log('🗑️ Found node to delete:', nodeToDelete);
+        console.log('Found node to delete:', nodeToDelete);
         onNodesDelete([nodeToDelete]);
-        console.log('🗑️ Called onNodesDelete with node:', nodeToDelete.id);
+        console.log('Called onNodesDelete with node:', nodeToDelete.id);
       } else {
-        console.error('🗑️ Node not found for deletion:', nodeId);
+        console.error('Node not found for deletion:', nodeId);
       }
     },
     [reactFlowNodes, onNodesDelete]
@@ -548,13 +548,13 @@ const AgentsDashboard: React.FC = () => {
   // Enhanced "run from here" handler
   const handleRunFromNode = useCallback(async (nodeId: string) => {
     try {
-      console.log(`🎯 Running workflow from node: ${nodeId}`);
+      console.log(`Running workflow from node: ${nodeId}`);
       const result = await executeFromNode(nodeId);
       
       if (result.success) {
-        console.log(`✅ Successfully executed from node ${nodeId} in ${result.executionTime}ms`);
+        console.log(`Successfully executed from node ${nodeId} in ${result.executionTime}ms`);
       } else {
-        console.error(`❌ Failed to execute from node ${nodeId}: ${result.error}`);
+        console.error(`Failed to execute from node ${nodeId}: ${result.error}`);
       }
     } catch (error) {
       console.error('Run from node failed:', error);
@@ -1256,14 +1256,14 @@ const AgentsDashboard: React.FC = () => {
                             typeof value[0] === 'object' && 
                             !key.startsWith('_')) {
                           // This looks like table data
-                          console.log(`📊 Found table data in key "${key}":`, value);
+                          console.log(`Found table data in key "${key}":`, value);
                           flattenedData.push(...value);
                         }
                       }
                     }
                   }
                   if (flattenedData.length > 0) {
-                    console.log('📊 Using flattened table data:', flattenedData);
+                    console.log('Using flattened table data:', flattenedData);
                     return flattenedData;
                   }
                 }
@@ -1281,7 +1281,7 @@ const AgentsDashboard: React.FC = () => {
                   if (Array.isArray(value) && value.length > 0 && 
                       typeof value[0] === 'object' && 
                       !key.startsWith('_')) {
-                    console.log(`📊 Found table data in key "${key}":`, value);
+                    console.log(`Found table data in key "${key}":`, value);
                     return value;
                   }
                 }
@@ -1459,8 +1459,8 @@ const AgentsDashboard: React.FC = () => {
             setSelectedNodeForConfig(null);
           }}
           onSave={(config) => {
-            console.log('💾 Saving FileNode config to node data:', config);
-            console.log('💾 FilePath in config:', config.filePath);
+            console.log('Saving FileNode config to node data:', config);
+            console.log('FilePath in config:', config.filePath);
             
             const updatedNodes = reactFlowNodes.map((node) =>
               node.id === selectedNodeForConfig
