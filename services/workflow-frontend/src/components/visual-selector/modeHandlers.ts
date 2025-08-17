@@ -16,11 +16,11 @@ import {
 } from './selectorUtils';
 
 /**
- * All Mode Handler - Highlights specific individual elements
+ * Raw Mode Handler - Highlights specific individual elements for text/content extraction
  */
-export class AllModeHandler implements ModeHandler {
+export class RawModeHandler implements ModeHandler {
   getModeName(): string {
-    return "all";
+    return "raw";
   }
 
   getHighlightColor(): string {
@@ -28,7 +28,7 @@ export class AllModeHandler implements ModeHandler {
   }
 
   handleHover(target: Element, context: ModeHandlerContext): void {
-    console.log(`🔍 ALL MODE: Highlighting specific element ${target.tagName.toLowerCase()}`);
+    console.log(`🔍 RAW MODE: Highlighting specific element ${target.tagName.toLowerCase()}`);
     
     const overlay = context.createHighlightOverlay(target);
     overlay.style.border = '3px solid #00d4ff';
@@ -46,7 +46,7 @@ export class AllModeHandler implements ModeHandler {
   }
 
   handleClick(target: Element, context: ModeHandlerContext): SelectedElement {
-    console.log(`🎯 ALL MODE: Selecting specific element ${target.tagName.toLowerCase()}`);
+    console.log(`🎯 RAW MODE: Selecting specific element ${target.tagName.toLowerCase()}`);
     
     const selector = generateOptimalSelector(target, context.doc, { isRepeating: false });
     const matchingElements = context.doc.querySelectorAll(selector);
@@ -61,7 +61,7 @@ export class AllModeHandler implements ModeHandler {
         target.className ? "." + Array.from(target.classList).slice(0, 2).join(".") : ""
       }`,
       elementCount: matchingElements.length,
-      type: "single",
+      type: "raw",
     };
   }
 }
@@ -71,7 +71,7 @@ export class AllModeHandler implements ModeHandler {
  */
 export class TableModeHandler implements ModeHandler {
   getModeName(): string {
-    return "table";
+    return "tables";
   }
 
   getHighlightColor(): string {
@@ -126,7 +126,7 @@ export class TableModeHandler implements ModeHandler {
       tagName: target.tagName.toLowerCase(),
       label: `Table: ${target.tagName.toLowerCase()}`,
       elementCount: matchingElements.length,
-      type: "table",
+      type: "tables",
     };
   }
 }
@@ -294,7 +294,7 @@ export class RepeatingModeHandler implements ModeHandler {
       tagName: target.tagName.toLowerCase(),
       label: `Field: ${target.tagName.toLowerCase()}`,
       elementCount: totalMatches,
-      type: "single",
+      type: "raw",
       name: "", // Will be set by user
     };
 
@@ -308,9 +308,9 @@ export class RepeatingModeHandler implements ModeHandler {
  */
 export const createModeHandler = (mode: SelectionMode): ModeHandler => {
   switch (mode) {
-    case "all":
-      return new AllModeHandler();
-    case "table":
+    case "raw":
+      return new RawModeHandler();
+    case "tables":
       return new TableModeHandler();
     case "repeating":
       return new RepeatingModeHandler();

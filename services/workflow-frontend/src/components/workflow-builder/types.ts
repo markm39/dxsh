@@ -1,5 +1,4 @@
 import { Node, Edge } from "reactflow";
-import { WorkflowNodeData, NodeOutput, ExecutionStatus } from "./workflow-types";
 
 export interface Agent {
   id: number;
@@ -67,6 +66,4 @@ export interface SidebarSection {
   items: NodeType[];
 }
 
-// Export enhanced types for the new system
-export type { WorkflowNodeData as EnhancedNodeData };
-export type { NodeOutput, ExecutionStatus };
+// Legacy exports - these types are now available in ./execution/types.ts

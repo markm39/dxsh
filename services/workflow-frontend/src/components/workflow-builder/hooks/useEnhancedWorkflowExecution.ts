@@ -65,7 +65,17 @@ export const useEnhancedWorkflowExecution = (
       authHeaders,
       nodes: enhanceNodesWithTypes(nodes),
       edges,
-      outputCache: outputCacheRef.current
+      outputCache: outputCacheRef.current,
+      onNodeUpdate: (nodeId: string, updates: any) => {
+        // Update the node data with execution results
+        setNodes(currentNodes => 
+          currentNodes.map(node => 
+            node.id === nodeId 
+              ? { ...node, data: { ...node.data, ...updates } }
+              : node
+          )
+        );
+      }
     };
 
     if (executionEngineRef.current) {
@@ -89,6 +99,7 @@ export const useEnhancedWorkflowExecution = (
 
       const enhancedData: WorkflowNodeData = {
         ...nodeData,
+        isExecuting: nodeData.isExecuting || false,
         nodeDefinition: definition || {
           nodeType: node.type,
           category: 'processing' as any,

@@ -53,14 +53,6 @@ export const AreaChart: React.FC<AreaChartProps> = ({
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
       >
-        <defs>
-          {yAxisFields.map((field, index) => (
-            <linearGradient key={field} id={`color${index}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor={colors[index % colors.length]} stopOpacity={0.8}/>
-              <stop offset="95%" stopColor={colors[index % colors.length]} stopOpacity={0.1}/>
-            </linearGradient>
-          ))}
-        </defs>
         
         {showGrid && <CartesianGrid strokeDasharray="3 3" stroke="rgb(148 163 184 / 0.2)" />}
         

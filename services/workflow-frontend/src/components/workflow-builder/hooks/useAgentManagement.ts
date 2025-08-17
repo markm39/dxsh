@@ -122,9 +122,9 @@ export const useAgentManagement = (authHeaders: Record<string, string>) => {
   const initializeWorkflow = useCallback((executeNodeFn: (nodeId: string) => Promise<void>) => {
     if (selectedAgentId) {
       loadWorkflow(selectedAgentId, executeNodeFn);
-      loadExecutionHistory();
+      // Don't call loadExecutionHistory here to avoid the infinite loop
     }
-  }, [selectedAgentId]); // Simplified dependencies
+  }, [selectedAgentId, loadWorkflow]);
 
   return {
     agents,

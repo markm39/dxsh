@@ -1154,7 +1154,7 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
         <div className="p-6 border-b border-border-subtle">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <Globe2 className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -1255,7 +1255,7 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
+                className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
               >
                 <CheckCircle className="w-4 h-4" />
                 {saving ? 'Saving...' : 'Save Configuration'}

@@ -70,9 +70,9 @@ body {
   min-height: 100vh;
 }
 
-/* A utility class we can use for the hero background gradient */
+/* A utility class we can use for the hero background */
 .hero-gradient {
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, oklch(95% 0 0 / 0.1), transparent);
+  background: oklch(95% 0 0 / 0.05);
 }
 
 .react-flow__node {

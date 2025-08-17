@@ -74,7 +74,7 @@ echo "   • Workflow Engine:   http://localhost:8000"
 echo "   • Dashboard Service: http://localhost:8002"
 echo ""
 echo "📋 Logs:"
-echo "   tail -f workflow-engine.log api-gateway.log dashboard-service.log builder-service.log dashboard-frontend.log"
+echo "   tail -f workflow-engine.log api-gateway.log dashboard-service.log workflow-frontend.log dashboard-frontend.log"
 echo ""
 echo "⌨️  Press Ctrl+C to stop all services"
 

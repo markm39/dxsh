@@ -961,9 +961,12 @@ const AgentsDashboard: React.FC = () => {
             {/* Header when no agent selected */}
             <div className="border-b border-border-subtle bg-background p-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-2xl font-bold text-text-primary">Dxsh Workflow Builder</h1>
-                  <p className="text-text-muted">Visual workflow automation platform</p>
+                <div className="flex items-center gap-3">
+                  <img src="/dxsh_logo.png" alt="Dxsh" className="h-10 w-auto" />
+                  <div>
+                    <h1 className="text-2xl font-bold text-text-primary">Dxsh Workflow Builder</h1>
+                    <p className="text-text-muted">Visual workflow automation platform</p>
+                  </div>
                 </div>
                 
                 <div className="flex items-center gap-2">
@@ -1340,6 +1343,8 @@ const AgentsDashboard: React.FC = () => {
             setSelectedNodeForConfig(null);
           }}
           inputData={getNodeInputData(selectedNodeForConfig)}
+          agentId={selectedAgentId || undefined}
+          nodeId={selectedNodeForConfig}
           onSave={(config) => {
             const updatedNodes = reactFlowNodes.map((node) =>
               node.id === selectedNodeForConfig

@@ -42,25 +42,23 @@ const EmbedWidgetPage: React.FC = () => {
         // Use embed token for authentication
         const headers = token ? { 'X-Embed-Token': token } : {};
         
-        // Get widget info to find its dashboard
+        // Get widget data from embed endpoint
         const response = await fetch(`/api/v1/embed/widget/${widgetId}/data?token=${token}`);
         if (response.ok) {
           const data = await response.json();
           if (data.success && data.data) {
-            setDashboardId(data.data.dashboard_id.toString());
+            // Set the widget data directly from the embed response
+            setWidget(data.data);
+            if (data.data.dashboard_id) {
+              setDashboardId(data.data.dashboard_id.toString());
+            }
+          } else {
+            console.error('Widget data missing from embed response:', data);
+            setError('Failed to load widget data');
           }
         } else {
-          // Fallback: try to get all dashboards and find the widget
-          const dashboardsResponse = await apiService.get('/dashboards', headers);
-          if (dashboardsResponse.data) {
-            for (const dashboard of dashboardsResponse.data) {
-              const foundWidget = dashboard.widgets?.find((w: any) => w.id.toString() === widgetId);
-              if (foundWidget) {
-                setDashboardId(dashboard.id.toString());
-                break;
-              }
-            }
-          }
+          console.error('Failed to fetch widget data:', response.status, response.statusText);
+          setError('Failed to load widget data');
         }
       } catch (err) {
         console.error('Failed to find widget dashboard:', err);
@@ -73,20 +71,10 @@ const EmbedWidgetPage: React.FC = () => {
     findWidgetDashboard();
   }, [widgetId, token]);
 
-  // Load the dashboard once we know which one contains the widget
-  useEffect(() => {
-    if (dashboardId) {
-      loadDashboard(dashboardId);
-    }
-  }, [dashboardId, loadDashboard]);
+  // For widget embeds, we don't need to load the full dashboard
+  // The widget data from the embed endpoint contains everything we need
 
-  // Find the specific widget in the loaded dashboard
-  useEffect(() => {
-    if (widgetId && state.currentDashboard) {
-      const foundWidget = state.currentDashboard.widgets.find(w => w.id.toString() === widgetId);
-      setWidget(foundWidget);
-    }
-  }, [widgetId, state.currentDashboard]);
+  // Widget is set directly from the embed data response
 
   // Auto-refresh functionality
   useEffect(() => {

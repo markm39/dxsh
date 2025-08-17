@@ -11,7 +11,9 @@ import {
   EyeOff,
   Globe,
   Shield,
-  Activity
+  Activity,
+  ArrowLeft,
+  Home
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
@@ -246,6 +248,26 @@ const EmbedTokensPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto">
+        {/* Navigation Header */}
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:text-text-primary hover:bg-surface border border-border-subtle rounded-lg transition-colors"
+            title="Go back"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:text-text-primary hover:bg-surface border border-border-subtle rounded-lg transition-colors"
+            title="Go home"
+          >
+            <Home className="w-4 h-4" />
+            Home
+          </button>
+        </div>
+
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

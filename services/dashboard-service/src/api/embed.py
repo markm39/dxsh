@@ -225,21 +225,10 @@ async def get_embedded_dashboard_data(
             detail="Dashboard not found"
         )
     
-    # Get fresh data for all connected widgets
+    # Use cached data only for embed access (no live data fetching)
     dashboard_data = dashboard.to_dict()
-    for widget in dashboard_data['widgets']:
-        if widget.get('dataSource', {}).get('agentId') and widget.get('dataSource', {}).get('nodeId'):
-            try:
-                node_data = await workflow_client.get_node_execution_data(
-                    widget['dataSource']['agentId'],
-                    widget['dataSource']['nodeId'],
-                    auth_token=None  # Public access via embed token
-                )
-                if node_data:
-                    widget['cachedData'] = node_data
-            except Exception:
-                # Fall back to cached data on error
-                pass
+    # Note: For embed access, we only use cached data to avoid authentication issues
+    # Fresh data fetching requires proper user authentication which embeds don't have
     
     return {
         'success': True,
@@ -267,21 +256,10 @@ async def get_embedded_widget_data(
             detail="Widget not found"
         )
     
-    # Get fresh data if connected to workflow node
+    # Use cached data only for embed access (no live data fetching)
     widget_data = widget.to_dict()
-    if widget.agent_id and widget.node_id:
-        try:
-            node_data = await workflow_client.get_node_execution_data(
-                widget.agent_id,
-                widget.node_id,
-                auth_token=None  # Public access via embed token
-            )
-            if node_data:
-                widget_data['cachedData'] = node_data
-                widget.update_cached_data(node_data, db)
-        except Exception:
-            # Fall back to cached data on error
-            pass
+    # Note: For embed access, we only use cached data to avoid authentication issues
+    # Fresh data fetching requires proper user authentication which embeds don't have
     
     return {
         'success': True,

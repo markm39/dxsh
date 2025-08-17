@@ -80,7 +80,7 @@ const ChartGeneratorSetup: React.FC<ChartGeneratorSetupProps> = ({
         <div className="p-6 border-b border-border-subtle">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
                 <Icon className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -276,7 +276,7 @@ const ChartGeneratorSetup: React.FC<ChartGeneratorSetupProps> = ({
             <button
               onClick={handleSave}
               disabled={!config.title.trim()}
-              className="px-8 py-3 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
+              className="px-8 py-3 bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
             >
               <CheckCircle className="w-4 h-4" />
               Create Chart Generator

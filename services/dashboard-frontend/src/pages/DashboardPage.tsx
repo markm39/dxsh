@@ -132,9 +132,12 @@ const DashboardPage: React.FC = () => {
         {/* Header with sign out */}
         <header className="bg-background border-b border-border-subtle px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl font-bold text-text-primary">Dxsh Dashboards</h1>
-              <p className="text-text-secondary text-sm">Dashboard Management</p>
+            <div className="flex items-center gap-3">
+              <img src="/dxsh_logo.png" alt="Dxsh" className="h-8 w-auto" />
+              <div>
+                <h1 className="text-xl font-bold text-text-primary">Dxsh Dashboards</h1>
+                <p className="text-text-secondary text-sm">Dashboard Management</p>
+              </div>
             </div>
             <button
               onClick={logout}
@@ -150,9 +153,9 @@ const DashboardPage: React.FC = () => {
         <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
           <div className="max-w-md w-full text-center">
             <div className="p-8 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
-              <h1 className="text-3xl font-bold text-text-primary mb-4">
-                Dxsh
-              </h1>
+              <div className="flex justify-center mb-6">
+                <img src="/dxsh_pure_name_logo.png" alt="Dxsh" className="h-12 w-auto" />
+              </div>
               <p className="text-text-secondary mb-8">
                 Create professional dashboards connected to your Dxsh data.
               </p>
@@ -248,7 +251,7 @@ const DashboardPage: React.FC = () => {
             {/* Refresh all widgets */}
             <button
               onClick={handleRefreshAll}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-amber-500/50 hover:border-amber-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-amber-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-amber-500/50 hover:border-amber-400 transition-all duration-200 flex items-center gap-2"
               title="Refresh all widgets"
             >
               <RefreshCw className="h-4 w-4" />
@@ -259,7 +262,7 @@ const DashboardPage: React.FC = () => {
             {/* Fullscreen */}
             <button
               onClick={handleFullscreen}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-indigo-500/50 hover:border-indigo-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-indigo-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-indigo-500/50 hover:border-indigo-400 transition-all duration-200 flex items-center gap-2"
               title="Toggle fullscreen"
             >
               <Maximize2 className="h-4 w-4" />
@@ -269,7 +272,7 @@ const DashboardPage: React.FC = () => {
             {/* Edit button */}
             <Link
               to={`/editor/${state.currentDashboard.id}`}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-lime-500/50 hover:border-lime-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-lime-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-lime-500/50 hover:border-lime-400 transition-all duration-200 flex items-center gap-2"
             >
               <Settings className="h-4 w-4" />
               Edit

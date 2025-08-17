@@ -60,9 +60,21 @@ class WebSourceExecutor(BaseNodeExecutor):
             
             # Extract configuration from node data
             data = self.node_config.get('data', {})
+            
+            # Handle both direct format and monitoring format
             url = data.get('url')
             selectors = data.get('selectors', [])
             options = data.get('options', {})
+            
+            # Check for monitoring configuration (used by frontend AI system)
+            monitoring = data.get('monitoring', {})
+            if not url and monitoring.get('url'):
+                url = monitoring.get('url')
+                logger.info(f"Found URL in monitoring config: {url}")
+            
+            if not selectors and monitoring.get('selectors'):
+                selectors = monitoring.get('selectors')
+                logger.info(f"Found {len(selectors)} selectors in monitoring config")
             
             # Validate required fields
             if not url:

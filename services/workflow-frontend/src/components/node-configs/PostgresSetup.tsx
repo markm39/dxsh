@@ -18,6 +18,7 @@ import {
   Code,
   ArrowRight,
   Info,
+  Monitor,
 } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import {
@@ -29,6 +30,7 @@ import {
   DataShape
 } from "../workflow-builder/workflow-types";
 import ColumnMappingInterface from "../workflow-builder/components/ColumnMappingInterface";
+import DashboardConnector from "../dashboard-connect/DashboardConnector";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -94,6 +96,8 @@ interface PostgresSetupProps {
   inputData?: any[];
   isConfigured?: boolean;
   inputVariables?: InputVariable[]; // Available input variables from connected nodes
+  agentId?: number;
+  nodeId?: string;
 }
 
 const PostgresSetup: React.FC<PostgresSetupProps> = ({
@@ -103,6 +107,8 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
   inputData = [],
   isConfigured = false,
   inputVariables = [],
+  agentId,
+  nodeId,
 }) => {
   const { authHeaders } = useAuth();
   const [config, setConfig] = useState<PostgresConfig>({
@@ -174,6 +180,9 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
 
   // State for managing selected input table for single-table mode
   const [selectedInputTable, setSelectedInputTable] = useState<string>('');
+  
+  // Dashboard connector state
+  const [showDashboardConnector, setShowDashboardConnector] = useState(false);
   
   // Update selected input table when available tables change
   useEffect(() => {
@@ -511,7 +520,7 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
         <div className="p-6 border-b border-border-subtle">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-purple-600 rounded-lg flex items-center justify-center">
                 <Database className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -1507,26 +1516,53 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
             >
               Cancel
             </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
-            >
-              {saving ? (
-                <>
-                  <Loader className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4" />
-                  Save Configuration
-                </>
+            <div className="flex gap-3">
+              {agentId && nodeId && (
+                <button
+                  onClick={() => setShowDashboardConnector(true)}
+                  className="px-4 py-3 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 rounded-xl font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                  <Monitor className="w-4 h-4" />
+                  Connect to Dashboard
+                </button>
               )}
-            </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-8 py-3 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl font-medium transition-all duration-200 flex items-center gap-2 text-white"
+              >
+                {saving ? (
+                  <>
+                    <Loader className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4" />
+                    Save Configuration
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Dashboard Connector Modal */}
+      {showDashboardConnector && agentId && nodeId && (
+        <DashboardConnector
+          agentId={agentId}
+          nodeId={nodeId}
+          nodeType="postgres"
+          nodeLabel={config.operationMode === 'source' ? 'PostgreSQL Query' : 'PostgreSQL Insert'}
+          nodeOutputType={config.operationMode === 'source' ? "structuredData" : "textData"}
+          onClose={() => setShowDashboardConnector(false)}
+          onConnect={(widgetId) => {
+            console.log(`Connected PostgreSQL ${nodeId} to widget ${widgetId}`);
+            setShowDashboardConnector(false);
+          }}
+        />
+      )}
     </div>
   );
 };

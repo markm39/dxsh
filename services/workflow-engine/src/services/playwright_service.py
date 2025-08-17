@@ -428,6 +428,9 @@ class PlaywrightService:
                 type_ = selector_config.get('type')
                 attribute = selector_config.get('attribute', 'textContent')
                 
+                # Debug log to understand why table types aren't working
+                logger.info(f"🔍 DEBUG SELECTOR: type='{type_}', attribute='{attribute}', selector='{selector}'")
+                
                 if not selector:
                     continue
                 

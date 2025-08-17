@@ -176,7 +176,7 @@ const DashboardEditorPage: React.FC = () => {
               <h1 className="text-xl font-semibold text-text-primary">
                 {currentDashboard?.name || 'New Dashboard'}
               </h1>
-              <span className="px-3 py-1 bg-slate-900 text-cyan-400 text-xs font-medium border border-cyan-500/50 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-cyan-500/10 before:to-transparent before:translate-x-[-100%] group-hover:before:translate-x-[100%] before:transition-transform before:duration-500 uppercase tracking-wide">
+              <span className="px-3 py-1 bg-slate-900 text-cyan-400 text-xs font-medium border border-cyan-500/50 uppercase tracking-wide">
                 Edit Mode
               </span>
             </div>
@@ -192,7 +192,7 @@ const DashboardEditorPage: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setShowWidgetPalette(!showWidgetPalette)}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-cyan-500/50 hover:border-cyan-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-cyan-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-cyan-500/50 hover:border-cyan-400 transition-all duration-200 flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" />
                 Add Widget
@@ -272,7 +272,7 @@ const DashboardEditorPage: React.FC = () => {
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white hover:text-white text-sm font-medium border border-emerald-500/50 hover:border-emerald-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group disabled:hover:bg-slate-900 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-emerald-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white hover:text-white text-sm font-medium border border-emerald-500/50 hover:border-emerald-400 transition-all duration-200 flex items-center gap-2 disabled:hover:bg-slate-900"
             >
               {isSaving ? (
                 <>
@@ -291,7 +291,7 @@ const DashboardEditorPage: React.FC = () => {
             {currentDashboard && (
               <Link
                 to={`/dashboard/${currentDashboard.id}`}
-                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-violet-500/50 hover:border-violet-400 transition-all duration-200 flex items-center gap-2 rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-violet-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-500"
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white hover:text-white text-sm font-medium border border-violet-500/50 hover:border-violet-400 transition-all duration-200 flex items-center gap-2"
               >
                 <Eye className="h-4 w-4" />
                 Preview
@@ -351,7 +351,7 @@ const DashboardEditorPage: React.FC = () => {
               </p>
               <button
                 onClick={() => setShowWidgetPalette(true)}
-                className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white hover:text-white font-medium border border-cyan-500/50 hover:border-cyan-400 transition-all duration-200 flex items-center gap-2 mx-auto rounded-none relative overflow-hidden group before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-cyan-500/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700"
+                className="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white hover:text-white font-medium border border-cyan-500/50 hover:border-cyan-400 transition-all duration-200 flex items-center gap-2 mx-auto"
               >
                 <Plus className="h-5 w-5" />
                 Add Your First Widget

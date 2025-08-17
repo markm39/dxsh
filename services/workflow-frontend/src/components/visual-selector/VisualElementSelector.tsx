@@ -28,7 +28,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
   const [error, setError] = useState<string>("");
   const [proxyUrl, setProxyUrl] = useState<string>("");
   const [isSelectionMode, setIsSelectionMode] = useState(false);
-  const [selectionMode, setSelectionMode] = useState<SelectionMode>("all");
+  const [selectionMode, setSelectionMode] = useState<SelectionMode>("raw");
   const [selectedElements, setSelectedElements] = useState<SelectedElement[]>([]);
   const [containerElement, setContainerElement] = useState<SelectedElement | null>(null);
   const [manualSelector, setManualSelector] = useState("");
@@ -78,12 +78,12 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
           text: message.element.textContent || '',
           tagName: message.element.tagName,
           elementCount: 1, // From proxy selector, will be 1
-          type: selectionMode === "table" ? "table" : (selectionMode === "repeating" ? "repeating" : "single"),
+          type: selectionMode, // Directly use the selection mode as it now matches our 3-type system
           label: `${message.element.tagName.toLowerCase()}: ${message.element.textContent?.slice(0, 30) || 'element'}...`,
           relativeSelector: message.relativeSelector // Add relative selector from iframe
         };
         
-        if (selectionMode === "table") {
+        if (selectionMode === "tables") {
           // In table mode, just add the table and we're done
           const newElements = [...selectedElements, selectedElement];
           setSelectedElements(newElements);
@@ -338,7 +338,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
       text: "",
       tagName: "manual",
       elementCount: 0,
-      type: "single",
+      type: "raw",
       label: `Manual: ${manualSelector}`,
     };
     
@@ -432,32 +432,32 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
               
               <div className="space-y-2">
                 <button
-                  onClick={() => handleModeChange("all")}
+                  onClick={() => handleModeChange("raw")}
                   className={`w-full p-3 rounded-lg border text-left flex items-center gap-3 transition-colors ${
-                    selectionMode === "all"
+                    selectionMode === "raw"
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border-subtle hover:border-primary/50"
                   }`}
                 >
                   <MousePointer className="w-5 h-5" />
                   <div>
-                    <div className="font-medium">All Elements</div>
-                    <div className="text-xs opacity-70">Select individual elements</div>
+                    <div className="font-medium">Raw Elements</div>
+                    <div className="text-xs opacity-70">Select individual text/content elements</div>
                   </div>
                 </button>
 
                 <button
-                  onClick={() => handleModeChange("table")}
+                  onClick={() => handleModeChange("tables")}
                   className={`w-full p-3 rounded-lg border text-left flex items-center gap-3 transition-colors ${
-                    selectionMode === "table"
+                    selectionMode === "tables"
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border-subtle hover:border-primary/50"
                   }`}
                 >
                   <Table className="w-5 h-5" />
                   <div>
-                    <div className="font-medium">Tables Only</div>
-                    <div className="text-xs opacity-70">Only highlight table elements</div>
+                    <div className="font-medium">Table Mode</div>
+                    <div className="text-xs opacity-70">Extract structured table data</div>
                   </div>
                 </button>
 
@@ -471,8 +471,8 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
                 >
                   <Layers className="w-5 h-5" />
                   <div>
-                    <div className="font-medium">Repeating Data</div>
-                    <div className="text-xs opacity-70">Extract structured data from patterns</div>
+                    <div className="font-medium">Repeating Mode</div>
+                    <div className="text-xs opacity-70">Extract data from repeating containers/patterns</div>
                   </div>
                 </button>
               </div>

@@ -32,7 +32,7 @@ export const ModelWidgetDemo: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-purple-600 rounded-xl flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold text-text-primary">Model Widget System</h1>
@@ -123,7 +123,7 @@ export const ModelWidgetDemo: React.FC = () => {
         </div>
 
         {/* Model Info Card */}
-        <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg p-6">
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-xl font-semibold text-text-primary mb-2">Demo Model Information</h2>

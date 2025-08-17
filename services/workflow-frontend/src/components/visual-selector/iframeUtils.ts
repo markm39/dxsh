@@ -18,12 +18,12 @@ export const testProxyAccess = async (
   
   // First try the new headless browser endpoint
   try {
-    const headlessUrl = `${API_BASE_URL}/api/v1/scrape/load-for-selection?url=${encodeURIComponent(url)}`;
+    const token = authHeaders.Authorization?.replace('Bearer ', '') || 'test';
+    const headlessUrl = `${API_BASE_URL}/api/v1/scrape/iframe?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
     console.log("🚀 Trying headless browser approach...");
 
     const response = await fetch(headlessUrl, {
       method: "GET",
-      headers: authHeaders,
     });
 
     if (response.ok) {
@@ -85,7 +85,8 @@ export const testProxyAccess = async (
  */
 export const generateProxyUrl = (url: string, token: string, method: 'headless_browser' | 'cors_proxy' = 'headless_browser'): string => {
   if (method === 'headless_browser') {
-    return `${API_BASE_URL}/api/v1/scrape/load-for-selection?url=${encodeURIComponent(url)}`;
+    // Use the new iframe endpoint that accepts token as URL parameter
+    return `${API_BASE_URL}/api/v1/scrape/iframe?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
   } else {
     return `${API_BASE_URL}/api/v1/proxy?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
   }

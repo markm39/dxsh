@@ -8,7 +8,7 @@ export interface SelectedElement {
   tagName: string;
   label: string;
   elementCount: number;
-  type: "single" | "repeating" | "table";
+  type: "raw" | "repeating" | "tables";
   name?: string;
   fields?: FieldConfig[];
   relativeSelector?: string;
@@ -34,7 +34,7 @@ export interface ProxyTestResult {
   method?: 'headless_browser' | 'cors_proxy';
 }
 
-export type SelectionMode = "single" | "repeating" | "table" | "all";
+export type SelectionMode = "raw" | "repeating" | "tables";
 
 export interface ModeHandlerContext {
   doc: Document;

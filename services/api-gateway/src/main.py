@@ -107,7 +107,11 @@ async def proxy_nodes(
     current_user: AuthUser = Depends(get_current_user)
 ):
     """Proxy node-related requests to workflow-engine service"""
-    response_data = await proxy.route_workflow_request(request, f"/v1/nodes/{path}")
+    # Handle web-source/extract specifically by routing to scraping endpoints
+    if path == "web-source/extract":
+        response_data = await proxy.route_workflow_request(request, f"/api/v1/nodes/web-source/extract")
+    else:
+        response_data = await proxy.route_workflow_request(request, f"/v1/nodes/{path}")
     
     return Response(
         content=response_data['content'],
@@ -281,6 +285,22 @@ async def proxy_api_embed(
 ):
     """Proxy embed-related API requests to dashboard-service (no auth required)"""
     response_data = await proxy.route_dashboard_request(request, f"/v1/embed/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+# Iframe scraping route (no auth required for iframe loading)
+@app.api_route(
+    "/api/v1/scrape/iframe",
+    methods=["GET", "OPTIONS"]
+)
+async def proxy_iframe_scraping(request: Request):
+    """Proxy iframe scraping requests to workflow-engine service (no auth required)"""
+    response_data = await proxy.route_workflow_request(request, "/api/v1/scrape/iframe")
     
     return Response(
         content=response_data['content'],
@@ -520,6 +540,44 @@ async def proxy_css_selector(
 ):
     """Proxy CSS selector requests to workflow-engine service"""
     response_data = await proxy.route_workflow_request(request, f"/api/v1/css-selector/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+# Monitoring Jobs Routes (for web monitoring job management)
+@app.api_route(
+    "/api/v1/monitoring-jobs/{path:path}",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_monitoring_jobs_with_path(
+    request: Request,
+    path: str,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy monitoring jobs requests to workflow-engine service"""
+    response_data = await proxy.route_workflow_request(request, f"/api/v1/monitoring-jobs/{path}")
+    
+    return Response(
+        content=response_data['content'],
+        status_code=response_data['status_code'],
+        headers={k: v for k, v in response_data['headers'].items() 
+                if k.lower() not in ['content-encoding', 'transfer-encoding']}
+    )
+
+@app.api_route(
+    "/api/v1/monitoring-jobs",
+    methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+)
+async def proxy_monitoring_jobs_root(
+    request: Request,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """Proxy monitoring jobs root requests to workflow-engine service"""
+    response_data = await proxy.route_workflow_request(request, f"/api/v1/monitoring-jobs")
     
     return Response(
         content=response_data['content'],

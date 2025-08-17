@@ -17,27 +17,52 @@ export const workflowService = {
     agentId: number,
     authHeaders: Record<string, string>
   ): Promise<{ nodes: Node[]; edges: Edge[] }> {
-    const response = await fetch(
-      `${API_BASE_URL}/v1/workflows/${agentId}`,
-      {
-        headers: authHeaders,
+    try {
+      console.log(`🔍 Loading workflow for agent ${agentId}`);
+      const response = await fetch(
+        `${API_BASE_URL}/v1/workflows/${agentId}`,
+        {
+          headers: authHeaders,
+        }
+      );
+      
+      console.log(`📡 Workflow API response: ${response.status} ${response.statusText}`);
+      
+      if (response.status === 401) {
+        console.warn('⚠️ Workflow loading failed: Authentication error');
+        handleAuthError();
+        return { nodes: [], edges: [] };
       }
-    );
-    
-    if (response.status === 401) {
-      handleAuthError();
-      return { nodes: [], edges: [] };
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('📊 Workflow data received:', {
+          success: data.success,
+          hasWorkflow: !!data.workflow,
+          nodeCount: data.workflow?.nodes?.length || 0,
+          edgeCount: data.workflow?.edges?.length || 0
+        });
+        
+        if (data.success && data.workflow) {
+          const result = {
+            nodes: data.workflow.nodes || [],
+            edges: data.workflow.edges || [],
+          };
+          console.log(`✅ Successfully loaded ${result.nodes.length} nodes and ${result.edges.length} edges`);
+          return result;
+        } else {
+          console.warn('⚠️ Workflow data structure invalid:', data);
+        }
+      } else {
+        console.error(`❌ Workflow API failed: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error('📄 Error response:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Failed to load workflow:', error);
     }
     
-    if (response.ok) {
-      const data = await response.json();
-      if (data.success && data.workflow) {
-        return {
-          nodes: data.workflow.nodes || [],
-          edges: data.workflow.edges || [],
-        };
-      }
-    }
+    console.log('📭 Returning empty workflow');
     return { nodes: [], edges: [] };
   },
 

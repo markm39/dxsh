@@ -48,6 +48,9 @@ const LoginPage: React.FC = () => {
         <div className="p-8 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <img src="/dxsh_logo.png" alt="Dxsh" className="h-16 w-auto" />
+            </div>
             <h1 className="text-2xl font-bold text-text-primary mb-2">
               {isRegistering ? 'Create Account' : 'Welcome Back'}
             </h1>
@@ -131,17 +134,6 @@ const LoginPage: React.FC = () => {
                 : "Don't have an account? Create one"}
             </button>
           </div>
-
-          {/* Demo credentials */}
-          {!isRegistering && (
-            <div className="mt-6 pt-6 border-t border-border-subtle">
-              <p className="text-xs text-text-muted text-center mb-2">Demo Credentials:</p>
-              <div className="text-xs text-text-muted text-center space-y-1">
-                <p>Email: demo@example.com</p>
-                <p>Password: demo123</p>
-              </div>
-            </div>
-          )}
 
           {/* Link to main app */}
           <div className="mt-4 text-center">

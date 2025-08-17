@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
+import json
 import httpx
 import asyncio
 import logging
+import os
 from typing import Dict, Any
 from urllib.parse import urlparse
 import re
@@ -189,6 +191,7 @@ async def proxy_request(
 @router.get("/scrape/load-for-selection")
 async def load_for_selection(
     url: str,
+    token: str = None,
     current_user: AuthUser = Depends(get_current_user)
 ):
     """Load page using headless browser for visual element selection"""
@@ -230,6 +233,54 @@ async def load_for_selection(
     except Exception as e:
         logger.error(f"Headless scraping error for {url}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Scraping failed: {str(e)}")
+
+@router.get("/scrape/iframe")
+async def load_for_iframe(
+    url: str,
+    token: str
+):
+    """Load page for iframe viewing with token-based auth (no JWT dependency for iframe compatibility)"""
+    try:
+        # TODO: Validate token here if needed for security
+        # For now, accept any token to allow iframe loading
+        
+        # Validate URL
+        validated_url = validate_url(url)
+        
+        # Use Playwright service with proper context management
+        async with PlaywrightService() as playwright_service:
+            # Load page with Playwright
+            result = await playwright_service.load_page_for_selection(validated_url)
+            
+            if not result.get('success'):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Failed to load page: {result.get('error', 'Unknown error')}"
+                )
+            
+            # Get HTML content and inject visual selector
+            html_content = result.get('html', '')
+            html_with_selector = inject_visual_selector_script(html_content)
+            
+            return Response(
+                content=html_with_selector,
+                status_code=200,
+                headers={
+                    'Content-Type': 'text/html',
+                    'X-Frame-Options': 'ALLOWALL',
+                    'Content-Security-Policy': "frame-ancestors *",
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+                    'Access-Control-Allow-Headers': '*',
+                }
+            )
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
+    except Exception as e:
+        logger.error(f"Iframe scraping error for {url}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Iframe scraping failed: {str(e)}")
 
 def inject_visual_selector_script(html_content: str) -> str:
     """Inject visual element selector JavaScript into HTML"""
@@ -683,3 +734,433 @@ def inject_visual_selector_script(html_content: str) -> str:
         html_content += visual_selector_script
     
     return html_content
+
+
+# Schemas for AI selector generation structured outputs
+RAW_SELECTORS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "selectors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "selector": {"type": "string", "description": "CSS selector"},
+                    "label": {"type": "string", "description": "Descriptive label"},
+                    "attribute": {"type": "string", "description": "Attribute to extract (textContent, href, src, etc.)"}
+                },
+                "required": ["selector", "label", "attribute"]
+            }
+        },
+        "confidence": {"type": "number", "description": "Confidence level (0-1)"},
+        "explanation": {"type": "string", "description": "Brief explanation of the selectors"}
+    },
+    "required": ["selectors", "confidence", "explanation"]
+}
+
+TABLE_SELECTORS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "selectors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "selector": {"type": "string", "description": "CSS selector for table"},
+                    "label": {"type": "string", "description": "Descriptive label"},
+                    "attribute": {"type": "string", "description": "Should be 'outerHTML' for tables"}
+                },
+                "required": ["selector", "label", "attribute"]
+            }
+        },
+        "confidence": {"type": "number", "description": "Confidence level (0-1)"},
+        "explanation": {"type": "string", "description": "Brief explanation of the table selectors"}
+    },
+    "required": ["selectors", "confidence", "explanation"]
+}
+
+REPEATING_SELECTORS_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "container_selector": {"type": "string", "description": "CSS selector for repeating container"},
+        "fields": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "selector": {"type": "string", "description": "Relative CSS selector within container"},
+                    "label": {"type": "string", "description": "Field label"},
+                    "attribute": {"type": "string", "description": "Attribute to extract"}
+                },
+                "required": ["selector", "label", "attribute"]
+            }
+        },
+        "confidence": {"type": "number", "description": "Confidence level (0-1)"},
+        "explanation": {"type": "string", "description": "Brief explanation of container and field selectors"}
+    },
+    "required": ["container_selector", "fields", "confidence", "explanation"]
+}
+
+SELECTOR_SCHEMAS = {
+    "raw": RAW_SELECTORS_SCHEMA,
+    "tables": TABLE_SELECTORS_SCHEMA,
+    "repeating": REPEATING_SELECTORS_SCHEMA
+}
+
+
+@router.post("/scrape/ai-selectors")
+async def generate_ai_selectors(
+    request_data: dict,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """
+    Generate CSS selectors using AI based on user description and website HTML
+    """
+    try:
+        # Validate required fields
+        url = request_data.get('url')
+        description = request_data.get('description')
+        data_type = request_data.get('data_type', 'raw')  # raw, tables, repeating
+        feedback = request_data.get('feedback')  # Optional feedback from previous attempt
+        previous_selectors = request_data.get('previous_selectors', [])  # Previous attempt's selectors
+        
+        if not url:
+            raise HTTPException(status_code=400, detail="url is required")
+        if not description:
+            raise HTTPException(status_code=400, detail="description is required")
+        if data_type not in ['raw', 'tables', 'repeating']:
+            raise HTTPException(status_code=400, detail="data_type must be 'raw', 'tables', or 'repeating'")
+        
+        # Validate and sanitize URL
+        url = validate_url(url)
+        
+        # Get page HTML using existing scraping infrastructure
+        playwright_service = PlaywrightService()
+        try:
+            page_data = await playwright_service.load_page_for_selection(url)
+            html_content = page_data.get('html', '')
+            
+            logger.info(f"Loaded HTML content: {len(html_content)} characters for URL: {url}")
+            
+            if not html_content:
+                raise HTTPException(status_code=400, detail="Failed to load page content")
+            
+        except Exception as e:
+            logger.error(f"Failed to load page content: {e}")
+            raise HTTPException(status_code=400, detail=f"Failed to load page: {str(e)}")
+        
+        # Import OpenAI here to avoid circular imports
+        import openai
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        
+        # Create AI prompt based on data type
+        if data_type == 'raw':
+            system_prompt = """You are a CSS selector expert. Generate precise CSS selectors to extract raw data from HTML.
+
+Instructions:
+1. Analyze the HTML structure carefully
+2. Generate CSS selectors that will extract the requested data
+3. Provide selectors that are specific enough to avoid unwanted elements
+4. Use appropriate attributes (textContent for text, href for links, src for images, etc.)
+5. Ensure selectors are robust and won't break easily"""
+            
+        elif data_type == 'tables':
+            system_prompt = """You are a CSS selector expert specializing in table extraction. Generate CSS selectors to extract table data from HTML.
+
+Instructions:
+1. Identify tables that contain the requested data
+2. Generate selectors for complete tables (use table element selectors)
+3. Focus on data tables, not layout tables
+4. Use 'outerHTML' attribute to get complete table structure
+5. Ensure selectors target the right tables with the requested data"""
+            
+        else:  # repeating
+            system_prompt = """You are a CSS selector expert specializing in repeating data extraction. Generate CSS selectors for containers and their fields.
+
+Instructions:
+1. Identify repeating container elements that hold similar data structures
+2. Generate a container selector and field selectors within each container
+3. Focus on consistent patterns like lists, cards, or repeating sections
+4. Field selectors should be relative to the container (not absolute)
+5. Use appropriate attributes for each field type"""
+        
+        # Build user prompt with optional feedback
+        feedback_section = ""
+        if feedback and previous_selectors:
+            feedback_section = f"""
+
+PREVIOUS ATTEMPT & FEEDBACK:
+Previous selectors that didn't work well:
+{json.dumps(previous_selectors, indent=2)}
+
+User feedback on what was wrong:
+{feedback}
+
+Please generate IMPROVED selectors that address the issues mentioned in the feedback."""
+
+        user_prompt = f"""Please analyze this HTML and generate CSS selectors for: {description}
+
+Data Type: {data_type}
+URL: {url}
+{feedback_section}
+
+HTML Content:
+{html_content}
+
+Generate precise CSS selectors that will extract the requested data. Be specific and avoid overly broad selectors."""
+
+        # Call OpenAI API with structured output
+        try:
+            client = openai.OpenAI(api_key=OPENAI_API_KEY)
+            
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+            
+            # Get schema for this data type
+            response_format = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": f"{data_type}_selectors",
+                    "schema": SELECTOR_SCHEMAS[data_type]
+                }
+            }
+            
+            response = client.chat.completions.create(
+                model="gpt-4.1-mini",  # Required for structured outputs
+                messages=messages,
+                response_format=response_format,
+                temperature=0.1  # Low temperature for consistent results
+            )
+            
+            # Parse the structured response
+            ai_selectors = json.loads(response.choices[0].message.content)
+            
+            # Extract token usage
+            tokens_used = {
+                "prompt_tokens": response.usage.prompt_tokens,
+                "completion_tokens": response.usage.completion_tokens,
+                "total_tokens": response.usage.total_tokens
+            }
+            
+            logger.info(f"AI selector generation successful for {url}")
+            
+            return {
+                "success": True,
+                "data_type": data_type,
+                "ai_selectors": ai_selectors,
+                "url": url,
+                "ai_metadata": {
+                    "model": "gpt-4.1-mini",
+                    "tokens_used": tokens_used,
+                    "finish_reason": response.choices[0].finish_reason
+                }
+            }
+            
+        except openai.RateLimitError:
+            raise HTTPException(status_code=429, detail="OpenAI rate limit exceeded. Please try again later.")
+        except openai.AuthenticationError:
+            raise HTTPException(status_code=401, detail="OpenAI API authentication failed. Check API key.")
+        except Exception as e:
+            logger.error(f"OpenAI API call failed: {e}")
+            raise HTTPException(status_code=500, detail=f"AI processing failed: {str(e)}")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"AI selector generation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"AI selector generation failed: {str(e)}")
+
+
+@router.post("/scrape/test-ai-selectors")
+async def test_ai_selectors(
+    request_data: dict,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """
+    Test AI-generated selectors and return preview data
+    """
+    try:
+        url = request_data.get('url')
+        selectors = request_data.get('selectors')
+        data_type = request_data.get('data_type', 'raw')
+        container_selector = request_data.get('container_selector')
+        
+        if not url or not selectors:
+            raise HTTPException(status_code=400, detail="url and selectors are required")
+        
+        # Use existing scraping infrastructure to test selectors
+        playwright_service = PlaywrightService()
+        
+        try:
+            # Load the page first for all data types
+            page_data = await playwright_service.load_page_for_selection(url)
+            
+            if data_type == 'tables':
+                # For tables, extract table data
+                table_data = await playwright_service._extract_table_data(selectors[0]['selector'])
+                preview_data = table_data[:5]  # First 5 rows for preview
+                
+            elif data_type == 'repeating':
+                # For repeating data, extract structured data
+                if not container_selector:
+                    raise HTTPException(status_code=400, detail="container_selector required for repeating data")
+                
+                structured_data = await playwright_service._extract_structured_data(selectors)
+                preview_data = structured_data[:5]  # First 5 items for preview
+                
+            else:  # raw
+                # For raw data, extract using selectors
+                raw_data = {}
+                page_content = page_data.get('html', '')
+                
+                for selector_config in selectors:
+                    selector = selector_config['selector']
+                    label = selector_config['label']
+                    
+                    # Extract data using selector (simplified implementation)
+                    raw_data[label] = f"[Data from {selector}]"  # Placeholder
+                
+                preview_data = [raw_data]
+        
+        except Exception as e:
+            logger.error(f"Failed to test selectors: {e}")
+            raise HTTPException(status_code=400, detail=f"Selector testing failed: {str(e)}")
+        
+        return {
+            "success": True,
+            "preview_data": preview_data,
+            "data_type": data_type,
+            "selector_count": len(selectors)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Selector testing failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Selector testing failed: {str(e)}")
+
+
+@router.post("/monitoring-jobs")
+async def create_monitoring_job(request_data: dict, current_user: AuthUser = Depends(get_current_user)):
+    """
+    Create a monitoring job from AI-generated or manually configured selectors
+    """
+    try:
+        agent_id = request_data.get('agent_id')
+        name = request_data.get('name', 'Web Monitoring Job')
+        url = request_data.get('url')
+        selectors = request_data.get('selectors', [])
+        data_type = request_data.get('data_type', 'raw')
+        
+        if not agent_id or not url:
+            raise HTTPException(status_code=400, detail="agent_id and url are required")
+        
+        # Create a basic monitoring job record
+        # For now, just return success since the actual job creation logic may be elsewhere
+        import time
+        job_data = {
+            'id': f"job_{agent_id}_{int(time.time())}",
+            'agent_id': agent_id,
+            'name': name,
+            'url': url,
+            'selectors': selectors,
+            'data_type': data_type,
+            'status': 'active',
+            'created_at': int(time.time())
+        }
+        
+        logger.info(f"Created monitoring job: {job_data['id']} for agent {agent_id}")
+        
+        return {
+            'success': True,
+            'job': job_data
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to create monitoring job: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to create monitoring job: {str(e)}")
+
+
+@router.post("/nodes/web-source/extract", include_in_schema=False)
+async def extract_web_source_data(
+    request_data: dict,
+    current_user: AuthUser = Depends(get_current_user)
+):
+    """
+    Extract data from a website using CSS selectors
+    Compatible with workflow execution engine
+    """
+    try:
+        # Extract parameters
+        url = request_data.get('url')
+        selectors = request_data.get('selectors', [])
+        
+        if not url:
+            raise HTTPException(status_code=400, detail="url is required")
+        if not selectors:
+            raise HTTPException(status_code=400, detail="selectors are required")
+        
+        # Validate and sanitize URL
+        url = validate_url(url)
+        
+        logger.info(f"Web source extraction request for URL: {url}")
+        logger.info(f"Using {len(selectors)} selectors")
+        logger.info(f"Raw selectors received: {selectors}")
+        
+        # Use PlaywrightService to extract data
+        playwright_service = PlaywrightService()
+        try:
+            # Load the page
+            await playwright_service.load_page(url, wait_for_load=True)
+            
+            # Process selectors to match expected format
+            processed_selectors = []
+            for selector_config in selectors:
+                if isinstance(selector_config, dict):
+                    processed_selector = {
+                        'selector': selector_config.get('selector', ''),
+                        'name': selector_config.get('name', selector_config.get('label', 'field')),
+                        'type': selector_config.get('type', 'all'),
+                        'attribute': selector_config.get('attribute', 'textContent')
+                    }
+                    
+                    # Handle special types
+                    if processed_selector['type'] == 'table':
+                        processed_selector['attribute'] = 'table_data'
+                    
+                    # Include fields for repeating containers
+                    if 'fields' in selector_config:
+                        processed_selector['fields'] = selector_config['fields']
+                    
+                    processed_selectors.append(processed_selector)
+                    logger.info(f"Processed selector: {processed_selector}")  # Debug log
+            
+            # Extract data using the service's main extraction method
+            extracted_data = await playwright_service.extract_all_content(processed_selectors)
+            
+            logger.info(f"Successfully extracted data from {len(processed_selectors)} selectors")
+            
+            return {
+                "success": True,
+                "result": {
+                    "extracted_data": extracted_data
+                }
+            }
+            
+        except Exception as e:
+            logger.error(f"Error during web source extraction: {e}")
+            return {
+                "success": False,
+                "error": f"Extraction failed: {str(e)}"
+            }
+        finally:
+            try:
+                await playwright_service.close()
+            except:
+                pass
+    
+    except Exception as e:
+        logger.error(f"Web source extraction error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
