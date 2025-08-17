@@ -331,7 +331,7 @@ class ExecutionService:
             self.db.add(node_execution)
             self.db.commit()
             
-            logger.info(f"✅ Saved node execution: {node_id} - Success: {result.success} - WF Exec ID: {self.current_workflow_execution_id}")
+            logger.info(f" Saved node execution: {node_id} - Success: {result.success} - WF Exec ID: {self.current_workflow_execution_id}")
             
         except Exception as e:
             logger.error(f"Error saving node execution for {node_id}: {e}")

@@ -47,13 +47,13 @@ const extractTablesFromInput = (data: any[]): { [tableName: string]: any[] } => 
     const isMultiTableStructure = keys.every(key => Array.isArray(firstItem[key]));
     
     if (isMultiTableStructure) {
-      console.log('🗂️ Detected multi-table structure:', keys);
+      console.log(' Detected multi-table structure:', keys);
       return firstItem as { [tableName: string]: any[] };
     }
   }
   
   // Regular array structure - treat as single unnamed table
-  console.log('📋 Detected regular array structure');
+  console.log(' Detected regular array structure');
   return { 'input_data': data };
 };
 
@@ -295,13 +295,13 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
       
       if (result.success) {
         setTableDetails(result);
-        console.log(`📊 Fetched table details for ${tableName}:`, result);
+        console.log(` Fetched table details for ${tableName}:`, result);
       } else {
-        console.warn(`❌ Failed to fetch table details for ${tableName}:`, result.error);
+        console.warn(` Failed to fetch table details for ${tableName}:`, result.error);
         // Don't show error to user - table might not exist yet, which is okay
       }
     } catch (error) {
-      console.warn(`❌ Error fetching table details for ${tableName}:`, error);
+      console.warn(` Error fetching table details for ${tableName}:`, error);
       // Silent fail - table might not exist
     } finally {
       setLoadingTableDetails(false);
@@ -506,7 +506,7 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
         selectedColumnTypes: config.createTableDynamically && schemaAnalysis ? selectedColumnTypes : undefined
       };
       
-      console.log('💾 Saving PostgreSQL config:', finalConfig);
+      console.log(' Saving PostgreSQL config:', finalConfig);
       onSave(finalConfig);
     } finally {
       setSaving(false);
@@ -1040,7 +1040,7 @@ const PostgresSetup: React.FC<PostgresSetupProps> = ({
                       />
                       {isMultiTableInput && (
                         <div className="text-xs text-text-muted">
-                          💡 Processing table: <span className="font-medium text-blue-400">{selectedInputTable}</span>
+                           Processing table: <span className="font-medium text-blue-400">{selectedInputTable}</span>
                         </div>
                       )}
                     </div>

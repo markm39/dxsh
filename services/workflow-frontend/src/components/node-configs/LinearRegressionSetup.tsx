@@ -61,10 +61,10 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
 
   // Enhanced numeric column detection similar to PostgreSQL node
   const inferColumnType = (values: any[], columnName: string): 'numeric' | 'text' => {
-    console.log(`🔍 Analyzing column "${columnName}":`, values);
+    console.log(` Analyzing column "${columnName}":`, values);
     
     if (values.length === 0) {
-      console.log(`❌ Column "${columnName}": No values, returning text`);
+      console.log(` Column "${columnName}": No values, returning text`);
       return 'text';
     }
     
@@ -121,7 +121,7 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
     const numericPercentage = validValues > 0 ? (numericCount / validValues) : 0;
     const isNumeric = numericPercentage >= 0.8;
     
-    console.log(`📊 Column "${columnName}" analysis:`, {
+    console.log(` Column "${columnName}" analysis:`, {
       totalValues: values.length,
       validValues,
       numericCount,
@@ -153,10 +153,10 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
         });
         
         setAvailableColumns(columns);
-        console.log('📊 Available numeric columns:', columns);
+        console.log(' Available numeric columns:', columns);
         
         // Add overall debugging
-        console.log('🔍 INPUT DATA DEBUG:', {
+        console.log(' INPUT DATA DEBUG:', {
           inputDataLength: inputData.length,
           firstRecord: inputData[0],
           allColumns: allColumns,
@@ -209,7 +209,7 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
       randomState: config.randomState
     };
     
-    console.log('💾 Saving linear regression config:', finalConfig);
+    console.log(' Saving linear regression config:', finalConfig);
     onSave(finalConfig);
   };
 
@@ -408,7 +408,7 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
                 ) : (
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                     <p className="text-yellow-700 text-sm">
-                      <strong>⚠️ No numeric data detected.</strong> This node requires structured data with numeric columns. Connect a data source with numeric columns (like CSV data, API responses with numbers, etc.) to configure the model.
+                      <strong> No numeric data detected.</strong> This node requires structured data with numeric columns. Connect a data source with numeric columns (like CSV data, API responses with numbers, etc.) to configure the model.
                     </p>
                   </div>
                 )}
@@ -449,7 +449,7 @@ const LinearRegressionSetup: React.FC<LinearRegressionSetupProps> = ({
             {activeTab === 'features' && inputData.length === 0 && (
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                 <p className="text-blue-700 text-sm">
-                  💡 <strong>Preview Note:</strong> Input data is available during workflow execution. Connect this node to a data source and use the Execute button in the workflow to train models with live data.
+                   <strong>Preview Note:</strong> Input data is available during workflow execution. Connect this node to a data source and use the Execute button in the workflow to train models with live data.
                 </p>
               </div>
             )}

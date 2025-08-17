@@ -1,7 +1,7 @@
 # Dxsh Microservices Migration Plan
 > **Detailed migration from monolith to separately deployable, embeddable services**
 
-## 🎯 Vision & Goals
+##  Vision & Goals
 
 **Transform current architecture into:**
 - **API-First Workflow Engine**: Execute workflows programmatically via REST API
@@ -9,19 +9,19 @@
 - **Modular Deployment Options**: Deploy only what you need (engine-only, dashboard-only, full suite)
 - **Open Source Ready**: Clean separation for community contributions
 
-## 📊 Current Architecture Analysis
+##  Current Architecture Analysis
 
 ### Existing Structure
 ```
 workflow-engine/
-├── backend/                 # Flask monolith (5000 port)
-│   ├── app/api/            # All API endpoints mixed together
-│   ├── app/services/       # Workflow execution, charts, ML
-│   ├── app/models/         # Database models
-│   └── run.py              # Single entry point
-├── frontend/               # React workflow builder (3000 port)  
-├── dashboard/              # React dashboard viewer (3001 port)
-└── docker-compose.yml      # Runs all 3 together
+ backend/                 # Flask monolith (5000 port)
+    app/api/            # All API endpoints mixed together
+    app/services/       # Workflow execution, charts, ML
+    app/models/         # Database models
+    run.py              # Single entry point
+ frontend/               # React workflow builder (3000 port)  
+ dashboard/              # React dashboard viewer (3001 port)
+ docker-compose.yml      # Runs all 3 together
 ```
 
 ### Problems with Current Setup
@@ -31,28 +31,28 @@ workflow-engine/
 - **Tight coupling**: Changes affect entire system
 - **Hard to open source**: Everything bundled together
 
-## 🏗️ Target Architecture
+##  Target Architecture
 
 ### Service Separation
 ```
 dxsh/
-├── services/
-│   ├── api-gateway/        # Auth, routing, CORS (port 5000)
-│   ├── workflow-engine/    # Execute workflows (port 5001) 
-│   ├── dashboard-service/  # Render dashboards (port 5002)
-│   └── builder-service/    # Visual workflow builder (port 5003)
-├── packages/
-│   ├── embed-sdk/         # JavaScript SDK for embedding
-│   ├── shared-types/      # Common TypeScript interfaces
-│   └── react-components/  # React component library
-├── deployment/
-│   ├── docker-compose.yml          # Full development setup
-│   ├── docker-compose.engine.yml   # Engine + API only  
-│   └── docker-compose.embed.yml    # Dashboard + API only
-└── examples/
-    ├── api-usage/         # How to execute workflows via API
-    ├── embedding/         # How to embed widgets
-    └── full-deployment/   # Complete setup examples
+ services/
+    api-gateway/        # Auth, routing, CORS (port 5000)
+    workflow-engine/    # Execute workflows (port 5001) 
+    dashboard-service/  # Render dashboards (port 5002)
+    builder-service/    # Visual workflow builder (port 5003)
+ packages/
+    embed-sdk/         # JavaScript SDK for embedding
+    shared-types/      # Common TypeScript interfaces
+    react-components/  # React component library
+ deployment/
+    docker-compose.yml          # Full development setup
+    docker-compose.engine.yml   # Engine + API only  
+    docker-compose.embed.yml    # Dashboard + API only
+ examples/
+     api-usage/         # How to execute workflows via API
+     embedding/         # How to embed widgets
+     full-deployment/   # Complete setup examples
 ```
 
 ### Deployment Modes
@@ -81,7 +81,7 @@ docker-compose -f docker-compose.embed.yml up
 # - No workflow builder
 ```
 
-## 🔄 Migration Strategy: Extract & Enhance
+##  Migration Strategy: Extract & Enhance
 
 ### Phase 1: Foundation (Week 1)
 **Extract core services without breaking existing functionality**
@@ -89,14 +89,14 @@ docker-compose -f docker-compose.embed.yml up
 #### 1.1 Create API Gateway Service
 ```
 services/api-gateway/
-├── src/
-│   ├── auth.py             # JWT validation, user management
-│   ├── proxy.py            # Route requests to services
-│   ├── cors.py             # CORS handling for embeds
-│   └── main.py             # FastAPI app
-├── Dockerfile
-├── requirements.txt
-└── .env.example
+ src/
+    auth.py             # JWT validation, user management
+    proxy.py            # Route requests to services
+    cors.py             # CORS handling for embeds
+    main.py             # FastAPI app
+ Dockerfile
+ requirements.txt
+ .env.example
 ```
 
 **Key responsibilities:**
@@ -109,22 +109,22 @@ services/api-gateway/
 #### 1.2 Extract Workflow Engine Service
 ```
 services/workflow-engine/
-├── src/
-│   ├── api/
-│   │   ├── workflows.py    # Workflow CRUD operations
-│   │   ├── executions.py   # Execute workflows, get results
-│   │   └── nodes.py        # Node library management
-│   ├── services/
-│   │   ├── execution_service.py     # Core execution logic
-│   │   ├── node_executors/          # Individual node executors
-│   │   └── data_processing.py       # Data transformation
-│   ├── models/
-│   │   ├── workflow.py     # Workflow database models
-│   │   └── execution.py    # Execution database models
-│   └── main.py             # FastAPI app
-├── Dockerfile
-├── requirements.txt
-└── .env.example
+ src/
+    api/
+       workflows.py    # Workflow CRUD operations
+       executions.py   # Execute workflows, get results
+       nodes.py        # Node library management
+    services/
+       execution_service.py     # Core execution logic
+       node_executors/          # Individual node executors
+       data_processing.py       # Data transformation
+    models/
+       workflow.py     # Workflow database models
+       execution.py    # Execution database models
+    main.py             # FastAPI app
+ Dockerfile
+ requirements.txt
+ .env.example
 ```
 
 **API endpoints to implement:**
@@ -167,25 +167,25 @@ CREATE INDEX idx_executions_api ON executions(api_version);
 #### 2.1 Create Dashboard Service
 ```
 services/dashboard-service/
-├── src/
-│   ├── api/
-│   │   ├── dashboards.py   # Dashboard CRUD operations
-│   │   ├── widgets.py      # Widget data and configuration
-│   │   └── embed.py        # Embedding endpoints
-│   ├── services/
-│   │   ├── chart_service.py        # Chart generation
-│   │   ├── dashboard_renderer.py   # Server-side rendering
-│   │   └── embed_service.py        # Embedding logic
-│   ├── templates/
-│   │   ├── widget_embed.html       # Widget embedding template
-│   │   └── dashboard_embed.html    # Dashboard embedding template
-│   └── main.py             # FastAPI app
-├── static/
-│   ├── embed.css           # Embedding styles
-│   └── embed.js            # Embedding JavaScript
-├── Dockerfile
-├── requirements.txt  
-└── .env.example
+ src/
+    api/
+       dashboards.py   # Dashboard CRUD operations
+       widgets.py      # Widget data and configuration
+       embed.py        # Embedding endpoints
+    services/
+       chart_service.py        # Chart generation
+       dashboard_renderer.py   # Server-side rendering
+       embed_service.py        # Embedding logic
+    templates/
+       widget_embed.html       # Widget embedding template
+       dashboard_embed.html    # Dashboard embedding template
+    main.py             # FastAPI app
+ static/
+    embed.css           # Embedding styles
+    embed.js            # Embedding JavaScript
+ Dockerfile
+ requirements.txt  
+ .env.example
 ```
 
 **API endpoints to implement:**
@@ -238,29 +238,29 @@ async def get_widget_data(widget_id: str):
 #### 3.1 Web Component SDK
 ```
 packages/embed-sdk/
-├── src/
-│   ├── components/
-│   │   ├── DxshWidget.js       # Web component for widgets
-│   │   ├── DxshDashboard.js    # Web component for dashboards  
-│   │   └── DxshBuilder.js      # Web component for builder
-│   ├── services/
-│   │   ├── ApiClient.js        # HTTP client for Dxsh API
-│   │   └── ThemeManager.js     # Handle themes and styling
-│   ├── utils/
-│   │   ├── AuthManager.js      # Token management
-│   │   └── EventEmitter.js     # Event handling
-│   └── index.js                # Main entry point
-├── dist/
-│   ├── dxsh-embed.js           # Bundled for CDN
-│   ├── dxsh-embed.min.js       # Minified version
-│   └── dxsh-embed.css          # Default styles
-├── examples/
-│   ├── basic-widget.html       # Simple widget example
-│   ├── full-dashboard.html     # Full dashboard example
-│   └── react-integration.html  # React usage example
-├── package.json
-├── webpack.config.js
-└── README.md
+ src/
+    components/
+       DxshWidget.js       # Web component for widgets
+       DxshDashboard.js    # Web component for dashboards  
+       DxshBuilder.js      # Web component for builder
+    services/
+       ApiClient.js        # HTTP client for Dxsh API
+       ThemeManager.js     # Handle themes and styling
+    utils/
+       AuthManager.js      # Token management
+       EventEmitter.js     # Event handling
+    index.js                # Main entry point
+ dist/
+    dxsh-embed.js           # Bundled for CDN
+    dxsh-embed.min.js       # Minified version
+    dxsh-embed.css          # Default styles
+ examples/
+    basic-widget.html       # Simple widget example
+    full-dashboard.html     # Full dashboard example
+    react-integration.html  # React usage example
+ package.json
+ webpack.config.js
+ README.md
 ```
 
 **Web Component Implementation:**
@@ -443,18 +443,18 @@ window.DxshEmbed = DxshEmbed;
 - [x] Update all API calls to go through API Gateway authentication
 - [x] Test successful build compilation (671KB bundle generated)
 
-**✅ Phase 4 Status: COMPLETE**
-- ✅ Builder service extracted as standalone React application
-- ✅ All API calls updated to use microservices endpoints through API Gateway
-- ✅ Dashboard service integration via dedicated client
-- ✅ Build process working correctly (Vite + TypeScript)
-- ✅ Docker configuration created for containerized deployment
-- ✅ Environment configuration for different deployment modes
-- ✅ Preserves all visual workflow builder functionality
-- ✅ Real-time workflow execution monitoring maintained
-- ✅ Node configuration interfaces working with new API structure
+** Phase 4 Status: COMPLETE**
+-  Builder service extracted as standalone React application
+-  All API calls updated to use microservices endpoints through API Gateway
+-  Dashboard service integration via dedicated client
+-  Build process working correctly (Vite + TypeScript)
+-  Docker configuration created for containerized deployment
+-  Environment configuration for different deployment modes
+-  Preserves all visual workflow builder functionality
+-  Real-time workflow execution monitoring maintained
+-  Node configuration interfaces working with new API structure
 
-## 🐳 Docker Configuration
+##  Docker Configuration
 
 ### Development (All Services)
 ```yaml
@@ -602,7 +602,7 @@ services:
       - POSTGRES_DB=workflow_engine
 ```
 
-## ✅ Detailed Migration Checklist
+##  Detailed Migration Checklist
 
 ### Pre-Migration Preparation
 - [ ] Create backup of current database
@@ -649,19 +649,19 @@ services:
 - [x] Test full request flow: Gateway → Engine (communication verified)
 - [ ] Verify existing frontend still works with new backend (requires Docker setup)
 
-**✅ Phase 1 Status: COMPLETE WITH ALL NODE TYPES**
-- ✅ API Gateway service running and tested (auth, routing, CORS)
-- ✅ Workflow Engine service extracted with all logic preserved
-- ✅ Service-to-service communication working (HTTP proxy pattern)
-- ✅ Authentication flow verified (JWT validation)
-- ✅ All execution logic matches original implementation
-- ✅ **CRITICAL**: All 9 node types successfully implemented and tested:
+** Phase 1 Status: COMPLETE WITH ALL NODE TYPES**
+-  API Gateway service running and tested (auth, routing, CORS)
+-  Workflow Engine service extracted with all logic preserved
+-  Service-to-service communication working (HTTP proxy pattern)
+-  Authentication flow verified (JWT validation)
+-  All execution logic matches original implementation
+-  **CRITICAL**: All 9 node types successfully implemented and tested:
   - webSource, aiProcessor, httpRequest, fileNode, dataStructuring
   - chartGenerator (fixed naming mismatch), linearRegression
   - postgres, randomForest (newly added)
-- ✅ Node executor architecture standardized with proper error handling
-- ✅ Frontend-backend compatibility ensured (chart node type fixed)
-- ✅ 30/32 tests passing (2 failures are database dependency issues)
+-  Node executor architecture standardized with proper error handling
+-  Frontend-backend compatibility ensured (chart node type fixed)
+-  30/32 tests passing (2 failures are database dependency issues)
 
 ### Phase 2: Dashboard Service (Week 2)
 
@@ -685,16 +685,16 @@ services:
 - [x] Create comprehensive test suite (39 test cases)
 - [x] Verify all functionality matches original implementation
 
-**✅ Phase 2 Status: COMPLETE**
-- ✅ Dashboard service extracted with all functionality preserved
-- ✅ FastAPI microservice with proper authentication and routing
-- ✅ Service-to-service communication with workflow engine established
-- ✅ Embedding endpoints implemented for public iframe access
-- ✅ Database models adapted for microservice architecture
-- ✅ Comprehensive test coverage with 39 test cases (models and APIs tested)
-- ✅ All CRUD operations working (dashboards and widgets)
-- ✅ API Gateway integration verified (dashboard routing already configured)
-- ✅ Maintains exact functionality of original Flask implementation
+** Phase 2 Status: COMPLETE**
+-  Dashboard service extracted with all functionality preserved
+-  FastAPI microservice with proper authentication and routing
+-  Service-to-service communication with workflow engine established
+-  Embedding endpoints implemented for public iframe access
+-  Database models adapted for microservice architecture
+-  Comprehensive test coverage with 39 test cases (models and APIs tested)
+-  All CRUD operations working (dashboards and widgets)
+-  API Gateway integration verified (dashboard routing already configured)
+-  Maintains exact functionality of original Flask implementation
 
 ### Phase 3: Embed SDK (Week 3)
 
@@ -768,7 +768,7 @@ services:
 - [ ] Create contributor guidelines
 - [ ] Set up automated testing pipeline
 
-## 🧪 Testing Strategy
+##  Testing Strategy
 
 ### Unit Tests
 ```bash
@@ -826,7 +826,7 @@ npm run test:e2e
 </html>
 ```
 
-## 🚀 Usage Examples
+##  Usage Examples
 
 ### Execute Workflows via API
 ```python
@@ -905,7 +905,7 @@ function MyApp() {
 }
 ```
 
-## 🎯 Success Criteria
+##  Success Criteria
 
 ### Technical Success
 - [ ] Can deploy services independently

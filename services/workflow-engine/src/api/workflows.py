@@ -263,7 +263,7 @@ async def delete_workflow_node(
     db: Session = Depends(get_db)
 ):
     """Delete a workflow node (legacy endpoint)"""
-    logger.info(f"🗑️ Backend: Deleting node {node_id} from agent {agent_id} for user {current_user.user_id}")
+    logger.info(f" Backend: Deleting node {node_id} from agent {agent_id} for user {current_user.user_id}")
     
     workflow = db.query(AgentWorkflow).filter(
         AgentWorkflow.agent_id == agent_id,
@@ -271,10 +271,10 @@ async def delete_workflow_node(
     ).first()
     
     if not workflow:
-        logger.error(f"🗑️ Backend: Workflow not found for agent {agent_id}")
+        logger.error(f" Backend: Workflow not found for agent {agent_id}")
         raise HTTPException(status_code=404, detail="Workflow not found")
     
-    logger.info(f"🗑️ Backend: Found workflow {workflow.id} with {len(workflow.nodes or [])} nodes")
+    logger.info(f" Backend: Found workflow {workflow.id} with {len(workflow.nodes or [])} nodes")
     
     # Delete node record
     node = db.query(WorkflowNode).filter(
@@ -283,10 +283,10 @@ async def delete_workflow_node(
     ).first()
     
     if node:
-        logger.info(f"🗑️ Backend: Deleting WorkflowNode record for {node_id}")
+        logger.info(f" Backend: Deleting WorkflowNode record for {node_id}")
         db.delete(node)
     else:
-        logger.warning(f"🗑️ Backend: WorkflowNode record not found for {node_id}")
+        logger.warning(f" Backend: WorkflowNode record not found for {node_id}")
     
     # Remove from workflow nodes array
     workflow_nodes = workflow.nodes or []
@@ -294,7 +294,7 @@ async def delete_workflow_node(
     workflow.nodes = [n for n in workflow_nodes if n.get('id') != node_id]
     new_count = len(workflow.nodes)
     
-    logger.info(f"🗑️ Backend: Removed from nodes JSON array: {original_count} -> {new_count}")
+    logger.info(f" Backend: Removed from nodes JSON array: {original_count} -> {new_count}")
     
     # Remove from workflow edges array
     workflow_edges = workflow.edges or []
@@ -305,10 +305,10 @@ async def delete_workflow_node(
     ]
     new_edge_count = len(workflow.edges)
     
-    logger.info(f"🗑️ Backend: Removed from edges JSON array: {original_edge_count} -> {new_edge_count}")
+    logger.info(f" Backend: Removed from edges JSON array: {original_edge_count} -> {new_edge_count}")
     
     db.commit()
-    logger.info(f"🗑️ Backend: Database commit completed for node {node_id}")
+    logger.info(f" Backend: Database commit completed for node {node_id}")
     
     return {"success": True}
 
@@ -320,7 +320,7 @@ async def delete_workflow_node_by_id(
     db: Session = Depends(get_db)
 ):
     """Delete a workflow node by workflow ID (new API)"""
-    logger.info(f"🗑️ Backend: Deleting node {node_id} from workflow {workflow_id} for user {current_user.user_id}")
+    logger.info(f" Backend: Deleting node {node_id} from workflow {workflow_id} for user {current_user.user_id}")
     
     workflow = db.query(AgentWorkflow).filter(
         AgentWorkflow.id == workflow_id,
@@ -328,10 +328,10 @@ async def delete_workflow_node_by_id(
     ).first()
     
     if not workflow:
-        logger.error(f"🗑️ Backend: Workflow not found for id {workflow_id}")
+        logger.error(f" Backend: Workflow not found for id {workflow_id}")
         raise HTTPException(status_code=404, detail="Workflow not found")
     
-    logger.info(f"🗑️ Backend: Found workflow {workflow.id} with {len(workflow.nodes or [])} nodes")
+    logger.info(f" Backend: Found workflow {workflow.id} with {len(workflow.nodes or [])} nodes")
     
     # Delete node record
     node = db.query(WorkflowNode).filter(
@@ -340,10 +340,10 @@ async def delete_workflow_node_by_id(
     ).first()
     
     if node:
-        logger.info(f"🗑️ Backend: Deleting WorkflowNode record for {node_id}")
+        logger.info(f" Backend: Deleting WorkflowNode record for {node_id}")
         db.delete(node)
     else:
-        logger.warning(f"🗑️ Backend: WorkflowNode record not found for {node_id}")
+        logger.warning(f" Backend: WorkflowNode record not found for {node_id}")
     
     # Remove from workflow nodes array
     workflow_nodes = workflow.nodes or []
@@ -351,7 +351,7 @@ async def delete_workflow_node_by_id(
     workflow.nodes = [n for n in workflow_nodes if n.get('id') != node_id]
     new_count = len(workflow.nodes)
     
-    logger.info(f"🗑️ Backend: Removed from nodes JSON array: {original_count} -> {new_count}")
+    logger.info(f" Backend: Removed from nodes JSON array: {original_count} -> {new_count}")
     
     # Remove from workflow edges array
     workflow_edges = workflow.edges or []
@@ -362,10 +362,10 @@ async def delete_workflow_node_by_id(
     ]
     new_edge_count = len(workflow.edges)
     
-    logger.info(f"🗑️ Backend: Removed from edges JSON array: {original_edge_count} -> {new_edge_count}")
+    logger.info(f" Backend: Removed from edges JSON array: {original_edge_count} -> {new_edge_count}")
     
     db.commit()
-    logger.info(f"🗑️ Backend: Database commit completed for node {node_id}")
+    logger.info(f" Backend: Database commit completed for node {node_id}")
     
     return {"success": True}
 

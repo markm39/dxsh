@@ -391,7 +391,7 @@ def inject_visual_selector_script(html_content: str) -> str:
     
     <script>
     // Full Visual Element Selector Logic (Injected by Proxy)
-    console.log('🎯 Visual Element Selector script injected by proxy');
+    console.log(' Visual Element Selector script injected by proxy');
     
     // Types and constants
     const SELECTION_MODES = {
@@ -657,7 +657,7 @@ def inject_visual_selector_script(html_content: str) -> str:
             containerSelector: containerSelector
         };
         
-        console.log('📨 Sending selection to parent:', message);
+        console.log(' Sending selection to parent:', message);
         
         if (window.parent && window.parent !== window) {
             window.parent.postMessage(message, '*');
@@ -666,7 +666,7 @@ def inject_visual_selector_script(html_content: str) -> str:
     
     // Enable selection
     function enableSelection() {
-        console.log('🎯 Enabling visual element selection');
+        console.log(' Enabling visual element selection');
         isSelectionEnabled = true;
         createHighlightBox();
         document.body.classList.add('element-selector-active');
@@ -677,7 +677,7 @@ def inject_visual_selector_script(html_content: str) -> str:
     
     // Disable selection
     function disableSelection() {
-        console.log('🛑 Disabling visual element selection');
+        console.log(' Disabling visual element selection');
         isSelectionEnabled = false;
         clearTempHighlights();
         hideHighlightBox();
@@ -692,12 +692,12 @@ def inject_visual_selector_script(html_content: str) -> str:
         
         if (message.type === 'SET_SELECTION_MODE') {
             selectionMode = message.mode || 'all';
-            console.log('🎯 Selection mode set to:', selectionMode);
+            console.log(' Selection mode set to:', selectionMode);
         }
         
         if (message.type === 'SET_CONTAINER_SELECTOR') {
             containerSelector = message.selector;
-            console.log('📦 Container selector set to:', containerSelector);
+            console.log(' Container selector set to:', containerSelector);
         }
         
         if (message.type === 'ENABLE_SELECTION') {
@@ -711,7 +711,7 @@ def inject_visual_selector_script(html_content: str) -> str:
     
     // Auto-enable selection
     setTimeout(() => {
-        console.log('🚀 Auto-enabling visual element selection');
+        console.log(' Auto-enabling visual element selection');
         enableSelection();
         
         // Notify parent that we're ready

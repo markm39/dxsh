@@ -28,7 +28,7 @@ export class RawModeHandler implements ModeHandler {
   }
 
   handleHover(target: Element, context: ModeHandlerContext): void {
-    console.log(`🔍 RAW MODE: Highlighting specific element ${target.tagName.toLowerCase()}`);
+    console.log(` RAW MODE: Highlighting specific element ${target.tagName.toLowerCase()}`);
     
     const overlay = context.createHighlightOverlay(target);
     overlay.style.border = '3px solid #00d4ff';
@@ -46,7 +46,7 @@ export class RawModeHandler implements ModeHandler {
   }
 
   handleClick(target: Element, context: ModeHandlerContext): SelectedElement {
-    console.log(`🎯 RAW MODE: Selecting specific element ${target.tagName.toLowerCase()}`);
+    console.log(` RAW MODE: Selecting specific element ${target.tagName.toLowerCase()}`);
     
     const selector = generateOptimalSelector(target, context.doc, { isRepeating: false });
     const matchingElements = context.doc.querySelectorAll(selector);
@@ -79,16 +79,16 @@ export class TableModeHandler implements ModeHandler {
   }
 
   handleHover(target: Element, context: ModeHandlerContext): void {
-    console.log(`🔍 TABLE MODE: Checking if ${target.tagName.toLowerCase()} is table element`);
+    console.log(` TABLE MODE: Checking if ${target.tagName.toLowerCase()} is table element`);
     
     // Only highlight if hovering over table elements - restrict to table tag only
     const isTableElement = target.tagName.toLowerCase() === 'table';
     if (!isTableElement) {
-      console.log(`❌ Not a <table> element, ignoring`);
+      console.log(` Not a <table> element, ignoring`);
       return;
     }
     
-    console.log(`✅ Highlighting table: ${target.tagName.toLowerCase()}`);
+    console.log(` Highlighting table: ${target.tagName.toLowerCase()}`);
     
     const overlay = context.createHighlightOverlay(target);
     overlay.style.border = '3px solid #22c55e';
@@ -106,12 +106,12 @@ export class TableModeHandler implements ModeHandler {
   }
 
   handleClick(target: Element, context: ModeHandlerContext): SelectedElement | null {
-    console.log(`🎯 TABLE MODE: Attempting to select table element`);
+    console.log(` TABLE MODE: Attempting to select table element`);
     
     // Only allow clicking on table elements - restrict to table tag only
     const isTableElement = target.tagName.toLowerCase() === 'table';
     if (!isTableElement) {
-      console.log(`❌ Not a <table> element, cannot select`);
+      console.log(` Not a <table> element, cannot select`);
       return null;
     }
     
@@ -154,11 +154,11 @@ export class RepeatingModeHandler implements ModeHandler {
   }
 
   private handleContainerHover(target: Element, context: ModeHandlerContext): void {
-    console.log(`🔍 REPEATING MODE: Finding containers like ${target.tagName.toLowerCase()}`);
+    console.log(` REPEATING MODE: Finding containers like ${target.tagName.toLowerCase()}`);
     
     const matches = findElementsWithSameStructure(target, context.doc);
     
-    console.log(`🎯 Highlighting ${matches.length} matching containers:`);
+    console.log(` Highlighting ${matches.length} matching containers:`);
     matches.forEach((match, index) => {
       console.log(`   ${index + 1}. ${match.tagName.toLowerCase()} - ${match.textContent?.trim().slice(0, 50)}...`);
       
@@ -181,7 +181,7 @@ export class RepeatingModeHandler implements ModeHandler {
   private handleFieldHover(target: Element, context: ModeHandlerContext): void {
     if (!context.currentContainerSelector) return;
     
-    console.log(`🔍 FIELD MODE: Finding fields like ${target.tagName.toLowerCase()}`);
+    console.log(` FIELD MODE: Finding fields like ${target.tagName.toLowerCase()}`);
     
     // Find all containers and highlight matching fields in each
     const containers = context.doc.querySelectorAll(context.currentContainerSelector);
@@ -189,7 +189,7 @@ export class RepeatingModeHandler implements ModeHandler {
     
     if (containingContainer) {
       const subSelector = computeRelativeSelector(target, containingContainer);
-      console.log(`📍 Field sub-selector: ${subSelector}`);
+      console.log(` Field sub-selector: ${subSelector}`);
       
       containers.forEach((container) => {
         const fieldsInContainer = container.querySelectorAll(subSelector);
@@ -223,7 +223,7 @@ export class RepeatingModeHandler implements ModeHandler {
   }
 
   private handleContainerClick(target: Element, context: ModeHandlerContext): SelectedElement {
-    console.log(`🎯 REPEATING MODE: Selecting container for ${target.tagName.toLowerCase()}`);
+    console.log(` REPEATING MODE: Selecting container for ${target.tagName.toLowerCase()}`);
     
     const matches = findElementsWithSameStructure(target, context.doc);
     const containerSelector = generateOptimalSelector(target, context.doc, { 
@@ -232,7 +232,7 @@ export class RepeatingModeHandler implements ModeHandler {
       maxMatches: 50 
     });
     
-    console.log(`🎯 Final container selection: ${matches.length} elements with selector: ${containerSelector}`);
+    console.log(` Final container selection: ${matches.length} elements with selector: ${containerSelector}`);
 
     const newContainer: SelectedElement = {
       selector: containerSelector,
@@ -260,20 +260,20 @@ export class RepeatingModeHandler implements ModeHandler {
 
   private handleFieldClick(target: Element, context: ModeHandlerContext): SelectedElement | null {
     if (!context.containerElement || !context.currentContainerSelector) {
-      console.log(`❌ No container selected for field`);
+      console.log(` No container selected for field`);
       return null;
     }
 
-    console.log(`🎯 REPEATING MODE: Selecting field ${target.tagName.toLowerCase()}`);
+    console.log(` REPEATING MODE: Selecting field ${target.tagName.toLowerCase()}`);
     
     const containingContainer = target.closest(context.currentContainerSelector);
     if (!containingContainer) {
-      console.log(`❌ Target is not within a container`);
+      console.log(` Target is not within a container`);
       return null;
     }
 
     const subSelector = computeRelativeSelector(target, containingContainer);
-    console.log(`📍 Field sub-selector: ${subSelector}`);
+    console.log(` Field sub-selector: ${subSelector}`);
 
     // Count matches across all containers
     const containers = context.doc.querySelectorAll(context.currentContainerSelector);
@@ -298,7 +298,7 @@ export class RepeatingModeHandler implements ModeHandler {
       name: "", // Will be set by user
     };
 
-    console.log(`✅ Selected field with ${totalMatches} matches across ${containers.length} containers`);
+    console.log(` Selected field with ${totalMatches} matches across ${containers.length} containers`);
     return fieldElement;
   }
 }

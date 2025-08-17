@@ -65,7 +65,7 @@ export const findElementsWithSameStructure = (element: Element, doc: Document): 
       child.tagName === element.tagName
     );
     if (siblings.length > 1) {
-      console.log(`📍 Found ${siblings.length} siblings with same tag`);
+      console.log(` Found ${siblings.length} siblings with same tag`);
       return siblings;
     }
   }
@@ -79,7 +79,7 @@ export const findElementsWithSameStructure = (element: Element, doc: Document): 
         .filter(el => getElementDepth(el) === elementDepth);
         
       if (classMatches.length > 1 && classMatches.length < 50) {
-        console.log(`📍 Found ${classMatches.length} matches with class .${mainClass} at same depth`);
+        console.log(` Found ${classMatches.length} matches with class .${mainClass} at same depth`);
         return classMatches;
       }
     }
@@ -91,11 +91,11 @@ export const findElementsWithSameStructure = (element: Element, doc: Document): 
     .filter(el => getElementDepth(el) === elementDepth);
     
   if (tagMatches.length > 1 && tagMatches.length < 20) {
-    console.log(`📍 Found ${tagMatches.length} matches with same tag at depth ${elementDepth}`);
+    console.log(` Found ${tagMatches.length} matches with same tag at depth ${elementDepth}`);
     return tagMatches;
   }
   
-  console.log(`❌ No repeating pattern found`);
+  console.log(` No repeating pattern found`);
   return [element]; // Return just the element itself
 };
 

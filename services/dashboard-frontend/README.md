@@ -4,21 +4,21 @@ A professional dashboard application for visualizing data from Dxsh. Built with 
 
 ## Features
 
-### ✨ Core Features
+###  Core Features
 - **Responsive Grid Layout**: Drag-and-drop widget positioning with React Grid Layout
 - **Real-time Data**: Live updates from Dxsh via API polling
 - **Multiple Widget Types**: Charts, metrics, tables, and more
 - **Theme Support**: Light and dark themes with custom theme creation
 - **Professional UI**: Built with Tailwind CSS and modern design principles
 
-### 📊 Widget Types
+###  Widget Types
 - **Chart Widgets**: Line, bar, pie charts using Recharts
 - **Metric Widgets**: KPIs with trend indicators and thresholds
 - **Table Widgets**: Data tables with sorting and filtering *(coming soon)*
 - **Text Widgets**: Markdown and HTML content *(coming soon)*
 - **Model Interface Widgets**: ML model prediction interfaces *(coming soon)*
 
-### 🎯 Dashboard Management
+###  Dashboard Management
 - **Edit Mode**: Drag, resize, and configure widgets
 - **Real-time Preview**: See changes instantly
 - **Auto-save**: Automatic saving of layout changes
@@ -166,17 +166,17 @@ npm run test:e2e:ui
 ### Project Structure
 ```
 dashboard/
-├── src/
-│   ├── components/          # Reusable components
-│   │   ├── widgets/        # Widget implementations
-│   │   └── grid/           # Grid layout components
-│   ├── hooks/              # Custom React hooks
-│   ├── pages/              # Route components
-│   ├── providers/          # Context providers
-│   ├── services/           # API services
-│   └── test/              # Test utilities
-├── public/                 # Static assets
-└── dist/                  # Production build
+ src/
+    components/          # Reusable components
+       widgets/        # Widget implementations
+       grid/           # Grid layout components
+    hooks/              # Custom React hooks
+    pages/              # Route components
+    providers/          # Context providers
+    services/           # API services
+    test/              # Test utilities
+ public/                 # Static assets
+ dist/                  # Production build
 ```
 
 ### Data Flow

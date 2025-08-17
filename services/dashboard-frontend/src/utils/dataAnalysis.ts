@@ -45,28 +45,28 @@ export interface DataStructureAnalysis {
  * Analyze any data structure and detect tables, fields, and types
  */
 export function analyzeDataStructure(data: any): DataStructureAnalysis {
-  console.log('🔍 analyzeDataStructure called with data:', typeof data, data);
-  console.log('🔍 Is Array?', Array.isArray(data));
+  console.log(' analyzeDataStructure called with data:', typeof data, data);
+  console.log(' Is Array?', Array.isArray(data));
   
   // Handle case where data is a JSON string that needs parsing
   if (typeof data === 'string') {
     try {
-      console.log('🔧 Attempting to parse string as JSON...');
+      console.log(' Attempting to parse string as JSON...');
       data = JSON.parse(data);
-      console.log('✅ Successfully parsed JSON:', typeof data, Array.isArray(data));
+      console.log(' Successfully parsed JSON:', typeof data, Array.isArray(data));
     } catch (error) {
-      console.log('❌ Failed to parse as JSON, treating as primitive string');
+      console.log(' Failed to parse as JSON, treating as primitive string');
     }
   }
   
   if (Array.isArray(data)) {
-    console.log('🔍 Array length:', data.length);
-    console.log('🔍 First item:', data[0]);
-    console.log('🔍 First item type:', typeof data[0]);
+    console.log(' Array length:', data.length);
+    console.log(' First item:', data[0]);
+    console.log(' First item type:', typeof data[0]);
   }
   
   if (!data) {
-    console.log('🚫 analyzeDataStructure: No data provided');
+    console.log(' analyzeDataStructure: No data provided');
     return {
       isTable: false,
       tables: [],
@@ -77,7 +77,7 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
 
   // Handle direct arrays (most common table format)
   if (Array.isArray(data)) {
-    console.log('🔍 analyzeDataStructure: Processing array with length:', data.length);
+    console.log(' analyzeDataStructure: Processing array with length:', data.length);
     
     if (data.length === 0) {
       return {
@@ -90,18 +90,18 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
 
     // Special case: Single-item array that might contain nested table data or be a table itself
     if (data.length === 1 && data[0] && typeof data[0] === 'object' && !Array.isArray(data[0])) {
-      console.log('🔍 analyzeDataStructure: Single-item array detected, checking for nested tables');
+      console.log(' analyzeDataStructure: Single-item array detected, checking for nested tables');
       const singleItem = data[0];
       const nestedTables: TableInfo[] = [];
       
       // Look for nested table arrays within the single object
       for (const [key, value] of Object.entries(singleItem)) {
         if (Array.isArray(value) && value.length > 0 && !key.startsWith('_')) {
-          console.log(`📊 Checking nested array "${key}" with ${value.length} items`);
+          console.log(` Checking nested array "${key}" with ${value.length} items`);
           if (isTableArray(value)) {
             const tableInfo = analyzeTable(key, value);
             nestedTables.push(tableInfo);
-            console.log(`✅ Found nested table "${key}" with confidence ${tableInfo.confidence}`);
+            console.log(` Found nested table "${key}" with confidence ${tableInfo.confidence}`);
           }
         }
       }
@@ -112,7 +112,7 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
           current.confidence > best.confidence ? current : best
         );
         
-        console.log(`🏆 Using nested table "${primaryTable.name}" as primary`);
+        console.log(` Using nested table "${primaryTable.name}" as primary`);
         return {
           isTable: true,
           tables: nestedTables,
@@ -125,7 +125,7 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
       // If no nested tables found, check if the single object itself represents structured data
       const objectKeys = Object.keys(singleItem);
       if (objectKeys.length > 0) {
-        console.log(`📊 Single-object array with ${objectKeys.length} fields, treating as key-value chart data`);
+        console.log(` Single-object array with ${objectKeys.length} fields, treating as key-value chart data`);
         const tableInfo = analyzeSingleObjectAsChart('data', data);
         return {
           isTable: true,
@@ -159,26 +159,26 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
 
   // Handle objects (may contain nested tables)
   if (typeof data === 'object') {
-    console.log('🔍 analyzeDataStructure: Processing object with keys:', Object.keys(data));
+    console.log(' analyzeDataStructure: Processing object with keys:', Object.keys(data));
     const tables: TableInfo[] = [];
     let primaryTable: TableInfo | undefined;
     let highestConfidence = 0;
 
     for (const [key, value] of Object.entries(data)) {
-      console.log(`🔍 Checking key "${key}":`, Array.isArray(value) ? `Array with ${value.length} items` : typeof value);
+      console.log(` Checking key "${key}":`, Array.isArray(value) ? `Array with ${value.length} items` : typeof value);
       
       if (Array.isArray(value) && value.length > 0 && !key.startsWith('_')) {
-        console.log(`📊 Analyzing potential table "${key}" with ${value.length} rows`);
+        console.log(` Analyzing potential table "${key}" with ${value.length} rows`);
         if (isTableArray(value)) {
           const tableInfo = analyzeTable(key, value);
           tables.push(tableInfo);
-          console.log(`✅ Added table "${key}" with confidence ${tableInfo.confidence}`);
+          console.log(` Added table "${key}" with confidence ${tableInfo.confidence}`);
           
           // Primary table is the one with highest confidence
           if (tableInfo.confidence > highestConfidence) {
             highestConfidence = tableInfo.confidence;
             primaryTable = tableInfo;
-            console.log(`🏆 New primary table: "${key}" (confidence: ${tableInfo.confidence})`);
+            console.log(` New primary table: "${key}" (confidence: ${tableInfo.confidence})`);
           }
         }
       }
@@ -206,14 +206,14 @@ export function analyzeDataStructure(data: any): DataStructureAnalysis {
  */
 function isTableArray(arr: any[]): boolean {
   if (arr.length === 0) {
-    console.log('🚫 isTableArray: Empty array');
+    console.log(' isTableArray: Empty array');
     return false;
   }
   
   // Check if all items are objects
   const allObjects = arr.every(item => item && typeof item === 'object' && !Array.isArray(item));
   if (!allObjects) {
-    console.log('🚫 isTableArray: Not all items are objects', arr.slice(0, 3));
+    console.log(' isTableArray: Not all items are objects', arr.slice(0, 3));
     return false;
   }
 
@@ -222,7 +222,7 @@ function isTableArray(arr: any[]): boolean {
   const firstKeys = Object.keys(firstItem);
   
   if (firstKeys.length === 0) {
-    console.log('🚫 isTableArray: First item has no keys');
+    console.log(' isTableArray: First item has no keys');
     return false;
   }
 
@@ -244,7 +244,7 @@ function isTableArray(arr: any[]): boolean {
   const fieldConsistency = consistentFields / totalFields;
   const isTable = fieldConsistency >= 0.6; // At least 60% of fields are consistent
   
-  console.log(`📊 isTableArray: ${isTable ? '✅' : '❌'} Table detection - ${consistentFields}/${totalFields} consistent fields (${(fieldConsistency * 100).toFixed(1)}%)`, {
+  console.log(` isTableArray: ${isTable ? '' : ''} Table detection - ${consistentFields}/${totalFields} consistent fields (${(fieldConsistency * 100).toFixed(1)}%)`, {
     arrayLength: arr.length,
     firstKeys,
     fieldConsistency
@@ -257,7 +257,7 @@ function isTableArray(arr: any[]): boolean {
  * Analyze a table array and extract field information
  */
 function analyzeTable(tableName: string, data: any[]): TableInfo {
-  console.log(`📊 analyzeTable: Analyzing table "${tableName}" with ${data.length} rows`);
+  console.log(` analyzeTable: Analyzing table "${tableName}" with ${data.length} rows`);
   
   if (data.length === 0) {
     return {
@@ -280,7 +280,7 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
     }
   });
 
-  console.log(`📋 analyzeTable: Found ${allKeys.size} unique keys:`, Array.from(allKeys));
+  console.log(` analyzeTable: Found ${allKeys.size} unique keys:`, Array.from(allKeys));
 
   // Analyze each field
   for (const key of Array.from(allKeys)) {
@@ -289,7 +289,7 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
       .filter(val => val !== undefined && val !== null);
 
     if (values.length === 0) {
-      console.log(`⚠️ analyzeTable: Skipping key "${key}" - no valid values`);
+      console.log(` analyzeTable: Skipping key "${key}" - no valid values`);
       continue;
     }
 
@@ -298,7 +298,7 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
     const uniqueValues = [...new Set(values)];
     const nullCount = data.length - values.length;
     
-    console.log(`🏷️ analyzeTable: Field "${key}" - type: ${fieldType}, values: ${values.length}, unique: ${uniqueValues.length}, nulls: ${nullCount}`);
+    console.log(` analyzeTable: Field "${key}" - type: ${fieldType}, values: ${values.length}, unique: ${uniqueValues.length}, nulls: ${nullCount}`);
 
     const fieldInfo: FieldInfo = {
       key,
@@ -327,16 +327,16 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
 
     // For object and array fields, analyze nested structure
     if (fieldType === 'object' && sampleValue && typeof sampleValue === 'object') {
-      console.log(`🔍 Analyzing nested object field "${key}"`);
+      console.log(` Analyzing nested object field "${key}"`);
       fieldInfo.nestedFields = analyzeNestedObject(sampleValue, key, 1, 3, key);
-      console.log(`📋 Found ${fieldInfo.nestedFields.length} nested fields in "${key}"`);
+      console.log(` Found ${fieldInfo.nestedFields.length} nested fields in "${key}"`);
     } else if (fieldType === 'array' && Array.isArray(sampleValue) && sampleValue.length > 0) {
-      console.log(`🔍 Analyzing array field "${key}" with ${sampleValue.length} items`);
+      console.log(` Analyzing array field "${key}" with ${sampleValue.length} items`);
       // For arrays, analyze the structure across multiple samples
       const arrayStructure = analyzeArrayFieldStructure(values.filter(v => Array.isArray(v)), key);
       if (arrayStructure.length > 0) {
         fieldInfo.nestedFields = arrayStructure;
-        console.log(`📋 Found ${fieldInfo.nestedFields.length} nested fields in array "${key}"`);
+        console.log(` Found ${fieldInfo.nestedFields.length} nested fields in array "${key}"`);
       }
     }
 
@@ -346,7 +346,7 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
   // Calculate table confidence based on field quality and consistency
   const confidence = calculateTableConfidence(data, fields);
 
-  console.log(`✅ analyzeTable: Completed analysis of "${tableName}" - ${fields.length} fields, confidence: ${confidence}`);
+  console.log(` analyzeTable: Completed analysis of "${tableName}" - ${fields.length} fields, confidence: ${confidence}`);
 
   return {
     name: tableName,
@@ -361,7 +361,7 @@ function analyzeTable(tableName: string, data: any[]): TableInfo {
  * Analyze a single-object array for charting (transpose keys/values)
  */
 function analyzeSingleObjectAsChart(tableName: string, data: any[]): TableInfo {
-  console.log(`📊 analyzeSingleObjectAsChart: Creating individual fields for each key-value pair`);
+  console.log(` analyzeSingleObjectAsChart: Creating individual fields for each key-value pair`);
   
   if (data.length !== 1 || !data[0] || typeof data[0] !== 'object') {
     // Fallback to regular table analysis
@@ -400,7 +400,7 @@ function analyzeSingleObjectAsChart(tableName: string, data: any[]): TableInfo {
   // The chart widgets will handle the field selection and data extraction
   const transformedData = [singleObject];
 
-  console.log(`✅ analyzeSingleObjectAsChart: Created ${fields.length} individual fields:`, fields.map(f => `${f.key} (${f.type})`));
+  console.log(` analyzeSingleObjectAsChart: Created ${fields.length} individual fields:`, fields.map(f => `${f.key} (${f.type})`));
 
   return {
     name: tableName,
@@ -766,7 +766,7 @@ function getNestedFieldDescription(
   value: any,
   depth: number
 ): string {
-  const prefix = depth > 0 ? `${'  '.repeat(depth)}└─ ` : '';
+  const prefix = depth > 0 ? `${'  '.repeat(depth)} ` : '';
   
   switch (type) {
     case 'object':

@@ -286,7 +286,7 @@ describe('MetricWidget', () => {
         config: {
           valueKey: 'total',
           format: 'number',
-          icon: '📊',
+          icon: '',
         } as MetricWidgetConfig,
       });
 
@@ -298,7 +298,7 @@ describe('MetricWidget', () => {
       );
 
       await waitFor(() => {
-        expect(screen.getByText('📊')).toBeInTheDocument();
+        expect(screen.getByText('')).toBeInTheDocument();
         expect(screen.getByText('450')).toBeInTheDocument();
       });
     });

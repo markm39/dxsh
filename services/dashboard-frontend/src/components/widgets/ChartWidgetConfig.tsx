@@ -122,9 +122,9 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
 }) => {
   const { data, isLoading, error } = useWidgetData(dashboardId, widget);
   
-  console.log('📊 ChartWidgetConfig - Raw Data:', data);
-  console.log('📊 ChartWidgetConfig - Loading:', isLoading);
-  console.log('📊 ChartWidgetConfig - Error:', error);
+  console.log(' ChartWidgetConfig - Raw Data:', data);
+  console.log(' ChartWidgetConfig - Loading:', isLoading);
+  console.log(' ChartWidgetConfig - Error:', error);
   
   const [config, setConfig] = useState<ChartWidgetConfig>(
     widget.config as ChartWidgetConfig || {
@@ -177,10 +177,10 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
   }, [primaryTable, config.xAxis, config.yAxis]);
 
   const handleConfigChange = (updates: Partial<ChartWidgetConfig>) => {
-    console.log('🔧 Config change:', updates);
+    console.log(' Config change:', updates);
     setConfig(prev => {
       const newConfig = { ...prev, ...updates };
-      console.log('🔧 New config:', newConfig);
+      console.log(' New config:', newConfig);
       return newConfig;
     });
   };
@@ -266,12 +266,12 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
 
   // Get unique values for a categorical field
   const getUniqueValuesForField = (fieldPath: string): string[] => {
-    console.log('🔍 getUniqueValuesForField called with:', fieldPath);
-    console.log('🔍 Data available:', data?.length || 0, 'items');
-    console.log('🔍 Data structure:', data?.[0]);
+    console.log(' getUniqueValuesForField called with:', fieldPath);
+    console.log(' Data available:', data?.length || 0, 'items');
+    console.log(' Data structure:', data?.[0]);
     
     if (!data || data.length === 0) {
-      console.log('❌ No data available');
+      console.log(' No data available');
       return [];
     }
     
@@ -279,13 +279,13 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
     
     // First, let's try to find the data from the primary table analysis
     if (primaryTable && primaryTable.data) {
-      console.log('🔍 Using primary table data:', primaryTable.data.length, 'items');
-      console.log('🔍 Sample item from primary table:', primaryTable.data[0]);
+      console.log(' Using primary table data:', primaryTable.data.length, 'items');
+      console.log(' Sample item from primary table:', primaryTable.data[0]);
       
       primaryTable.data.forEach((item: any, index: number) => {
         const value = getNestedValue(item, fieldPath);
         if (index < 3) { // Log first 3 items for debugging
-          console.log(`🔍 Primary table item ${index}:`, { item, fieldPath, extractedValue: value });
+          console.log(` Primary table item ${index}:`, { item, fieldPath, extractedValue: value });
         }
         if (value !== undefined && value !== null && value !== '') {
           values.add(String(value));
@@ -293,11 +293,11 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
       });
     } else {
       // Fallback to raw data
-      console.log('🔍 Using raw data fallback');
+      console.log(' Using raw data fallback');
       data.forEach((item: any, index: number) => {
         const value = getNestedValue(item, fieldPath);
         if (index < 3) { // Log first 3 items for debugging
-          console.log(`🔍 Raw data item ${index}:`, { item, fieldPath, extractedValue: value });
+          console.log(` Raw data item ${index}:`, { item, fieldPath, extractedValue: value });
         }
         if (value !== undefined && value !== null && value !== '') {
           values.add(String(value));
@@ -306,7 +306,7 @@ const ChartWidgetConfig: React.FC<ChartWidgetConfigProps> = ({
     }
     
     const uniqueValues = Array.from(values).sort();
-    console.log('🔍 Unique values found:', uniqueValues);
+    console.log(' Unique values found:', uniqueValues);
     return uniqueValues;
   };
 

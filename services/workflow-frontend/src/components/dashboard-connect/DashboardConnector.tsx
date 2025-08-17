@@ -268,18 +268,18 @@ const DashboardConnector: React.FC<DashboardConnectorProps> = ({
   const getNodeTypeIcon = (type: string) => {
     switch (type) {
       case 'webSource':
-        return '🌐';
+        return '';
       case 'httpRequest':
-        return '📡';
+        return '';
       case 'aiProcessor':
-        return '🤖';
+        return '';
       case 'chartGenerator':
-        return '📊';
+        return '';
       case 'linearRegression':
       case 'randomForest':
-        return '🤖';
+        return '';
       default:
-        return '⚙️';
+        return '';
     }
   };
 

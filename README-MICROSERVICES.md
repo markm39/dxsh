@@ -1,42 +1,42 @@
 # Dxsh Microservices Architecture
 
-🎉 **Migration Complete!** Dxsh has been successfully transformed from a monolithic architecture to a modern microservices platform.
+ **Migration Complete!** Dxsh has been successfully transformed from a monolithic architecture to a modern microservices platform.
 
-## 🏗️ Architecture Overview
+##  Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    CLIENT REQUEST                        │
-└─────────────────────┬───────────────────────────────────┘
-                     │
-┌─────────────────────▼───────────────────────────────────┐
-│              API GATEWAY (Port 5000)                    │
-│  • Authentication & Authorization                       │
-│  • Request Routing & Load Balancing                     │
-│  • CORS Handling for Embeddings                         │
-└─────┬─────────────────────┬─────────────────────┬───────┘
-      │                     │                     │
-┌─────▼─────┐      ┌─────────▼────────┐  ┌────────▼────────┐
-│WORKFLOW   │      │   DASHBOARD      │  │    BUILDER      │
-│ ENGINE    │      │    SERVICE       │  │    SERVICE      │
-│(Port 5001)│◄────►│  (Port 5002)     │  │  (Port 3000)    │
-│           │      │                  │  │                 │
-│• 9 Node   │      │• Dashboard CRUD  │  │• Visual Builder │
-│  Executors│      │• Widget Mgmt     │  │• React Frontend │
-│• Workflow │      │• Chart Gen       │  │• Real-time UI   │
-│  Execution│      │• Embed APIs      │  │                 │
-└───────────┘      └──────────────────┘  └─────────────────┘
-      │                     │                     │
-      └─────────────────────┼─────────────────────┘
-                           │
-              ┌─────────────▼──────────────┐
-              │         DATABASE           │
-              │      PostgreSQL +          │
-              │         Redis              │
-              └────────────────────────────┘
+
+                    CLIENT REQUEST                        
+
+                     
+
+              API GATEWAY (Port 5000)                    
+  • Authentication & Authorization                       
+  • Request Routing & Load Balancing                     
+  • CORS Handling for Embeddings                         
+
+                                                
+        
+WORKFLOW            DASHBOARD            BUILDER      
+ ENGINE              SERVICE             SERVICE      
+(Port 5001)  (Port 5002)         (Port 3000)    
+                                                      
+• 9 Node         • Dashboard CRUD    • Visual Builder 
+  Executors      • Widget Mgmt       • React Frontend 
+• Workflow       • Chart Gen         • Real-time UI   
+  Execution      • Embed APIs                         
+        
+                                                
+      
+                           
+              
+                       DATABASE           
+                    PostgreSQL +          
+                       Redis              
+              
 ```
 
-## 📦 Services
+##  Services
 
 ### 1. **API Gateway** (Port 5000)
 - **Purpose**: Single entry point for all client requests
@@ -74,7 +74,7 @@
   - Node configuration interfaces
   - Dashboard connection tools
 
-## 🚀 Deployment Modes
+##  Deployment Modes
 
 ### Full Suite (Recommended for Development)
 ```bash
@@ -97,7 +97,7 @@ docker-compose -f docker-compose.dashboard-only.yml up
 - **Access**: Dashboards and embedding at http://localhost:5000
 - **Use Case**: Customer-facing embeds, dashboard hosting
 
-## ⚡ Quick Start
+##  Quick Start
 
 1. **Clone and Setup**
    ```bash
@@ -121,7 +121,7 @@ docker-compose -f docker-compose.dashboard-only.yml up
    - **API Documentation**: http://localhost:5000/docs
    - **Health Checks**: http://localhost:5000/health
 
-## 🔗 API Endpoints
+##  API Endpoints
 
 ### Workflow Engine (via API Gateway)
 - `GET /v1/workflows` - List workflows
@@ -143,7 +143,7 @@ Authorization: Bearer <your-jwt-token>
 
 **Exception**: `/v1/embed/*` endpoints are public for iframe embedding.
 
-## 🎯 Embedding Dashboards
+##  Embedding Dashboards
 
 Embed dashboards in external websites using iframe:
 
@@ -162,7 +162,7 @@ Or use the JavaScript API:
 <dxsh-widget widget-id="456" theme="dark"></dxsh-widget>
 ```
 
-## 🛠️ Development
+##  Development
 
 ### Service Dependencies
 ```bash
@@ -190,7 +190,7 @@ cd services/dashboard-service && uvicorn src.main:app --reload --port 5002
 cd services/builder-service && npm run dev
 ```
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Test individual services
@@ -205,7 +205,7 @@ pytest integration_tests/
 cd services/builder-service && npm run test:e2e
 ```
 
-## 📊 Monitoring & Logs
+##  Monitoring & Logs
 
 ```bash
 # View logs for all services
@@ -218,7 +218,7 @@ docker-compose -f docker-compose.microservices.yml logs -f workflow-engine
 curl http://localhost:5000/health
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 - `OPENAI_API_KEY`: Required for AI processing nodes
@@ -231,17 +231,17 @@ curl http://localhost:5000/health
 - `DASHBOARD_SERVICE_URL=http://dashboard-service:5000`  
 - `BUILDER_SERVICE_URL=http://builder-service:3000`
 
-## 🎯 Migration Benefits
+##  Migration Benefits
 
-✅ **Independently deployable services**
-✅ **Embeddable dashboards and widgets**  
-✅ **API-first workflow execution**
-✅ **Scalable microservice architecture**
-✅ **100% functionality preservation**
-✅ **Multiple deployment modes**
-✅ **Clean service boundaries**
+ **Independently deployable services**
+ **Embeddable dashboards and widgets**  
+ **API-first workflow execution**
+ **Scalable microservice architecture**
+ **100% functionality preservation**
+ **Multiple deployment modes**
+ **Clean service boundaries**
 
-## 🚧 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -260,7 +260,7 @@ curl -H "Authorization: Bearer <token>" http://localhost:5000/v1/workflows
 docker-compose -f docker-compose.microservices.yml logs postgres
 ```
 
-## 📞 Support
+##  Support
 
 - **Issues**: Open GitHub issue with service logs
 - **Docs**: Full API documentation at `/docs` endpoints

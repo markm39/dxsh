@@ -99,14 +99,14 @@ Then create a pull request on GitHub with:
 
 ```
 dxsh/
-├── services/
-│   ├── workflow-engine/      # Core workflow execution
-│   ├── dashboard-service/    # Dashboard management
-│   ├── workflow-frontend/    # Workflow builder UI
-│   └── dashboard-frontend/   # Dashboard UI
-├── docs/                     # Documentation
-├── scripts/                  # Development scripts
-└── docker/                   # Docker configurations
+ services/
+    workflow-engine/      # Core workflow execution
+    dashboard-service/    # Dashboard management
+    workflow-frontend/    # Workflow builder UI
+    dashboard-frontend/   # Dashboard UI
+ docs/                     # Documentation
+ scripts/                  # Development scripts
+ docker/                   # Docker configurations
 ```
 
 ## Adding New Features

@@ -67,7 +67,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
       const message = event.data;
       // Only log selection events, not hover/info events
       if (message.type === "ELEMENT_SELECTED") {
-        console.log('📨 Parent received message:', message);
+        console.log(' Parent received message:', message);
       }
       
       if (message.type === "ELEMENT_SELECTED" && message.element && message.selector) {
@@ -107,7 +107,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
           }
           
           // Debug the selectors
-          console.log('🔍 FIELD CREATION DEBUG:', {
+          console.log(' FIELD CREATION DEBUG:', {
             absoluteSelector: selectedElement.selector,
             relativeSelector: selectedElement.relativeSelector,
             name: selectedElement.name
@@ -119,7 +119,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
             attribute: 'textContent'
           };
           
-          console.log('🔍 CREATED FIELD:', fieldElement);
+          console.log(' CREATED FIELD:', fieldElement);
           
           containerElement.fields.push(fieldElement);
           setContainerElement({ ...containerElement }); // Update state to trigger re-render
@@ -317,7 +317,7 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
       if (updatedFields[index]) {
         updatedFields[index] = { ...updatedFields[index], name };
         setContainerElement({ ...containerElement, fields: updatedFields });
-        console.log('🏷️ Updated field name in container:', updatedFields[index]);
+        console.log(' Updated field name in container:', updatedFields[index]);
       }
     }
   };
@@ -369,8 +369,8 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
       finalElements = [finalContainer];
     }
 
-    console.log('🏁 Finishing selection with elements:', finalElements);
-    console.log('🏁 Elements with names:', finalElements.map(el => ({ 
+    console.log(' Finishing selection with elements:', finalElements);
+    console.log(' Elements with names:', finalElements.map(el => ({ 
       name: el.name, 
       selector: el.selector,
       type: (el as any).type,
@@ -379,10 +379,10 @@ const VisualElementSelector: React.FC<VisualElementSelectorProps> = ({
     
     // Debug the actual fields structure being passed
     if (containerElement && containerElement.fields) {
-      console.log('🔍 CONTAINER FIELDS BEFORE PASSING:', JSON.stringify(containerElement.fields, null, 2));
+      console.log(' CONTAINER FIELDS BEFORE PASSING:', JSON.stringify(containerElement.fields, null, 2));
       finalElements.forEach((el, idx) => {
         if ((el as any).fields) {
-          console.log(`🔍 FINAL ELEMENT ${idx} FIELDS:`, JSON.stringify((el as any).fields, null, 2));
+          console.log(` FINAL ELEMENT ${idx} FIELDS:`, JSON.stringify((el as any).fields, null, 2));
         }
       });
     }

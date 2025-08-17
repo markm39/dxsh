@@ -109,7 +109,7 @@ export const MyCustomNodeConfig: NodeConfig = {
     }
   ],
   color: '#4F46E5',  // Node color
-  icon: '🔢'         // Optional icon
+  icon: ''         // Optional icon
 };
 ```
 

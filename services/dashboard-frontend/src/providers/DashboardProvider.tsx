@@ -458,9 +458,9 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
       // If API call succeeds, remove from local state
       dispatch({ type: 'REMOVE_WIDGET', payload: id });
-      console.log('✅ Widget deleted successfully:', id);
+      console.log(' Widget deleted successfully:', id);
     } catch (error) {
-      console.error('❌ Failed to delete widget:', error);
+      console.error(' Failed to delete widget:', error);
       dispatch({ type: 'SET_ERROR', payload: (error as Error).message });
       // Don't remove from local state if API call fails
     }

@@ -8,14 +8,14 @@ The Model Widget System provides a standardized way to create rich UIs for ML mo
 
 ## Features
 
-- ✅ **Interactive Prediction Forms** - User-friendly input forms with validation
-- ✅ **Performance Metrics** - Model accuracy, coefficients, and training info
-- ✅ **Type Safety** - Full TypeScript support with comprehensive interfaces
-- ✅ **Reusable Components** - Modular architecture for different model types
-- ✅ **Configurable UI** - Customizable tabs and layout options
-- ✅ **Mock Data Support** - Built-in testing and development data
-- 🔄 **Extensible** - Easy to add new model types
-- 🔄 **Responsive** - Works on desktop and mobile devices
+-  **Interactive Prediction Forms** - User-friendly input forms with validation
+-  **Performance Metrics** - Model accuracy, coefficients, and training info
+-  **Type Safety** - Full TypeScript support with comprehensive interfaces
+-  **Reusable Components** - Modular architecture for different model types
+-  **Configurable UI** - Customizable tabs and layout options
+-  **Mock Data Support** - Built-in testing and development data
+-  **Extensible** - Easy to add new model types
+-  **Responsive** - Works on desktop and mobile devices
 
 ## Quick Start
 
@@ -58,17 +58,17 @@ function DemoWidget() {
 
 ```
 model-widgets/
-├── types.ts                 # TypeScript interfaces and types
-├── components/
-│   ├── BaseModelWidget.tsx  # Common tabbed interface
-│   ├── PredictionForm.tsx   # Input form with validation
-│   └── PerformanceDisplay.tsx # Metrics and visualizations
-├── hooks/
-│   ├── usePrediction.ts     # Prediction state management
-│   └── useModelValidation.ts # Input validation logic
-├── LinearRegressionWidget.tsx # Specialized implementation
-├── ModelWidgetDemo.tsx      # Development/testing component
-└── index.ts                 # Main exports
+ types.ts                 # TypeScript interfaces and types
+ components/
+    BaseModelWidget.tsx  # Common tabbed interface
+    PredictionForm.tsx   # Input form with validation
+    PerformanceDisplay.tsx # Metrics and visualizations
+ hooks/
+    usePrediction.ts     # Prediction state management
+    useModelValidation.ts # Input validation logic
+ LinearRegressionWidget.tsx # Specialized implementation
+ ModelWidgetDemo.tsx      # Development/testing component
+ index.ts                 # Main exports
 ```
 
 ### Data Flow
@@ -292,10 +292,10 @@ test('should make predictions when form is submitted', async () => {
 
 ## Browser Support
 
-- ✅ Chrome 88+
-- ✅ Firefox 85+
-- ✅ Safari 14+
-- ✅ Edge 88+
+-  Chrome 88+
+-  Firefox 85+
+-  Safari 14+
+-  Edge 88+
 
 ## Roadmap
 

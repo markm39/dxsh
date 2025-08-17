@@ -2,9 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Rules
+
+1. **NO EMOJIS**: Do not add emojis to any code, comments, console logs, or documentation. Keep all text professional and emoji-free.
+2. **ALWAYS ACTIVATE VENV**: When running Python commands in the Flask backend services, always activate the virtual environment first.
+3. **PREFER EDITING**: Always prefer editing existing files over creating new ones. Only create new files when absolutely necessary.
+
 ## Project Overview
 
-**Dxsh** is a self-hostable visual workflow automation platform designed for data science, analytics, statistics, and mathematical operations. Born from the successful extraction and evolution of the workflow system originally developed within the Chatmark sports analytics platform, this project represents a complete reimagining of data processing automation.
+**Dxsh** is a self-hostable visual workflow automation platform designed for data science, analytics, statistics, and mathematical operations. This platform provides a visual interface for building complex data workflows through a drag-and-drop node-based system.
 
 ### Core Vision
 
@@ -19,20 +25,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Architecture Philosophy
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                        DXSH CORE                        │
-│  ┌─────────┐    ┌─────────┐    ┌─────────┐            │
-│  │ Collect │───▶│ Process │───▶│ Output  │            │
-│  │  Data   │    │  Data   │    │ Results │            │
-│  └─────────┘    └─────────┘    └─────────┘            │
-│       ▲              ▲               │                  │
-│       │              │               ▼                  │
-│  ┌─────────┐   ┌──────────┐   ┌───────────┐          │
-│  │   API   │   │ ML/Stats │   │ Dashboard │          │
-│  │ Scraper │   │  Models  │   │   Feeds   │          │
-│  │Database │   │ Analysis │   │  Storage  │          │
-│  └─────────┘   └──────────┘   └───────────┘          │
-└─────────────────────────────────────────────────────────┘
+
+                        DXSH CORE                        
+                      
+   Collect  Process  Output              
+    Data         Data        Results             
+                      
+                                                      
+                                                      
+                  
+     API       ML/Stats     Dashboard           
+   Scraper      Models        Feeds             
+  Database     Analysis      Storage            
+                  
+
 ```
 
 ### Business Model & Distribution Strategy

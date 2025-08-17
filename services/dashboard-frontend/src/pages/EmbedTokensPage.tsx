@@ -370,7 +370,7 @@ const EmbedTokensPage: React.FC = () => {
 
                 {/* Embed Information */}
                 <div className="mb-4 p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg">
-                  <h4 className="text-sm font-medium text-text-primary mb-2">📋 Embed Information</h4>
+                  <h4 className="text-sm font-medium text-text-primary mb-2"> Embed Information</h4>
                   <div className="text-xs text-text-muted mb-1">Embed URL:</div>
                   <code className="block text-xs bg-background px-2 py-1 rounded border text-blue-600 break-all">
                     {import.meta.env['VITE_API_BASE_URL'] || `${window.location.protocol}//${window.location.hostname}:8001`}/api/v1/embed/{token.dashboard_id ? 'dashboard' : 'widget'}/{resourceInfo.id}?token={token.token}

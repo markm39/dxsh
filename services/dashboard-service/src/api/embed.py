@@ -779,7 +779,7 @@ def generate_widget_embed_html(widget: dict, theme: str = "light", refresh_inter
                     if (data.type === 'chart') {{
                         content.innerHTML = `
                             <div style="text-align: center; padding: 20px;">
-                                <h3>📊 Chart Widget</h3>
+                                <h3> Chart Widget</h3>
                                 <p>Chart data available (${JSON.stringify(data.cachedData).length} chars)</p>
                                 <pre style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(data.cachedData, null, 2)}</pre>
                             </div>
@@ -787,7 +787,7 @@ def generate_widget_embed_html(widget: dict, theme: str = "light", refresh_inter
                     }} else if (data.type === 'table') {{
                         content.innerHTML = `
                             <div style="text-align: center; padding: 20px;">
-                                <h3>📋 Table Widget</h3>
+                                <h3> Table Widget</h3>
                                 <p>Table data available</p>
                                 <pre style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(data.cachedData, null, 2)}</pre>
                             </div>
@@ -795,7 +795,7 @@ def generate_widget_embed_html(widget: dict, theme: str = "light", refresh_inter
                     }} else if (data.type === 'metric') {{
                         content.innerHTML = `
                             <div style="text-align: center; padding: 20px;">
-                                <h3>📈 Metric Widget</h3>
+                                <h3> Metric Widget</h3>
                                 <p>Metric data available</p>
                                 <pre style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(data.cachedData, null, 2)}</pre>
                             </div>
@@ -803,7 +803,7 @@ def generate_widget_embed_html(widget: dict, theme: str = "light", refresh_inter
                     }} else {{
                         content.innerHTML = `
                             <div style="text-align: center; padding: 20px;">
-                                <h3>🔧 Widget Data</h3>
+                                <h3> Widget Data</h3>
                                 <pre style="text-align: left; font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(data.cachedData, null, 2)}</pre>
                             </div>
                         `;
@@ -811,7 +811,7 @@ def generate_widget_embed_html(widget: dict, theme: str = "light", refresh_inter
                 }} else {{
                     content.innerHTML = `
                         <div style="text-align: center; padding: 40px;">
-                            <h3>📭 No Data Available</h3>
+                            <h3> No Data Available</h3>
                             <p>This widget doesn't have cached data yet.</p>
                             <p>Try running the connected workflow to generate data.</p>
                         </div>

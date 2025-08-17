@@ -412,7 +412,7 @@ async def load_file(
                 db.add(node_execution)
                 db.commit()
                 
-                logger.info(f"✅ Saved file node execution: node_id={node_id}, agent_id={agent_id}, execution_id={workflow_execution.id}")
+                logger.info(f" Saved file node execution: node_id={node_id}, agent_id={agent_id}, execution_id={workflow_execution.id}")
                 
             except Exception as e:
                 logger.error(f"Failed to save file node execution: {e}")

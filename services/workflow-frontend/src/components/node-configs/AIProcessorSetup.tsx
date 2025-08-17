@@ -223,7 +223,7 @@ const AIProcessorSetup: React.FC<AIProcessorSetupProps> = ({
             {inputData.length === 0 && (
               <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
                 <p className="text-blue-700 text-sm">
-                  💡 <strong>Preview Note:</strong> Input data is available during workflow execution. Connect this node to a data source and use the Execute button in the workflow to see live results in the Dashboard tab.
+                   <strong>Preview Note:</strong> Input data is available during workflow execution. Connect this node to a data source and use the Execute button in the workflow to see live results in the Dashboard tab.
                 </p>
               </div>
             )}

@@ -203,7 +203,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
       }
 
       const result = await response.json();
-      console.log('📁 Upload response:', result);
+      console.log(' Upload response:', result);
       
       if (!result.file?.path) {
         throw new Error('Upload response missing file path');
@@ -216,7 +216,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
         fileType: getFileType(selectedFile.name)
       }));
 
-      console.log('📁 Updated config with filePath:', result.file.path);
+      console.log(' Updated config with filePath:', result.file.path);
       setSelectedFile(null);
     } catch (error) {
       setTestError(error instanceof Error ? error.message : 'Upload failed');
@@ -289,15 +289,15 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ File operation test failed:', errorText);
+        console.error(' File operation test failed:', errorText);
         throw new Error(`Test failed (${response.status}): ${errorText}`);
       }
 
       const result = await response.json();
       setTestResult(result);
-      console.log('✅ File operation test successful:', result);
+      console.log(' File operation test successful:', result);
     } catch (error) {
-      console.error('❌ File operation test error:', error);
+      console.error(' File operation test error:', error);
       setTestError(error instanceof Error ? error.message : 'Test failed');
     } finally {
       setIsTestingConnection(false);
@@ -366,8 +366,8 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
       return;
     }
 
-    console.log('💾 Saving FileNode config:', config);
-    console.log('💾 FilePath check:', config.filePath ? 'PRESENT' : 'MISSING');
+    console.log(' Saving FileNode config:', config);
+    console.log(' FilePath check:', config.filePath ? 'PRESENT' : 'MISSING');
     onSave(config);
   }, [config, selectedFile, onSave]);
 
@@ -653,13 +653,13 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
                 const isMultiTableStructure = keys.every(key => Array.isArray(firstItem[key]));
                 
                 if (isMultiTableStructure) {
-                  console.log('🗂️ Detected multi-table structure:', keys);
+                  console.log(' Detected multi-table structure:', keys);
                   return firstItem as { [tableName: string]: any[] };
                 }
               }
               
               // Regular array structure - treat as single unnamed table
-              console.log('📋 Detected regular array structure');
+              console.log(' Detected regular array structure');
               return { 'input_data': data };
             };
             
@@ -813,7 +813,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
                                       </div>
                                       {isSelected && (
                                         <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center ml-2">
-                                          <span className="text-white text-xs">✓</span>
+                                          <span className="text-white text-xs"></span>
                                         </div>
                                       )}
                                     </div>
@@ -978,7 +978,7 @@ const FileNodeSetup: React.FC<FileNodeSetupProps> = ({
                             </div>
                             {isSelected && (
                               <div className="w-4 h-4 rounded-full bg-orange-500 flex items-center justify-center ml-2">
-                                <span className="text-white text-xs">✓</span>
+                                <span className="text-white text-xs"></span>
                               </div>
                             )}
                           </div>

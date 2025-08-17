@@ -429,25 +429,25 @@ class PlaywrightService:
                 attribute = selector_config.get('attribute', 'textContent')
                 
                 # Debug log to understand why table types aren't working
-                logger.info(f"🔍 DEBUG SELECTOR: type='{type_}', attribute='{attribute}', selector='{selector}'")
+                logger.info(f" DEBUG SELECTOR: type='{type_}', attribute='{attribute}', selector='{selector}'")
                 
                 if not selector:
                     continue
                 
                 if type_ == 'table' or attribute == 'table_data':
                     # Table mode - use structured table extraction
-                    logger.info(f"🏓 TABLE MODE: Processing table selector: {selector}")
+                    logger.info(f" TABLE MODE: Processing table selector: {selector}")
                     
                     try:
                         # Use the built-in table extraction logic
                         table_data = await self._extract_table_data(selector)
                         
                         if table_data:
-                            logger.info(f"🏓 TABLE MODE: Extracted {len(table_data)} table rows")
+                            logger.info(f" TABLE MODE: Extracted {len(table_data)} table rows")
                             result = {name: table_data}
                             all_results.append(result)
                         else:
-                            logger.warning(f"🏓 TABLE MODE: No table data extracted for {selector}")
+                            logger.warning(f" TABLE MODE: No table data extracted for {selector}")
                             all_results.append({name: []})
                             
                     except Exception as e:
@@ -456,16 +456,16 @@ class PlaywrightService:
                 
                 elif type_ == 'repeating' and 'fields' in selector_config:
                     # Repeating container mode - extract structured rows
-                    logger.info(f"🔄 REPEATING MODE: Processing container selector: {selector}")
-                    logger.info(f"🔄 REPEATING MODE: Fields to extract: {[f['name'] for f in selector_config['fields']]}")
+                    logger.info(f" REPEATING MODE: Processing container selector: {selector}")
+                    logger.info(f" REPEATING MODE: Fields to extract: {[f['name'] for f in selector_config['fields']]}")
                     
                     try:
                         containers = await self.page.query_selector_all(selector)
-                        logger.info(f"🔄 REPEATING MODE: Found {len(containers)} containers for '{selector}'")
+                        logger.info(f" REPEATING MODE: Found {len(containers)} containers for '{selector}'")
                         
                         rows = []
                         for i, container in enumerate(containers):
-                            logger.info(f"🔄 REPEATING MODE: Processing container {i+1}/{len(containers)}")
+                            logger.info(f" REPEATING MODE: Processing container {i+1}/{len(containers)}")
                             row = {}
                             row_valid = False
                             
@@ -475,10 +475,10 @@ class PlaywrightService:
                                 attribute = field.get('attribute', 'textContent')
                                 
                                 if not sub_selector:
-                                    logger.warning(f"❌ FIELD CONFIG ERROR: Field '{field_name}' missing sub_selector/selector")
+                                    logger.warning(f" FIELD CONFIG ERROR: Field '{field_name}' missing sub_selector/selector")
                                     continue
                                 
-                                logger.info(f"🔍 FIELD EXTRACTION: Looking for field '{field_name}' with selector '{sub_selector}' in container {i+1}")
+                                logger.info(f" FIELD EXTRACTION: Looking for field '{field_name}' with selector '{sub_selector}' in container {i+1}")
                                 
                                 try:
                                     # Use relative selector within the container
@@ -516,29 +516,29 @@ class PlaywrightService:
                                             value = await field_elem.evaluate(f'el => el.getAttribute("{attribute}")')
                                         
                                         row[field_name] = value
-                                        logger.info(f"✅ FIELD EXTRACTED: '{field_name}' = '{value[:50]}...' from container {i+1}")
+                                        logger.info(f" FIELD EXTRACTED: '{field_name}' = '{value[:50]}...' from container {i+1}")
                                         if value:  # Mark row as valid if we got at least one non-empty value
                                             row_valid = True
                                     else:
                                         row[field_name] = None
-                                        logger.warning(f"❌ FIELD NOT FOUND: '{field_name}' selector '{sub_selector}' not found in container {i+1}")
+                                        logger.warning(f" FIELD NOT FOUND: '{field_name}' selector '{sub_selector}' not found in container {i+1}")
                                         
                                 except Exception as e:
-                                    logger.error(f"💥 FIELD ERROR: Error extracting '{field_name}' from container {i+1}: {e}")
+                                    logger.error(f" FIELD ERROR: Error extracting '{field_name}' from container {i+1}: {e}")
                                     row[field_name] = None
                             
                             # Only add row if we extracted at least some data
                             if row_valid:
                                 rows.append(row)
-                                logger.info(f"📝 ROW ADDED: Container {i+1} produced valid row: {row}")
+                                logger.info(f" ROW ADDED: Container {i+1} produced valid row: {row}")
                             else:
-                                logger.warning(f"❌ ROW SKIPPED: Container {i+1} had no valid fields")
+                                logger.warning(f" ROW SKIPPED: Container {i+1} had no valid fields")
                         
-                        logger.info(f"🏁 FINAL RESULT: Extracted {len(rows)} structured rows from {len(containers)} containers")
+                        logger.info(f" FINAL RESULT: Extracted {len(rows)} structured rows from {len(containers)} containers")
                         if rows:
-                            logger.info(f"🏁 SAMPLE ROW: {rows[0]}")
+                            logger.info(f" SAMPLE ROW: {rows[0]}")
                         else:
-                            logger.error(f"🏁 NO ROWS EXTRACTED! Check field selectors.")
+                            logger.error(f" NO ROWS EXTRACTED! Check field selectors.")
                         
                         # Return structured rows under the container name
                         result = {name: rows}

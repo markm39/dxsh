@@ -20,26 +20,26 @@ export const testProxyAccess = async (
   try {
     const token = authHeaders.Authorization?.replace('Bearer ', '') || 'test';
     const headlessUrl = `${API_BASE_URL}/api/v1/scrape/iframe?url=${encodeURIComponent(url)}&token=${encodeURIComponent(token)}`;
-    console.log("🚀 Trying headless browser approach...");
+    console.log(" Trying headless browser approach...");
 
     const response = await fetch(headlessUrl, {
       method: "GET",
     });
 
     if (response.ok) {
-      console.log("✅ Headless browser access successful");
+      console.log(" Headless browser access successful");
       return {
         success: true,
         proxyUrl: headlessUrl,
         method: 'headless_browser'
       };
     } else {
-      console.log(`⚠️ Headless browser failed: ${response.status} ${response.statusText}`);
-      console.log("🔄 Falling back to CORS proxy...");
+      console.log(` Headless browser failed: ${response.status} ${response.statusText}`);
+      console.log(" Falling back to CORS proxy...");
     }
   } catch (error) {
-    console.log(`⚠️ Headless browser error: ${error}`);
-    console.log("🔄 Falling back to CORS proxy...");
+    console.log(` Headless browser error: ${error}`);
+    console.log(" Falling back to CORS proxy...");
   }
 
   // Fallback to CORS proxy for compatibility
@@ -49,21 +49,21 @@ export const testProxyAccess = async (
       url
     )}&token=${encodeURIComponent(token)}`;
 
-    console.log("🔄 Trying CORS proxy fallback...");
+    console.log(" Trying CORS proxy fallback...");
     const response = await fetch(proxyUrl, {
       method: "GET",
       headers: authHeaders,
     });
 
     if (response.ok) {
-      console.log("✅ CORS proxy access successful");
+      console.log(" CORS proxy access successful");
       return {
         success: true,
         proxyUrl,
         method: 'cors_proxy'
       };
     } else {
-      console.log(`❌ CORS proxy failed: ${response.status} ${response.statusText}`);
+      console.log(` CORS proxy failed: ${response.status} ${response.statusText}`);
       return {
         success: false,
         error: `Both headless browser and CORS proxy failed. Last error: ${response.status} ${response.statusText}`,
@@ -71,7 +71,7 @@ export const testProxyAccess = async (
       };
     }
   } catch (error) {
-    console.log(`❌ CORS proxy error: ${error}`);
+    console.log(` CORS proxy error: ${error}`);
     return {
       success: false,
       error: `Both headless browser and CORS proxy failed. Last error: ${String(error)}`,
@@ -145,7 +145,7 @@ export const setupIframeElementSelection = (
     }
     
     .element-selector-container::before {
-      content: "📦 Container - Click elements inside me";
+      content: " Container - Click elements inside me";
       position: absolute !important;
       top: -35px !important;
       left: 0 !important;
@@ -169,7 +169,7 @@ export const setupIframeElementSelection = (
     }
     
     .element-selector-field::before {
-      content: "✓ Field";
+      content: " Field";
       position: absolute !important;
       top: -20px !important;
       left: 0 !important;

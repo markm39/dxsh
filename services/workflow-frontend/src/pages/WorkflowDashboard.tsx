@@ -1237,7 +1237,7 @@ const AgentsDashboard: React.FC = () => {
             const sourceNode = reactFlowNodes.find(n => n.id === sourceEdge.source);
             
             if (sourceNode?.data?.executionResult) {
-              console.log('🔗 Found input data for linear regression from connected node:', sourceNode.data.executionResult);
+              console.log(' Found input data for linear regression from connected node:', sourceNode.data.executionResult);
               
               // Handle different data structures
               const result = sourceNode.data.executionResult;
@@ -1291,7 +1291,7 @@ const AgentsDashboard: React.FC = () => {
               return [result];
             }
             
-            console.log('🔗 No execution result found for connected node:', sourceNode?.data);
+            console.log(' No execution result found for connected node:', sourceNode?.data);
             return [];
           })()}
           agentId={selectedAgentId || undefined}

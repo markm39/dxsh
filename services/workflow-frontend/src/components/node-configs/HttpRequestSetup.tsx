@@ -171,24 +171,24 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
   const fetchExecutionHistory = async () => {
     if (!agentId || !nodeId) return;
     
-    console.log('🔍 Fetching execution history for:', { agentId, nodeId });
+    console.log(' Fetching execution history for:', { agentId, nodeId });
     setLoadingHistory(true);
     try {
       const url = `${API_BASE_URL}/api/v1/agents/${agentId}/nodes/${nodeId}/executions`;
-      console.log('🔍 Request URL:', url);
+      console.log(' Request URL:', url);
       
       const response = await fetch(url, {
         headers: authHeaders
       });
       
       const data = await response.json();
-      console.log('🔍 Response data:', data);
+      console.log(' Response data:', data);
       
       if (data.success) {
         setExecutionHistory(data.executions || []);
-        console.log('🔍 Set execution history with', data.executions?.length || 0, 'executions');
+        console.log(' Set execution history with', data.executions?.length || 0, 'executions');
       } else {
-        console.error('🔍 API request failed:', data.error);
+        console.error(' API request failed:', data.error);
       }
     } catch (error) {
       console.error('Failed to fetch execution history:', error);
@@ -499,7 +499,7 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
         return;
       }
 
-      console.log('💾 Saving HTTP Request config:', config);
+      console.log(' Saving HTTP Request config:', config);
       onSave(config);
     } finally {
       setSaving(false);
@@ -987,7 +987,7 @@ const HttpRequestSetup: React.FC<HttpRequestSetupProps> = ({
                     <summary className="cursor-pointer text-sm text-primary hover:text-primary/80 list-none">
                       <span className="flex items-center gap-1">
                         Response Data
-                        <span className="group-open:rotate-90 transition-transform">▶</span>
+                        <span className="group-open:rotate-90 transition-transform"></span>
                       </span>
                     </summary>
                     <div className="mt-2 p-3 bg-background/50 rounded border border-border-subtle/30">

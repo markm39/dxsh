@@ -672,7 +672,7 @@ class TestNodeExecutorIntegration:
         for node_type in expected_coverage:
             assert node_type in service.node_executors, f"Missing coverage for node type: {node_type}"
         
-        print(f"\n✅ ALL {len(expected_coverage)} NODE TYPES COVERED:")
+        print(f"\n ALL {len(expected_coverage)} NODE TYPES COVERED:")
         for node_type, description in expected_coverage.items():
             print(f"  • {node_type}: {description}")
 
@@ -682,14 +682,14 @@ if __name__ == "__main__":
     import subprocess
     import sys
     
-    print("🚀 Running comprehensive node executor tests...")
+    print(" Running comprehensive node executor tests...")
     result = subprocess.run([
         sys.executable, "-m", "pytest", __file__, "-v", "--tb=short"
     ], cwd=os.path.dirname(__file__))
     
     if result.returncode == 0:
-        print("\n🎉 ALL TESTS PASSED - 100% Node Functionality Verified!")
+        print("\n ALL TESTS PASSED - 100% Node Functionality Verified!")
     else:
-        print("\n❌ Some tests failed - requires investigation")
+        print("\n Some tests failed - requires investigation")
     
     sys.exit(result.returncode)

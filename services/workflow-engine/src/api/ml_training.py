@@ -475,7 +475,7 @@ async def train_model(
         
         # Update the NodeExecution record with the output data for dashboard widgets
         try:
-            logger.info(f"🔍 Looking for NodeExecution with ID: {request.node_execution_id}")
+            logger.info(f" Looking for NodeExecution with ID: {request.node_execution_id}")
             node_execution = db.query(NodeExecution).filter(
                 NodeExecution.id == request.node_execution_id
             ).first()
@@ -517,19 +517,19 @@ async def train_model(
                 }
                 
                 db.commit()
-                logger.info(f"✅ Updated NodeExecution {request.node_execution_id} with ML results")
+                logger.info(f" Updated NodeExecution {request.node_execution_id} with ML results")
                 
                 # Debug: Check what was saved
-                logger.info(f"📊 NodeExecution details: node_id={node_execution.node_id}, " +
+                logger.info(f" NodeExecution details: node_id={node_execution.node_id}, " +
                           f"execution_id={node_execution.execution_id}, " +
                           f"status={node_execution.status}, " +
                           f"has_output_data={bool(node_execution.output_data)}")
             else:
-                logger.warning(f"❌ NodeExecution {request.node_execution_id} not found for update")
+                logger.warning(f" NodeExecution {request.node_execution_id} not found for update")
                 
                 # Debug: Check all NodeExecutions
                 all_node_execs = db.query(NodeExecution).all()
-                logger.info(f"📊 Total NodeExecutions in DB: {len(all_node_execs)}")
+                logger.info(f" Total NodeExecutions in DB: {len(all_node_execs)}")
                 for ne in all_node_execs[-5:]:  # Show last 5
                     logger.info(f"   - ID: {ne.id}, node_id: {ne.node_id}, status: {ne.status}")
                 
