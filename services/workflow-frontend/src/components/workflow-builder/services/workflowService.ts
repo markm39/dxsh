@@ -187,4 +187,42 @@ export const workflowService = {
 
     return await response.json();
   },
+
+  async deleteNode(
+    workflowId: number,
+    nodeId: string,
+    authHeaders: Record<string, string>
+  ): Promise<boolean> {
+    try {
+      const url = `${API_BASE_URL}/v1/workflows/${workflowId}/nodes/${nodeId}`;
+      console.log(`🗑️ API: Making DELETE request to: ${url}`);
+      console.log('🗑️ API: Auth headers:', Object.keys(authHeaders));
+      
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: authHeaders,
+      });
+      
+      console.log(`🗑️ API: Response status: ${response.status} ${response.statusText}`);
+      
+      if (response.status === 401) {
+        console.log('🗑️ API: Authentication error');
+        handleAuthError();
+        return false;
+      }
+      
+      if (response.ok) {
+        const result = await response.json();
+        console.log('🗑️ API: Success response:', result);
+        return true;
+      } else {
+        const errorText = await response.text();
+        console.error('🗑️ API: Error response:', errorText);
+        return false;
+      }
+    } catch (error) {
+      console.error("🗑️ API: Exception:", error);
+      return false;
+    }
+  },
 };

@@ -253,6 +253,7 @@ const AgentsDashboard: React.FC = () => {
     setWorkflowResults,
     loadAgents,
     saveWorkflow,
+    deleteNode,
     initializeWorkflow,
   } = useAgentManagement(authHeaders || {});
 
@@ -397,14 +398,41 @@ const AgentsDashboard: React.FC = () => {
 
 
   const onNodesDelete = useCallback(
-    (deleted: Node[]) => {
+    async (deleted: Node[]) => {
+      const deletedNodeIds = deleted.map(node => node.id);
+      
+      console.log('🗑️ Deleting nodes from database:', deletedNodeIds);
+      
+      // Delete nodes from database first
+      if (selectedAgentId) {
+        for (const nodeId of deletedNodeIds) {
+          const success = await deleteNode(selectedAgentId, nodeId);
+          if (!success) {
+            console.error('❌ Failed to delete node from database:', nodeId);
+            return; // Don't update UI state if database deletion failed
+          }
+        }
+        console.log('✅ Successfully deleted nodes from database');
+      }
+      
+      // Remove the deleted nodes from UI state
       const remainingNodes = reactFlowNodes.filter(
-        node => !deleted.find(d => d.id === node.id)
+        node => !deletedNodeIds.includes(node.id)
       );
+      
+      // Remove edges connected to deleted nodes from UI state
+      const remainingEdges = reactFlowEdges.filter(
+        edge => !deletedNodeIds.includes(edge.source) && !deletedNodeIds.includes(edge.target)
+      );
+      
+      console.log('🗑️ Updating UI state - remaining nodes:', remainingNodes.length);
+      console.log('🗑️ Updating UI state - remaining edges:', remainingEdges.length);
+      
+      // Update UI state
       setReactFlowNodes(remainingNodes);
-      debouncedSave();
+      setReactFlowEdges(remainingEdges);
     },
-    [reactFlowNodes, edges, debouncedSave, setNodes]
+    [reactFlowNodes, reactFlowEdges, setReactFlowNodes, setReactFlowEdges, selectedAgentId, deleteNode]
   );
 
   const handleDeleteNode = useCallback(

@@ -103,6 +103,19 @@ export const useAgentManagement = (authHeaders: Record<string, string>) => {
     }
   }, [authHeaders]);
 
+  const deleteNode = useCallback(async (agentId: number, nodeId: string) => {
+    try {
+      const success = await workflowService.deleteNode(agentId, nodeId, authHeaders);
+      if (!success) {
+        console.error("Failed to delete node from database:", nodeId);
+      }
+      return success;
+    } catch (error) {
+      console.error("Failed to delete node:", error);
+      return false;
+    }
+  }, [authHeaders]);
+
 
   useEffect(() => {
     loadAgents();
@@ -132,6 +145,7 @@ export const useAgentManagement = (authHeaders: Record<string, string>) => {
     loadWorkflow,
     loadExecutionHistory,
     saveWorkflow,
+    deleteNode,
     initializeWorkflow,
   };
 };

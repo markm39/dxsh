@@ -14,13 +14,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setIsSubmitting(true);
 
     try {
       const endpoint = isRegistering
@@ -47,7 +47,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     } catch (err) {
       setError("Network error. Please try again.");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -62,13 +62,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         <div className="p-8 bg-surface border border-border-subtle rounded-xl shadow-xl backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
+            <div className="flex justify-center mb-6">
+              <img src="/dxsh_logo.png" alt="Dxsh" className="h-16 w-auto" />
+            </div>
             <h1 className="text-2xl font-bold text-text-primary mb-2">
               {isRegistering ? "Create Account" : "Welcome Back"}
             </h1>
             <p className="text-text-secondary">
               {isRegistering
                 ? "Sign up to create and manage workflows"
-                : "Sign in to access Dxsh"}
+                : "Sign in to access your workflows"}
             </p>
           </div>
 
@@ -125,10 +128,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             {/* Submit button */}
             <button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting}
               className="w-full px-4 py-2 bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
-              {loading ? (
+              {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
                   {isRegistering ? "Creating Account..." : "Signing In..."}
@@ -161,7 +164,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           {/* Link to dashboard */}
           <div className="mt-4 text-center">
             <a
-              href="http://localhost:3000"
+              href={import.meta.env['VITE_DASHBOARD_FRONTEND_URL'] || 'http://localhost:3000'}
               className="text-xs text-text-muted hover:text-text-secondary transition-colors"
             >
               ← Back to Dashboard

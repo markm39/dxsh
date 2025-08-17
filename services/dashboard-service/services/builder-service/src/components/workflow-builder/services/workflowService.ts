@@ -161,4 +161,30 @@ export const workflowService = {
 
     return await response.json();
   },
+
+  async deleteNode(
+    agentId: number,
+    nodeId: string,
+    authHeaders: Record<string, string>
+  ): Promise<boolean> {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/v1/agents/${agentId}/workflow/nodes/${nodeId}`,
+        {
+          method: "DELETE",
+          headers: authHeaders,
+        }
+      );
+      
+      if (response.status === 401) {
+        handleAuthError();
+        return false;
+      }
+      
+      return response.ok;
+    } catch (error) {
+      console.error("Failed to delete node:", error);
+      return false;
+    }
+  },
 };

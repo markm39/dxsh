@@ -253,6 +253,7 @@ const AgentsDashboard: React.FC = () => {
     setWorkflowResults,
     loadAgents,
     saveWorkflow,
+    deleteNode,
     initializeWorkflow,
   } = useAgentManagement(authHeaders || {});
 
@@ -397,14 +398,59 @@ const AgentsDashboard: React.FC = () => {
 
 
   const onNodesDelete = useCallback(
-    (deleted: Node[]) => {
+    async (deleted: Node[]) => {
+      const deletedNodeIds = deleted.map(node => node.id);
+      
+      console.log('🗑️ Deleting nodes from database:', deletedNodeIds);
+      console.log('🗑️ Using agent ID:', selectedAgentId);
+      
+      // Clear any pending debounced saves to prevent overwriting our deletion
+      if (saveTimeoutRef.current) {
+        console.log('🗑️ Cancelling pending save to prevent overwriting deletion');
+        clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
+      }
+      
+      // Delete nodes from database first
+      if (selectedAgentId) {
+        for (const nodeId of deletedNodeIds) {
+          console.log(`🗑️ Calling deleteNode(${selectedAgentId}, ${nodeId})`);
+          const success = await deleteNode(selectedAgentId, nodeId);
+          console.log(`🗑️ Delete result for ${nodeId}:`, success);
+          if (!success) {
+            console.error('❌ Failed to delete node from database:', nodeId);
+            return; // Don't update UI state if database deletion failed
+          }
+        }
+        console.log('✅ Successfully deleted nodes from database');
+      } else {
+        console.error('❌ No selectedAgentId available for deletion');
+        return;
+      }
+      
+      // Remove the deleted nodes from both React Flow state AND useAgentManagement state
       const remainingNodes = reactFlowNodes.filter(
-        node => !deleted.find(d => d.id === node.id)
+        node => !deletedNodeIds.includes(node.id)
       );
-      setReactFlowNodes(remainingNodes);
-      debouncedSave();
+      
+      // Remove edges connected to deleted nodes
+      const remainingEdges = reactFlowEdges.filter(
+        edge => !deletedNodeIds.includes(edge.source) && !deletedNodeIds.includes(edge.target)
+      );
+      
+      console.log('🗑️ Updating UI state - remaining nodes:', remainingNodes.length);
+      console.log('🗑️ Updating UI state - remaining edges:', remainingEdges.length);
+      
+      // CRITICAL: Update both React Flow state AND useAgentManagement state
+      // to prevent the useEffect from restoring deleted nodes
+      setNodes(remainingNodes);  // Update useAgentManagement state first
+      setEdges(remainingEdges);  // Update useAgentManagement edges too
+      setReactFlowNodes(remainingNodes);  // Update React Flow state
+      setReactFlowEdges(remainingEdges);  // Update React Flow edges
+      
+      console.log('🗑️ Node deletion completed - no additional saves should occur');
     },
-    [reactFlowNodes, edges, debouncedSave, setNodes]
+    [reactFlowNodes, reactFlowEdges, setReactFlowNodes, setReactFlowEdges, selectedAgentId, deleteNode, setNodes, setEdges]
   );
 
   const handleDeleteNode = useCallback(
