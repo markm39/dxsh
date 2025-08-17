@@ -2,9 +2,6 @@
 
 A self-hostable visual workflow automation platform for data processing, analytics, and integration tasks.
 
-![Dxsh Platform Overview](docs/images/platform-overview.png)
-*Screenshot needed: A composite image showing the workflow builder on the left and a dashboard on the right, demonstrating the full platform capabilities.*
-
 ## Overview
 
 Dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
@@ -47,9 +44,6 @@ The platform consists of five core microservices:
 ## Features
 
 ### Workflow Builder
-
-![Workflow Builder](docs/images/workflow-builder-demo.png)
-*Screenshot needed: Show a complete workflow with multiple nodes connected, demonstrating a real data processing pipeline (e.g., Web Source → Data Processing → Chart Generation).*
 
 - Visual drag-and-drop workflow design
 - Extensive library of processing nodes

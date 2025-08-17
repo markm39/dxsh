@@ -9,6 +9,7 @@ import { useCallback } from 'react';
 import type { DashboardWidget } from '@shared/types';
 import { apiService } from '../services/api';
 import { useAuthHeaders } from '../providers/AuthProvider';
+import { useEmbedToken } from '../contexts/EmbedContext';
 
 interface UseWidgetDataOptions {
   enabled?: boolean;
@@ -22,8 +23,9 @@ export const useWidgetData = (
 ) => {
   const queryClient = useQueryClient();
   const authHeaders = useAuthHeaders();
+  const embedToken = useEmbedToken();
 
-  const queryKey = ['widget-data', dashboardId, widget.id, widget.dataSource];
+  const queryKey = ['widget-data', dashboardId, widget.id, widget.dataSource, embedToken];
 
   const query = useQuery({
     queryKey,
@@ -31,10 +33,39 @@ export const useWidgetData = (
       console.log('useWidgetData: Starting data fetch for widget:', {
         dashboardId,
         widgetId: widget.id,
-        dataSource: widget.dataSource
+        dataSource: widget.dataSource,
+        isEmbed: !!embedToken
       });
 
-      // Try to get data from widget-specific endpoint first
+      // If we have an embed token, use the embed endpoint
+      if (embedToken) {
+        try {
+          console.log('useWidgetData: Using embed endpoint with token');
+          const apiUrl = import.meta.env.VITE_WORKFLOW_API_URL || 'http://localhost:8001';
+          const response = await fetch(
+            `${apiUrl}/api/v1/embed/widget/${widget.id}/data?token=${embedToken}`,
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch widget data: ${response.statusText}`);
+          }
+
+          const result = await response.json();
+          return result.data;
+        } catch (error) {
+          console.error('useWidgetData: Embed endpoint failed:', error);
+          // For embeds, we only return cached data from the dashboard
+          return widget.cachedData || null;
+        }
+      }
+
+      // Original authenticated flow
       try {
         console.log('useWidgetData: Trying widget-specific endpoint...');
         const widgetData = await apiService.getWidgetData(dashboardId, widget.id, authHeaders);
