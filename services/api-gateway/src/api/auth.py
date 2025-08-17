@@ -63,8 +63,8 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     
     # Check database for real users
     user = db.query(User).filter(User.email == request.email).first()
-    # Temporary simple password check for testing authentication flow
-    if user and user.is_active and request.password == "admin123":
+    # Verify password using bcrypt
+    if user and user.is_active and pwd_context.verify(request.password, user.password_hash):
         token = create_jwt_token(user.id, user.email)
         # Return the same format as the original backend
         return {
@@ -88,10 +88,11 @@ async def register(request: RegisterRequest, db: Session = Depends(get_db)):
         if existing_user:
             raise HTTPException(status_code=400, detail="User with this email already exists")
         
-        # Create new user (for now, store password as-is since auth.py expects plain text comparison)
+        # Create new user with hashed password
+        hashed_password = pwd_context.hash(request.password)
         new_user = User(
             email=request.email,
-            password_hash=request.password,  # In production this should be hashed
+            password_hash=hashed_password,
             is_active=True
         )
         

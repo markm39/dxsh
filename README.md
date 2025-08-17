@@ -110,9 +110,9 @@ cd dxsh
 
 This will start all services locally. Access the applications at:
 
-- Workflow Builder: http://localhost:3002
+- Workflow Builder: http://localhost:3000
 - Dashboard Interface: http://localhost:3001
-- API Documentation: http://localhost:5000/docs
+- API Documentation: http://localhost:8001/docs
 
 ## Configuration
 

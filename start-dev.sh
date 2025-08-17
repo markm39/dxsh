@@ -107,7 +107,7 @@ export DASHBOARD_FRONTEND_URL=http://localhost:3001
 export VITE_API_BASE_URL=http://localhost:8001
 export VITE_WORKFLOW_API_URL=http://localhost:8001
 
-echo "🚀 Starting services..."
+echo "Starting services..."
 
 # Start Workflow Engine
 echo "   Starting Workflow Engine on :8000"
