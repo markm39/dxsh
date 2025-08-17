@@ -40,7 +40,7 @@ The workflow builder provides an intuitive drag-and-drop interface for creating 
 
 **How to Use:**
 
-1. Access the Workflow Builder at http://localhost:3002
+1. Access the Workflow Builder at http://localhost:3000
 2. Select or create an agent from the left sidebar
 3. Drag nodes from the node library onto the canvas
 4. Connect nodes by dragging from output to input ports
@@ -65,6 +65,7 @@ The workflow builder provides an intuitive drag-and-drop interface for creating 
 ##### HTTP Request Configuration
 
 The HTTP Request node allows you to configure:
+
 - Method selection (GET/POST/PUT/DELETE)
 - URL field
 - Headers section
@@ -79,6 +80,7 @@ The HTTP Request node allows you to configure:
 ##### AI Processor Configuration
 
 The AI Processor configuration includes:
+
 - Prompt template editor
 - Model selection
 - Token limits
@@ -92,6 +94,7 @@ The AI Processor configuration includes:
 ##### Linear Regression Setup
 
 The Linear Regression configuration includes:
+
 - Feature selection
 - Target variable selection
 - Training options
@@ -107,6 +110,7 @@ The Linear Regression configuration includes:
 ### Workflow Execution
 
 During workflow execution you'll see:
+
 - Running workflow with progress indicators on nodes
 - "Running..." button state
 - Node execution status (green for success, yellow for running)
@@ -148,6 +152,7 @@ Create interactive dashboards to visualize workflow results and monitor metrics.
 ### Creating Widgets
 
 When you click the "Add Widget" button, you'll see:
+
 - Widget type selection
 - Widget configuration options
 - Data source selection
@@ -159,6 +164,7 @@ When you click the "Add Widget" button, you'll see:
 ![Chart Widget Example](images/chart-widget.png)
 
 The chart widget configuration includes:
+
 - Chart type selection (Line, Bar, Pie)
 - Data mapping options
 - Styling options
@@ -167,6 +173,7 @@ The chart widget configuration includes:
 #### Text Widget
 
 Text widgets support:
+
 - Rich text content
 - Markdown formatting
 - Integration in the dashboard grid
@@ -178,6 +185,7 @@ Text widgets support:
 #### Creating Embed Tokens
 
 When creating embed tokens, you can configure:
+
 - Token name field
 - Resource type selection (Dashboard/Widget)
 - Resource ID selection
