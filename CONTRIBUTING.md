@@ -22,6 +22,7 @@ git checkout -b feature/your-feature-name
 ```
 
 Use descriptive branch names:
+
 - `feature/add-csv-export`
 - `fix/workflow-execution-error`
 - `docs/update-api-guide`
@@ -31,12 +32,14 @@ Use descriptive branch names:
 Follow the coding standards for the language you're working with:
 
 **Python (Backend Services):**
+
 - Follow PEP 8
 - Use type hints where appropriate
 - Add docstrings to functions and classes
 - Run Black formatter: `black .`
 
 **TypeScript/React (Frontend Services):**
+
 - Use TypeScript strict mode
 - Follow ESLint rules
 - Use functional components with hooks
@@ -47,12 +50,14 @@ Follow the coding standards for the language you're working with:
 All new features should include tests:
 
 **Backend Tests:**
+
 ```bash
 cd services/workflow-engine
 python -m pytest tests/
 ```
 
 **Frontend Tests:**
+
 ```bash
 cd services/workflow-frontend
 npm test
@@ -75,6 +80,7 @@ git commit -m "docs: update API authentication guide"
 ```
 
 Commit types:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -90,6 +96,7 @@ git push origin feature/your-feature-name
 ```
 
 Then create a pull request on GitHub with:
+
 - Clear description of changes
 - Link to related issues
 - Screenshots for UI changes
@@ -116,6 +123,7 @@ dxsh/
 See the [Node Development Guide](docs/development/creating-nodes.md) for detailed instructions.
 
 Quick checklist:
+
 1. Create node class in `services/workflow-engine/src/nodes/`
 2. Add to node registry
 3. Create frontend configuration
@@ -127,6 +135,7 @@ Quick checklist:
 See the [Widget Development Guide](docs/development/creating-widgets.md) for detailed instructions.
 
 Quick checklist:
+
 1. Create React component in `services/dashboard-frontend/src/widgets/`
 2. Define widget configuration
 3. Register widget
@@ -136,6 +145,7 @@ Quick checklist:
 ## Code Review Process
 
 All pull requests require:
+
 1. Passing CI/CD checks
 2. Code review from maintainers
 3. Tests for new functionality
@@ -165,15 +175,16 @@ def test_workflow_execution():
 
 ```typescript
 // Frontend example
-test('renders workflow node', () => {
+test("renders workflow node", () => {
   render(<WorkflowNode type="http_request" />);
-  expect(screen.getByText('HTTP Request')).toBeInTheDocument();
+  expect(screen.getByText("HTTP Request")).toBeInTheDocument();
 });
 ```
 
 ### Integration Tests
 
 Test component interactions:
+
 - API endpoint tests
 - Database operations
 - Service communication
@@ -182,6 +193,7 @@ Test component interactions:
 ### End-to-End Tests
 
 Test complete user flows:
+
 - Create and execute workflow
 - Build and share dashboard
 - User authentication flow
@@ -190,7 +202,8 @@ Test complete user flows:
 
 ### Reporting Security Issues
 
-Do not create public issues for security vulnerabilities. Instead, email security@dxsh.dev with:
+Do not create public issues for security vulnerabilities. Instead, email support@dxsh.io with:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact
@@ -207,6 +220,7 @@ Do not create public issues for security vulnerabilities. Instead, email securit
 ## Performance Considerations
 
 When contributing, consider:
+
 - Query optimization for large datasets
 - Efficient data structures
 - Caching opportunities
@@ -218,20 +232,22 @@ When contributing, consider:
 ### Code Documentation
 
 **Python:**
+
 ```python
 def process_data(input_data: List[Dict]) -> Dict[str, Any]:
     """
     Process input data and return aggregated results.
-    
+
     Args:
         input_data: List of dictionaries containing raw data
-        
+
     Returns:
         Dictionary with processed results and metadata
     """
 ```
 
 **TypeScript:**
+
 ```typescript
 /**
  * Renders a workflow node on the canvas
@@ -264,6 +280,7 @@ export const WorkflowNode: React.FC<NodeProps> = (props) => {
 ## Recognition
 
 Contributors are recognized in:
+
 - GitHub contributors page
 - Release notes
 - Project documentation
