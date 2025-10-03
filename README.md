@@ -6,6 +6,24 @@ A self-hostable visual workflow automation platform for data processing, analyti
 
 Dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
 
+### Visual Workflow Builder
+
+![Workflow Builder](docs/images/workflow-builder-main.png)
+
+Build complex data pipelines with an intuitive drag-and-drop interface. Connect nodes, configure parameters, and execute workflows in real-time.
+
+### Dashboard System
+
+![Dashboard Interface](docs/images/dashboard-main.png)
+
+Create customizable dashboards with real-time data visualization. Share dashboards publicly or embed them in your applications.
+
+### Embeddable Widgets
+
+![Embed Tokens](docs/images/embed-tokens.png)
+
+Generate secure embed tokens to share dashboards and widgets externally with fine-grained access control.
+
 ## Architecture
 
 The platform consists of five core microservices:
