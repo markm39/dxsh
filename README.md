@@ -92,7 +92,7 @@ The platform consists of five core microservices:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/dxsh.git
+git clone https://github.com/markm39/dxsh.git
 cd dxsh
 ```
 
