@@ -216,16 +216,6 @@ const DashboardEditorPage: React.FC = () => {
                       </div>
                     </button>
                     <button
-                      onClick={() => handleAddWidget('metric')}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left hover:bg-surface-secondary/50 rounded-md transition-all duration-200 text-text-primary border border-transparent hover:border-border-subtle"
-                    >
-                      <Activity className="h-4 w-4 text-green-400" />
-                      <div>
-                        <div className="font-medium">Metric Widget</div>
-                        <div className="text-xs text-text-muted">KPIs and key metrics</div>
-                      </div>
-                    </button>
-                    <button
                       onClick={() => handleAddWidget('text')}
                       className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left hover:bg-surface-secondary/50 rounded-md transition-all duration-200 text-text-primary border border-transparent hover:border-border-subtle"
                     >
