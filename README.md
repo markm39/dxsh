@@ -2,7 +2,7 @@
 
 A self-hostable visual workflow automation platform for data processing, analytics, and integration tasks.
 
-DISCORD COMMUNITY: https://discord.gg/m4g7suRu
+[![Discord](https://img.shields.io/discord/1423834980257239085?color=7289da&label=Discord&logo=discord&logoColor=white)](https://discord.gg/m4g7suRu)
 
 ## Overview
 
