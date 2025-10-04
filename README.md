@@ -2,6 +2,8 @@
 
 A self-hostable visual workflow automation platform for data processing, analytics, and integration tasks.
 
+DISCORD COMMUNITY: https://discord.gg/m4g7suRu
+
 ## Overview
 
 Dxsh is a microservices-based platform that enables users to create, execute, and monitor data processing workflows through an intuitive visual interface. The system supports various data sources, processing nodes, and output destinations, making it suitable for ETL operations, data analytics, and automation tasks.
