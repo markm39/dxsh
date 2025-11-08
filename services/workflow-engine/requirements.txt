@@ -24,9 +24,47 @@ aiofiles==23.2.0
 python-multipart==0.0.6
 werkzeug==2.3.7
 
-# Optional dependencies (install as needed)
-# python-docx==0.8.11  # For Word document processing
+# Scheduled execution dependencies
+celery[redis]==5.3.4
+flower==2.0.1
+kombu==5.3.4
+croniter==2.0.1
+
+# Multi-agent AI dependencies
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-anthropic==0.0.1
+langgraph==0.0.20
+
+# RAG and vector database
+weaviate-client==4.4.0
+sentence-transformers==2.2.2
+langchain-community==0.0.20
+chromadb==0.4.22
+tiktoken==0.5.2
+
+# Advanced error handling
+tenacity==8.2.3
+pybreaker==1.0.1
+limits==3.7.0
+
+# Real-time collaboration
+python-socketio==5.11.0
+aioredis==2.0.1
+
+# Integrations for approvals
+slack-sdk==3.26.0
+pymsteams==0.2.2
+aiosmtplib==3.0.1
+
+# Document processing for RAG
+pypdf==4.0.0
+python-docx==1.1.0
+
+# Enhanced scraping
+fake-useragent==1.4.0
 
 # Testing dependencies
 pytest==7.4.3
 pytest-asyncio==0.21.1
+pytest-cov==4.1.0

@@ -10,25 +10,26 @@ from ..database import Base
 
 class AgentWorkflow(Base):
     __tablename__ = 'agent_workflows'
-    
+
     id = Column(Integer, primary_key=True)
     agent_id = Column(Integer, nullable=False)  # Removed FK constraint for now
     user_id = Column(Integer, nullable=False)  # User identifier from JWT auth
-    
+
     # Workflow data
     name = Column(String(255), nullable=False, default='Workflow')
     nodes = Column(JSON, nullable=False, default=list)  # React Flow nodes
     edges = Column(JSON, nullable=False, default=list)  # React Flow edges
-    
+
     # Service versioning
     service_version = Column(String(10), default='v1')
-    
+
     # Metadata
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    
+
     # Relationships
     workflow_nodes = relationship("WorkflowNode", back_populates="workflow", cascade="all, delete-orphan")
+    schedules = relationship("Schedule", back_populates="workflow", cascade="all, delete-orphan")
     
     def to_dict(self):
         return {
