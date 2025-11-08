@@ -29,7 +29,7 @@ class AgentWorkflow(Base):
 
     # Relationships
     workflow_nodes = relationship("WorkflowNode", back_populates="workflow", cascade="all, delete-orphan")
-    schedules = relationship("Schedule", back_populates="workflow", cascade="all, delete-orphan")
+    # Removed schedules relationship due to SQLite FK constraints
     
     def to_dict(self):
         return {
