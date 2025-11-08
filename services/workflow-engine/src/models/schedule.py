@@ -5,7 +5,7 @@ Database models for scheduled workflow execution.
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, JSON, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .workflow import Base
+from ..database import Base
 
 
 class Schedule(Base):
@@ -45,8 +45,8 @@ class Schedule(Base):
     next_run_at = Column(DateTime, nullable=True)
 
     # Relationships
-    workflow = relationship("Workflow", back_populates="schedules")
-    executions = relationship("ScheduledExecution", back_populates="schedule")
+    workflow = relationship("AgentWorkflow", back_populates="schedules")
+    executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Schedule(id={self.id}, workflow_id={self.workflow_id}, cron='{self.cron_expression}')>"
