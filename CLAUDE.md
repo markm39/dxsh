@@ -4,9 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Important Rules
 
+- Always make a new branch for a new feature, and merge it with a pull request
+- Keep files under 700 lines, refactoring long files whenever you see them
+- Add unit tests for all logical code you add
+- Add a README for every root subdirectory in the repo
+- Make sure the frontends build and the backends compile before pushing changes
+- ALWAYS make commits as me (Don't commit as Claude)
+
 1. **NO EMOJIS**: Do not add emojis to any code, comments, console logs, or documentation. Keep all text professional and emoji-free.
 2. **ALWAYS ACTIVATE VENV**: When running Python commands in the Flask backend services, always activate the virtual environment first.
-3. **PREFER EDITING**: Always prefer editing existing files over creating new ones. Only create new files when absolutely necessary.
 
 ## Project Overview
 
