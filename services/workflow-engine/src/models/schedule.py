@@ -44,8 +44,8 @@ class Schedule(Base):
     # Next scheduled run
     next_run_at = Column(DateTime, nullable=True)
 
-    # Relationships - removed workflow relationship due to SQLite FK constraints
-    executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
+    # Relationships - removed all relationships due to SQLite FK constraints
+    # executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Schedule(id={self.id}, workflow_id={self.workflow_id}, cron='{self.cron_expression}')>"
@@ -72,8 +72,8 @@ class ScheduledExecution(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relationships
-    schedule = relationship("Schedule", back_populates="executions")
+    # Relationships - removed due to SQLite FK constraints
+    # schedule = relationship("Schedule", back_populates="executions")
 
     def __repr__(self):
         return f"<ScheduledExecution(id={self.id}, schedule_id={self.schedule_id}, status='{self.status}')>"
