@@ -13,7 +13,7 @@ class Schedule(Base):
     __tablename__ = "schedules"
 
     id = Column(Integer, primary_key=True, index=True)
-    workflow_id = Column(Integer, ForeignKey("workflows.id"), nullable=False)
+    workflow_id = Column(Integer, nullable=False)  # Removed FK constraint for SQLite compatibility
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
@@ -44,8 +44,7 @@ class Schedule(Base):
     # Next scheduled run
     next_run_at = Column(DateTime, nullable=True)
 
-    # Relationships
-    workflow = relationship("AgentWorkflow", back_populates="schedules")
+    # Relationships - removed workflow relationship due to SQLite FK constraints
     executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -57,8 +56,8 @@ class ScheduledExecution(Base):
     __tablename__ = "scheduled_executions"
 
     id = Column(Integer, primary_key=True, index=True)
-    schedule_id = Column(Integer, ForeignKey("schedules.id"), nullable=False)
-    execution_id = Column(Integer, ForeignKey("executions.id"), nullable=True)
+    schedule_id = Column(Integer, nullable=False)  # Removed FK for SQLite compatibility
+    execution_id = Column(Integer, nullable=True)  # Removed FK for SQLite compatibility
 
     # Execution details
     scheduled_time = Column(DateTime, nullable=False)

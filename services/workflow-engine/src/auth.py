@@ -1,5 +1,6 @@
 import jwt
 import os
+import logging
 from datetime import datetime, timedelta
 from fastapi import HTTPException, Security, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -14,6 +15,8 @@ load_dotenv()
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'workflow-engine-dev-secret-change-in-production')
 ALGORITHM = "HS256"
 
+logger = logging.getLogger(__name__)
+
 security = HTTPBearer()
 
 class AuthUser(BaseModel):
@@ -25,10 +28,16 @@ def verify_token(token: str) -> Optional[AuthUser]:
     """Verify and decode a JWT token"""
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        logger.info(f"Token verified successfully for user: {payload.get('email')}")
         return AuthUser(user_id=str(payload['user_id']), email=payload['email'])
-    except jwt.ExpiredSignatureError:
+    except jwt.ExpiredSignatureError as e:
+        logger.error(f"Token expired: {e}")
         return None
-    except jwt.InvalidTokenError:
+    except jwt.InvalidTokenError as e:
+        logger.error(f"Invalid token: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"Unexpected error verifying token: {e}")
         return None
 
 def verify_api_key(api_key: str) -> Optional[AuthUser]:
