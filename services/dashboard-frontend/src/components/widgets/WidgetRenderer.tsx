@@ -1,11 +1,13 @@
 /**
  * Widget Renderer Component
- * 
+ *
  * Dynamically renders widgets based on their type
  */
 
 import React from 'react';
 import type { DashboardWidget } from '@shared/types';
+import type { DashboardStyles } from '../../types/styling';
+import { DEFAULT_DASHBOARD_STYLES } from '../../types/styling';
 import ChartWidget from './ChartWidget';
 import MetricWidget from './MetricWidget';
 import TextWidget from './TextWidget';
@@ -16,12 +18,14 @@ interface WidgetRendererProps {
   dashboardId: string;
   widget: DashboardWidget;
   isEditMode?: boolean;
+  dashboardStyles?: DashboardStyles;
 }
 
 const WidgetRenderer: React.FC<WidgetRendererProps> = ({
   dashboardId,
   widget,
   isEditMode = false,
+  dashboardStyles = DEFAULT_DASHBOARD_STYLES,
 }) => {
   // Render appropriate widget component based on type
   const renderWidget = () => {

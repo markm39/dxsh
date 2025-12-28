@@ -222,10 +222,10 @@ const dashboardReducer = (state: DashboardState, action: DashboardAction): Dashb
 // Context interface
 interface DashboardContextValue {
   state: DashboardState;
-  
+
   // Dashboard operations
   loadDashboard: (dashboardId: string) => Promise<void>;
-  updateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => void;
+  updateDashboard: (updates: Partial<Dashboard>) => void;
   saveDashboard: () => Promise<void>;
   resetDashboard: () => void;
   
@@ -367,9 +367,29 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
   }, [state.currentDashboard, authHeaders]);
 
   // Update dashboard
-  const updateDashboard = useCallback((dashboardId: string, updates: Partial<Dashboard>) => {
+  const updateDashboard = useCallback(async (updates: Partial<Dashboard>) => {
     dispatch({ type: 'UPDATE_DASHBOARD', payload: updates });
-  }, []);
+
+    // Persist to backend
+    if (state.currentDashboard) {
+      try {
+        const response = await fetch(`${defaultSettings.apiUrl}/api/v1/dashboards/${state.currentDashboard.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders,
+          },
+          body: JSON.stringify({ ...state.currentDashboard, ...updates }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to update dashboard: ${response.statusText}`);
+        }
+      } catch (error) {
+        console.error('Error updating dashboard:', error);
+      }
+    }
+  }, [state.currentDashboard, authHeaders]);
 
   // Reset dashboard
   const resetDashboard = useCallback(() => {
