@@ -13,7 +13,7 @@ class Schedule(Base):
     __tablename__ = "schedules"
 
     id = Column(Integer, primary_key=True, index=True)
-    workflow_id = Column(Integer, ForeignKey("workflows.id"), nullable=False)
+    workflow_id = Column(Integer, nullable=False)  # Removed FK constraint for SQLite compatibility
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
 
@@ -44,9 +44,8 @@ class Schedule(Base):
     # Next scheduled run
     next_run_at = Column(DateTime, nullable=True)
 
-    # Relationships
-    workflow = relationship("AgentWorkflow", back_populates="schedules")
-    executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
+    # Relationships - removed all relationships due to SQLite FK constraints
+    # executions = relationship("ScheduledExecution", back_populates="schedule", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Schedule(id={self.id}, workflow_id={self.workflow_id}, cron='{self.cron_expression}')>"
@@ -57,8 +56,8 @@ class ScheduledExecution(Base):
     __tablename__ = "scheduled_executions"
 
     id = Column(Integer, primary_key=True, index=True)
-    schedule_id = Column(Integer, ForeignKey("schedules.id"), nullable=False)
-    execution_id = Column(Integer, ForeignKey("executions.id"), nullable=True)
+    schedule_id = Column(Integer, nullable=False)  # Removed FK for SQLite compatibility
+    execution_id = Column(Integer, nullable=True)  # Removed FK for SQLite compatibility
 
     # Execution details
     scheduled_time = Column(DateTime, nullable=False)
@@ -73,8 +72,8 @@ class ScheduledExecution(Base):
     # Metadata
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relationships
-    schedule = relationship("Schedule", back_populates="executions")
+    # Relationships - removed due to SQLite FK constraints
+    # schedule = relationship("Schedule", back_populates="executions")
 
     def __repr__(self):
         return f"<ScheduledExecution(id={self.id}, schedule_id={self.schedule_id}, status='{self.status}')>"

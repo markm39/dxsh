@@ -33,6 +33,6 @@ def get_db():
 def create_tables():
     """Create database tables"""
     # Import models to register them with Base
-    from .models import workflow, execution
-    
+    from .models import workflow, execution, schedule
+
     Base.metadata.create_all(bind=engine)
